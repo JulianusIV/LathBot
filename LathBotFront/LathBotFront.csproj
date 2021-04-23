@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-00840" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="5.0.0-nightly-00840" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-00840" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="5.0.0-nightly-00840" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
   </ItemGroup>
 
