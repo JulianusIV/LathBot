@@ -14,6 +14,7 @@ using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 
 using Newtonsoft.Json;
+using LathBotFront.Commands;
 
 namespace LathBotFront
 {
@@ -97,10 +98,14 @@ namespace LathBotFront
 			Commands = Client.UseCommandsNext(commandsConfig);
 
 			//Register commands
+			Commands.RegisterCommands<TechnicalCommands>();
 
 			await Client.ConnectAsync();
 
-			LavalinkNodeConnection lavaNode = await lavalink.ConnectAsync(lavalinkConfig);
+			if (!IsInDesignMode)
+			{
+				LavalinkNodeConnection lavaNode = await lavalink.ConnectAsync(lavalinkConfig);
+			}
 
 			await Task.Delay(-1);
 		}
