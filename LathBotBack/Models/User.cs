@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LathBotBack.Models
 {
-	class User
+	public class User
 	{
 		public int ID { get; set; }
 		public ulong DcID { get; set; }

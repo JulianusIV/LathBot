@@ -8,11 +8,11 @@ using System.Text;
 
 namespace LathBotBack.Repos
 {
-	class WarnRepository : RepositoryBase
+	public class WarnRepository : RepositoryBase
 	{
 		public WarnRepository(string connectionString) : base(connectionString) { }
 
-		public bool Create(Warn entity)
+		public bool Create(ref Warn entity)
 		{
 			bool result = false;
 
@@ -26,19 +26,24 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.AddWithValue("warnnum", entity.Number);
 				DbCommand.Parameters.AddWithValue("warnlevel", entity.Level);
 				DbCommand.Parameters.AddWithValue("warntime", entity.Time);
-				using (DbConnection)
-				using (SqlDataReader reader = DbCommand.ExecuteReader())
-				{
-					DbConnection.Open();
-					reader.Read();
-					entity.ID = (int)reader["WarnId"];
-				}
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				entity.ID = (int)reader["WarnId"];
+				DbConnection.Close();
 				result = true;
 			}
 			catch (Exception e)
 			{
 				//Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -54,28 +59,33 @@ namespace LathBotBack.Repos
 				DbCommand.CommandText = "SELECT * FROM Warns WHERE WarnId = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
-				using (DbConnection)
-				using (SqlDataReader reader = DbCommand.ExecuteReader())
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				entity = new Warn
 				{
-					DbConnection.Open();
-					reader.Read();
-					entity = new Warn
-					{
-						ID = (int)reader["WarnId"],
-						User = (int)reader["UserDbId"],
-						Mod = (int)reader["ModeratorDbId"],
-						Reason = (string)reader["Reason"],
-						Number = (int)reader["WarnNumber"],
-						Level = (int)reader["WarnLevel"],
-						Time = (DateTime)reader["WarnTime"]
-					};
-				}
+					ID = (int)reader["WarnId"],
+					User = (int)reader["UserDbId"],
+					Mod = (int)reader["ModeratorDbId"],
+					Reason = (string)reader["Reason"],
+					Number = (int)reader["WarnNumber"],
+					Level = (int)reader["WarnLevel"],
+					Time = (DateTime)reader["WarnTime"]
+				};
+				DbConnection.Close();
 				result = true;
 			}
 			catch (Exception e)
 			{
 				//Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -96,17 +106,22 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.AddWithValue("level", entity.Level);
 				DbCommand.Parameters.AddWithValue("time", entity.Time);
 				DbCommand.Parameters.AddWithValue("id", entity.ID);
-				using (DbConnection)
-				{
-					DbConnection.Open();
-					DbCommand.ExecuteNonQuery();
-				}
+				DbConnection.Open();
+				DbCommand.ExecuteNonQuery();
+				DbConnection.Close();
 				result = true;
 			}
 			catch (Exception e)
 			{
 				//Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -121,17 +136,22 @@ namespace LathBotBack.Repos
 				DbCommand.CommandText = "DELETE FROM Warns WHERE WarnId = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
-				using (DbConnection)
-				{
-					DbConnection.Open();
-					DbCommand.ExecuteNonQuery();
-				}
+				DbConnection.Open();
+				DbCommand.ExecuteNonQuery();
+				DbConnection.Close();
 				result = true;
 			}
 			catch (Exception e)
 			{
 				//Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;

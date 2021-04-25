@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LathBotBack.Base
 {
-	class RepositoryBase
+	public class RepositoryBase
 	{
 		public SqlConnection DbConnection { get; set; }
 		public SqlCommand DbCommand { get; set; }

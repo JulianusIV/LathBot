@@ -8,7 +8,7 @@ using System.Text;
 
 namespace LathBotBack.Repos
 {
-	class AuditRepository : RepositoryBase
+	public class AuditRepository : RepositoryBase
 	{
 		public AuditRepository(string connectionString) : base(connectionString) { }
 
@@ -27,11 +27,9 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.AddWithValue("unmutes", entity.Unmutes);
 				DbCommand.Parameters.AddWithValue("kicks", entity.Kicks);
 				DbCommand.Parameters.AddWithValue("bans", entity.Bans);
-				using (DbConnection)
-				{
-					DbConnection.Open();
-					DbCommand.ExecuteNonQuery();
-				}
+				DbConnection.Open();
+				DbCommand.ExecuteNonQuery();
+				DbConnection.Close();
 
 				result = true;
 			}
@@ -39,6 +37,13 @@ namespace LathBotBack.Repos
 			{
 				//Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -54,29 +59,34 @@ namespace LathBotBack.Repos
 				DbCommand.CommandText = "SELECT WarnAmount, PardonAmount, MuteAmount, UnmuteAmount, KickAmount, BanAmount FROM Audits WHERE ModDbId = @mod;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("mod", id);
-				using (DbConnection)
-				using (SqlDataReader reader = DbCommand.ExecuteReader())
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				entity = new Audit
 				{
-					DbConnection.Open();
-					reader.Read();
-					entity = new Audit
-					{
-						Mod = id,
-						Warns = (int)reader["WarnAmount"],
-						Pardons = (int)reader["PardonAmount"],
-						Mutes = (int)reader["MuteAmount"],
-						Unmutes = (int)reader["UnmuteAmount"],
-						Kicks = (int)reader["KickAmount"],
-						Bans = (int)reader["BanAmount"]
-					};
+					Mod = id,
+					Warns = (int)reader["WarnAmount"],
+					Pardons = (int)reader["PardonAmount"],
+					Mutes = (int)reader["MuteAmount"],
+					Unmutes = (int)reader["UnmuteAmount"],
+					Kicks = (int)reader["KickAmount"],
+					Bans = (int)reader["BanAmount"]
+				};
+				DbConnection.Close();
 
-				}
 				result = true;
 			}
 			catch (Exception e)
 			{
 				//Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -97,11 +107,9 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.AddWithValue("kicks", entity.Kicks);
 				DbCommand.Parameters.AddWithValue("bans", entity.Bans);
 				DbCommand.Parameters.AddWithValue("id", entity.Mod);
-				using (DbConnection)
-				{
-					DbConnection.Open();
-					DbCommand.ExecuteNonQuery();
-				}
+				DbConnection.Open();
+				DbCommand.ExecuteNonQuery();
+				DbConnection.Close();
 
 				result = true;
 			}
@@ -109,6 +117,13 @@ namespace LathBotBack.Repos
 			{
 				//Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -123,11 +138,9 @@ namespace LathBotBack.Repos
 				DbCommand.CommandText = "DELETE FROM Audits WHERE ModDbId = @id";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
-				using (DbConnection)
-				{
-					DbConnection.Open();
-					DbCommand.ExecuteNonQuery();
-				}
+				DbConnection.Open();
+				DbCommand.ExecuteNonQuery();
+				DbConnection.Close();
 
 				result = true;
 			}
@@ -135,6 +148,13 @@ namespace LathBotBack.Repos
 			{
 				//Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LathBotBack.Models
 {
-	class Audit
+	public class Audit
 	{
 		public int Mod{ get; set; }
 		public int Warns { get; set; }

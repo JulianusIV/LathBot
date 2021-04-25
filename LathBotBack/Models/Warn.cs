@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LathBotBack.Models
 {
-	class Warn
+	public class Warn
 	{
 		public int ID { get; set; }
 		public int User { get; set; }
