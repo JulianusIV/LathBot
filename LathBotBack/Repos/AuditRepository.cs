@@ -1,10 +1,9 @@
-﻿using LathBotBack.Base;
-using LathBotBack.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using System;
 using System.Diagnostics;
-using System.Text;
+using System.Data.SqlClient;
+
+using LathBotBack.Base;
+using LathBotBack.Models;
 
 namespace LathBotBack.Repos
 {

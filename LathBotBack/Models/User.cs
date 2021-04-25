@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LathBotBack.Models
+﻿namespace LathBotBack.Models
 {
 	public class User
 	{
