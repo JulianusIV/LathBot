@@ -2,11 +2,12 @@ using NUnit.Framework;
 
 namespace LathBotTest
 {
-	public class Tests
+	public class WarnRepoTest
 	{
 		[SetUp]
 		public void Setup()
 		{
+
 		}
 
 		[Test]
