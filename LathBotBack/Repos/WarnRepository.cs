@@ -17,7 +17,7 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "INSERT INTO Warns (UserDbId, ModeratorDbId, Reason, WarnNumber, WarnLevel, WarnTime) OUTPUT INSERTED.WarnId VALUES (@userid, @modid, @reason, @warnnum, @warnlevel, @warntime);";
+				DbCommand.CommandText = "INSERT INTO Warns (UserDbId, ModeratorDbId, Reason, WarnNumber, WarnLevel, WarnTime, Persistent) OUTPUT INSERTED.WarnId VALUES (@userid, @modid, @reason, @warnnum, @warnlevel, @warntime, @persistent);";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("userid", entity.User);
 				DbCommand.Parameters.AddWithValue("modid", entity.Mod);
@@ -25,6 +25,7 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.AddWithValue("warnnum", entity.Number);
 				DbCommand.Parameters.AddWithValue("warnlevel", entity.Level);
 				DbCommand.Parameters.AddWithValue("warntime", entity.Time);
+				DbCommand.Parameters.AddWithValue("persistent", entity.Persistent);
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
 				reader.Read();
@@ -69,7 +70,8 @@ namespace LathBotBack.Repos
 					Reason = (string)reader["Reason"],
 					Number = (int)reader["WarnNumber"],
 					Level = (int)reader["WarnLevel"],
-					Time = (DateTime)reader["WarnTime"]
+					Time = (DateTime)reader["WarnTime"],
+					Persistent = (bool)reader["Persistent"]
 				};
 				DbConnection.Close();
 				result = true;
@@ -96,7 +98,7 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "UPDATE Warns SET UserDbId = @user, ModeratorDbId = @mod, Reason = @reason, WarnNumber = @num, WarnLevel = @level, WarnTime = @time WHERE WarnId = @id;";
+				DbCommand.CommandText = "UPDATE Warns SET UserDbId = @user, ModeratorDbId = @mod, Reason = @reason, WarnNumber = @num, WarnLevel = @level, WarnTime = @time, Persistent = @persistent WHERE WarnId = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("user", entity.User);
 				DbCommand.Parameters.AddWithValue("mod", entity.Mod);
@@ -104,6 +106,7 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.AddWithValue("num", entity.Number);
 				DbCommand.Parameters.AddWithValue("level", entity.Level);
 				DbCommand.Parameters.AddWithValue("time", entity.Time);
+				DbCommand.Parameters.AddWithValue("persistent", entity.Persistent);
 				DbCommand.Parameters.AddWithValue("id", entity.ID);
 				DbConnection.Open();
 				DbCommand.ExecuteNonQuery();

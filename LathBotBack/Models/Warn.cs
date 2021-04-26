@@ -11,5 +11,6 @@ namespace LathBotBack.Models
 		public int Number { get; set; }
 		public int Level { get; set; }
 		public DateTime Time { get; set; }
+		public bool Persistent { get; set; }
 	}
 }

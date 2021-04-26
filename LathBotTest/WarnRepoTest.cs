@@ -27,7 +27,7 @@ namespace LathBotTest
 		[SetUp]
 		public void Setup()
 		{
-			_objRepo = new WarnRepository("Data Source = 192.168.0.136; Initial Catalog = master; Persist Security Info = True; User ID = sa; Password = Julianus162636#");
+			_objRepo = new WarnRepository("Data Source = localhost; Initial Catalog = master; Persist Security Info = True; User ID = sa; Password = Julianus162636#");
 		}
 
 		[Test]
@@ -85,6 +85,7 @@ namespace LathBotTest
 			Assert.AreEqual(entity.Number, _obj.Number);
 			Assert.AreEqual(entity.Level, _obj.Level);
 			Assert.AreEqual(entity.Time, _obj.Time);
+			Assert.AreEqual(entity.Persistent, _obj.Persistent);
 		}
 
 		private void TestUpdate()
@@ -106,6 +107,7 @@ namespace LathBotTest
 			Assert.AreEqual(entity.Number, _obj.Number);
 			Assert.AreEqual(entity.Level, _obj.Level);
 			Assert.AreEqual(entity.Time, _obj.Time);
+			Assert.AreEqual(entity.Persistent, _obj.Persistent);
 		}
 
 		private void TestDelete()
