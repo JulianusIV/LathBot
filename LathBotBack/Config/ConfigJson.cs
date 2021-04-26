@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace LathBotFront
+namespace LathBotBack.Config
 {
 	public struct ConfigJson
 	{
@@ -8,5 +8,7 @@ namespace LathBotFront
 		public string Token { get; private set; }
 		[JsonProperty("prefix")]
 		public string Prefix { get; private set; }
+		[JsonProperty("connectionString")]
+		public string ConnectionString { get; private set; }
 	}
 }

@@ -15,6 +15,7 @@ using DSharpPlus.Interactivity.Extensions;
 
 using Newtonsoft.Json;
 using LathBotFront.Commands;
+using LathBotBack.Config;
 
 namespace LathBotFront
 {
@@ -45,17 +46,11 @@ namespace LathBotFront
 
 		public async Task RunAsync()
 		{
-			string json = string.Empty;
-
-			using (FileStream fs = File.OpenRead("config.json"))
-			using (StreamReader sr = new StreamReader(fs, new UTF8Encoding(false)))
-				json = await sr.ReadToEndAsync();
-
-			ConfigJson configJson = JsonConvert.DeserializeObject<ConfigJson>(json);
+			ReadConfig.Read();
 
 			DiscordConfiguration config = new DiscordConfiguration
 			{
-				Token = configJson.Token,
+				Token = ReadConfig.configJson.Token,
 				TokenType = TokenType.Bot,
 				AutoReconnect = true,
 				MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Debug,
@@ -92,7 +87,7 @@ namespace LathBotFront
 
 			CommandsNextConfiguration commandsConfig = new CommandsNextConfiguration
 			{
-				StringPrefixes = new string[] { configJson.Prefix },
+				StringPrefixes = new string[] { ReadConfig.configJson.Prefix },
 				EnableMentionPrefix = true
 			};
 			Commands = Client.UseCommandsNext(commandsConfig);

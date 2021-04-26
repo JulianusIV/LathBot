@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using NUnit.Framework;
 
 using LathBotBack.Repos;
+using LathBotBack.Config;
 
 namespace LathBotTest
 {
@@ -27,7 +28,8 @@ namespace LathBotTest
 		[SetUp]
 		public void Setup()
 		{
-			_objRepo = new WarnRepository("Data Source = localhost; Initial Catalog = master; Persist Security Info = True; User ID = sa; Password = Julianus162636#");
+			ReadConfig.Read();
+			_objRepo = new WarnRepository(ReadConfig.configJson.ConnectionString);
 		}
 
 		[Test]
