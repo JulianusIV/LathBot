@@ -73,6 +73,7 @@ namespace LathBotTest
 			bool result = _objRepo.Create(ref _obj);
 
 			Assert.IsTrue(result);
+			Assert.NotNull(_obj.ID);
 		}
 
 		private void TestRead()
@@ -100,7 +101,7 @@ namespace LathBotTest
 
 			Assert.IsTrue(result);
 
-			_objRepo.Read(_obj.ID, out LathBotBack.Models.Warn entity);
+			_ = _objRepo.Read(_obj.ID, out LathBotBack.Models.Warn entity);
 
 			Assert.AreEqual(entity.ID, _obj.ID);
 			Assert.AreEqual(entity.User, _obj.User);

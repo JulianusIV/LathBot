@@ -107,10 +107,11 @@ namespace LathBotFront
 
 		private Task OnClientReady(DiscordClient sender, ReadyEventArgs e)
 		{
-			DiscordActivity activity = new DiscordActivity("a Turtle.", ActivityType.Streaming)
-			{
-				StreamUrl = "https://www.twitch.tv/lathland"
-			};
+			//DiscordActivity activity = new DiscordActivity("a Turtle.", ActivityType.Streaming)
+			//{
+			//	StreamUrl = "https://www.twitch.tv/lathland"
+			//};
+			DiscordActivity activity = new DiscordActivity("flamethrower music.", ActivityType.ListeningTo);
 			Client.UpdateStatusAsync(activity);
 			return Task.CompletedTask;
 		}

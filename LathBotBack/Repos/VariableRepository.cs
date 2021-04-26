@@ -11,7 +11,7 @@ namespace LathBotBack.Repos
 	{
 		public VariableRepository(string connectionString) : base(connectionString) { }
 
-		public bool Create(Variable entity)
+		public bool Create(ref Variable entity)
 		{
 			bool result = false;
 

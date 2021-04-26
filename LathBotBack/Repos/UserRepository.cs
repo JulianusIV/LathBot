@@ -11,7 +11,7 @@ namespace LathBotBack.Repos
 	{
 		public UserRepository(string connectionString) : base(connectionString) { }
 
-		public bool Create(User entity)
+		public bool Create(ref User entity)
 		{
 			bool result = false;
 
