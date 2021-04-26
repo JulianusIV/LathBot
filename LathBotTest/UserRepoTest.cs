@@ -8,17 +8,16 @@ using System.Text;
 
 namespace LathBotTest
 {
-	class VariableRepoTest
+	class UserRepoTest
 	{
-		Variable _obj;
-		VariableRepository _objRepo;
+		User _obj;
+		UserRepository _objRepo;
 
-		public VariableRepoTest()
+		public UserRepoTest()
 		{
-			_obj = new Variable
+			_obj = new User
 			{
-				Name = "UnitTest",
-				Value = "test"
+				DcID = 111111111111111111
 			};
 		}
 
@@ -26,11 +25,11 @@ namespace LathBotTest
 		public void Setup()
 		{
 			ReadConfig.Read();
-			_objRepo = new VariableRepository(ReadConfig.configJson.ConnectionString);
+			_objRepo = new UserRepository(ReadConfig.configJson.ConnectionString);
 		}
 
 		[Test]
-		public void TestVariableRepository()
+		public void TestUserRepository()
 		{
 			TestCreate();
 
@@ -51,28 +50,24 @@ namespace LathBotTest
 
 		private void TestRead()
 		{
-			bool result = _objRepo.Read(_obj.ID, out Variable entity);
+			bool result = _objRepo.Read(_obj.ID, out User entity);
 
 			Assert.IsTrue(result);
 			Assert.AreEqual(_obj.ID, entity.ID);
-			Assert.AreEqual(_obj.Name, entity.Name);
-			Assert.AreEqual(_obj.Value, entity.Value);
+			Assert.AreEqual(_obj.DcID, entity.DcID);
 		}
 
 		private void TestUpdate()
 		{
-			_obj.Name = "test";
-			_obj.Value = "UT";
-
+			_obj.DcID = 222222222222222222;
 			bool result = _objRepo.Update(_obj);
 
 			Assert.IsTrue(result);
 
-			_ = _objRepo.Read(_obj.ID, out Variable entity);
+			_ = _objRepo.Read(_obj.ID, out User entity);
 
 			Assert.AreEqual(_obj.ID, entity.ID);
-			Assert.AreEqual(_obj.Name, entity.Name);
-			Assert.AreEqual(_obj.Value, entity.Value);
+			Assert.AreEqual(_obj.DcID, entity.DcID);
 		}
 
 		private void TestDelete()

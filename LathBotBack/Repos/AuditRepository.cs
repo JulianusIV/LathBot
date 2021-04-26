@@ -11,7 +11,7 @@ namespace LathBotBack.Repos
 	{
 		public AuditRepository(string connectionString) : base(connectionString) { }
 
-		public bool Create(ref Audit entity)
+		public bool Create(Audit entity)
 		{
 			bool result = false;
 

@@ -19,9 +19,10 @@ namespace LathBotBack.Repos
 			{
 				DbCommand.CommandText = "INSERT INTO Users (UserDcId) OUTPUT INSERTED.UserDbId VALUES (@DcId);";
 				DbCommand.Parameters.Clear();
-				DbCommand.Parameters.AddWithValue("DcId", entity.DcID);
+				DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
 				entity.ID = (int)reader["UserDbId"];
 				DbConnection.Close();
 
@@ -56,10 +57,11 @@ namespace LathBotBack.Repos
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
 				reader.Read();
+				long temp = (long)reader["UserDcId"];
 				entity = new User
 				{
 					ID = id,
-					DcID = (ulong)reader["UserDcId"]
+					DcID = (ulong)temp
 				};
 				DbConnection.Close();
 
@@ -89,7 +91,7 @@ namespace LathBotBack.Repos
 			{
 				DbCommand.CommandText = "UPDATE Users SET UserDcId = @DcId WHERE UserDbId = @id;";
 				DbCommand.Parameters.Clear();
-				DbCommand.Parameters.AddWithValue("DcId", entity.DcID);
+				DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
 				DbCommand.Parameters.AddWithValue("id", entity.ID);
 				DbConnection.Open();
 				DbCommand.ExecuteNonQuery();
