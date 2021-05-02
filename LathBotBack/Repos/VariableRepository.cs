@@ -30,7 +30,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 			finally
@@ -69,7 +69,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 			finally
@@ -102,7 +102,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 			finally
@@ -133,7 +133,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 			finally

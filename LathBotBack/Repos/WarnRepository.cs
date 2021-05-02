@@ -4,12 +4,214 @@ using System.Data.SqlClient;
 
 using LathBotBack.Base;
 using LathBotBack.Models;
+using System.Collections.Generic;
 
 namespace LathBotBack.Repos
 {
 	public class WarnRepository : RepositoryBase
 	{
 		public WarnRepository(string connectionString) : base(connectionString) { }
+
+		public bool GetAll(out List<Warn> list)
+		{
+			bool result = false;
+			list = new List<Warn>();
+
+			try
+			{
+				DbCommand.CommandText = "SELECT * FROM Warns;";
+				DbCommand.Parameters.Clear();
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				while (reader.Read())
+				{
+					list.Add(new Warn
+					{
+						ID = (int)reader["WarnId"],
+						Level = (int)reader["WarnLevel"],
+						Mod = (int)reader["ModeratorDbId"],
+						Number = (int)reader["WarnNumber"],
+						Persistent = (bool)reader["Persistent"],
+						Reason = (string)reader["Reason"],
+						Time = (DateTime)reader["WarnTime"],
+						User = (int)reader["UserDbId"]
+					});
+				}
+				DbConnection.Close();
+				result = true;
+			}
+			catch (Exception e)
+			{
+				//TODO: Add logging
+				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
+		public bool GetAllByUser(int UserDbId, out List<Warn> list)
+		{
+			bool result = false;
+			list = new List<Warn>();
+
+			try
+			{
+				DbCommand.CommandText = "SELECT * FROM Warns WHERE UserDbId = @id;";
+				DbCommand.Parameters.Clear();
+				DbCommand.Parameters.AddWithValue("id", UserDbId);
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				while (reader.Read())
+				{
+					list.Add(new Warn
+					{
+						ID = (int)reader["WarnId"],
+						Level = (int)reader["WarnLevel"],
+						Mod = (int)reader["ModeratorDbId"],
+						Number = (int)reader["WarnNumber"],
+						Persistent = (bool)reader["Persistent"],
+						Reason = (string)reader["Reason"],
+						Time = (DateTime)reader["WarnTime"],
+						User = (int)reader["UserDbId"]
+					});
+				}
+				DbConnection.Close();
+				result = true;
+			}
+			catch (Exception e)
+			{
+				//TODO Add logging
+				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
+		public bool GetWarnByUserAndNum(int UserDbId, int WarnNum, out Warn entity)
+		{
+			bool result = false;
+			entity = null;
+
+			try
+			{
+				DbCommand.CommandText = "SELECT * FROM Warns WHERE UserDbId = @id AND WarnNumber = @num;";
+				DbCommand.Parameters.Clear();
+				DbCommand.Parameters.AddWithValue("id", UserDbId);
+				DbCommand.Parameters.AddWithValue("num", WarnNum);
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				entity = new Warn
+				{
+					ID = (int)reader["WarnId"],
+					Level = (int)reader["WarnLevel"],
+					Mod = (int)reader["ModeratorDbId"],
+					Number = (int)reader["WarnNumber"],
+					Persistent = (bool)reader["Persistent"],
+					Reason = (string)reader["Reason"],
+					Time = (DateTime)reader["WarnTime"],
+					User = (int)reader["UserDbId"]
+				};
+				DbConnection.Close();
+				result = true;
+			}
+			catch (Exception e)
+			{
+				//TODO: Add logging
+				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
+		public bool GetRemainingPoints(int UserDbId, out int amount)
+		{
+			bool result = false;
+			amount = 15;
+
+			try
+			{
+				DbCommand.CommandText = "SELECT WarnLevel FROM Warns WHERE UserDbId = @id;";
+				DbCommand.Parameters.Clear();
+				DbCommand.Parameters.AddWithValue("id", UserDbId);
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				while (reader.Read())
+				{
+					amount -= (int)reader["WarnLevel"];
+				}
+
+				result = true;
+			}
+			catch (Exception e)
+			{
+				//TODO: Add logging
+				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
+		public bool GetWarnAmount(int id, out int amount)
+		{
+			bool result = false;
+			amount = 0;
+
+			try
+			{
+				DbCommand.CommandText = "SELECT COUNT(UserDbId) FROM Warns WHERE UserDbId = @userid;";
+				DbCommand.Parameters.Clear();
+				DbCommand.Parameters.AddWithValue("userid", id);
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				amount = (int)reader[0];
+				DbConnection.Close();
+				result = true;
+			}
+			catch (Exception e)
+			{
+				//TODO: Add logging
+				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
 
 		public bool Create(ref Warn entity)
 		{
@@ -35,7 +237,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 			finally
@@ -78,7 +280,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 			finally
@@ -115,7 +317,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 			finally
@@ -145,7 +347,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 			finally

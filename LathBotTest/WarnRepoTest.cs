@@ -63,7 +63,7 @@ namespace LathBotTest
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 		}
@@ -137,7 +137,7 @@ namespace LathBotTest
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 		}

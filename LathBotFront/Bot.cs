@@ -21,6 +21,7 @@ namespace LathBotFront
 {
 	public class Bot
 	{
+		#region singleton
 		private static Bot instance = null;
 		private static readonly object padlock = new object();
 		public static Bot Instance
@@ -35,6 +36,7 @@ namespace LathBotFront
 				}
 			}
 		}
+		#endregion
 
 		public readonly bool IsInDesignMode = true;
 

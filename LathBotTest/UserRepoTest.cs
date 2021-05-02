@@ -40,6 +40,14 @@ namespace LathBotTest
 			TestDelete();
 		}
 
+		[Test]
+		public void TestExists()
+		{
+			bool result = _objRepo.ExistsDcId(387325006176059394, out bool exists);
+			Assert.IsTrue(result);
+			Assert.IsTrue(exists);
+		}
+
 		private void TestCreate()
 		{
 			bool result = _objRepo.Create(ref _obj);

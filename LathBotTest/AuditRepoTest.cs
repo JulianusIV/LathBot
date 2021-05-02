@@ -12,7 +12,7 @@ namespace LathBotTest
 {
 	class AuditRepoTest
 	{
-		Audit _obj;
+		readonly Audit _obj;
 		AuditRepository _objRepo;
 
 		public AuditRepoTest()
@@ -65,7 +65,7 @@ namespace LathBotTest
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 		}
@@ -139,7 +139,7 @@ namespace LathBotTest
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
 			}
 		}
