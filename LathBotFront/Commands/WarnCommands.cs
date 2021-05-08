@@ -1,20 +1,21 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Linq;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
 using DSharpPlus.Entities;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
+using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity.Extensions;
+
 using LathBotBack;
+using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
-using LathBotBack.Repos;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
 {
@@ -100,7 +101,7 @@ namespace LathBotFront.Commands
 
 		[Command("mute")]
 		[Aliases("shuddup")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
+		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
 		[Description("Mute a user")]
 		public async Task Mute(CommandContext ctx, [Description("The user that you want to mute")] DiscordMember member)
 		{
@@ -154,7 +155,7 @@ namespace LathBotFront.Commands
 					bool updateResult = repo.Update(audit);
 					if (!updateResult)
 					{
-						await ctx.RespondAsync("There was a problem reading to th Audit table");
+						await ctx.RespondAsync("There was a problem writing to the Audit table");
 					}
 				}
 			}
@@ -172,7 +173,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("unmute")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
+		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
 		[Description("Unmute a muted user")]
 		public async Task UnMute(CommandContext ctx, [Description("The user that you want to unmute")] DiscordMember member)
 		{
@@ -240,7 +241,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("kick")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Bot Management")]
+		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Bot Management")]
 		[Description("Kick a user")]
 		public async Task Kick(CommandContext ctx, [Description("The user that you want to kick")] DiscordMember member)
 		{
@@ -295,7 +296,7 @@ namespace LathBotFront.Commands
 
 		[Command("ban")]
 		[Aliases("yeet")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Bot Management")]
+		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Bot Management")]
 		[Description("Ban a user")]
 		public async Task Ban(CommandContext ctx, [Description("The user that you want to ban")] DiscordUser user, [RemainingText][Description("Why the user is boing banned")] string reason)
 		{
@@ -355,7 +356,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("warn")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
+		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
 		[Description("Warn a user (for more information go to #staff-information and look at the warn documentation)")]
 		public async Task Warn(CommandContext ctx, [Description("The user that you want to warn")] DiscordMember member, [Description("a link to the warned message (will get deleted and logged)")] DiscordMessage messageLink = null)
 		{
@@ -832,7 +833,7 @@ namespace LathBotFront.Commands
 
 		[Command("pardon")]
 		[Aliases("unwarn")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Bot Management")]
+		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Bot Management")]
 		[Description("Pardon a warn of a user (for more information go to #staff-information and look at the warn documentation)")]
 		public async Task Pardon(CommandContext ctx, [Description("The user that you want to pardon a warn of")] DiscordMember member, [Description("The number of the warn that you want to pardon")] int warnNumber)
 		{
@@ -1028,6 +1029,40 @@ namespace LathBotFront.Commands
 				await senator.SendMessageAsync(embed).ConfigureAwait(false);
 			}
 			await ctx.Channel.SendMessageAsync("Report successfully sent, The senate will get back to you, until then please be patient.");
+		}
+
+		[Command("persist")]
+		[RequireRoles(RoleCheckMode.Any, "Bot Management", "Senate of Lathland (ADM)")]
+		public async Task Persist(CommandContext ctx, [Description("Member that got warned")]DiscordMember member, [Description("The number of the warn")]int warnNumber)
+		{
+			await ctx.Channel.TriggerTypingAsync();
+			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			WarnRepository repo = new WarnRepository(ReadConfig.configJson.ConnectionString);
+			bool result = urepo.GetIdByDcId(member.Id, out int userDbId);
+			if (!result)
+			{
+				await ctx.RespondAsync("Failed to get the user from the database.");
+				return;
+			}
+			result = repo.GetWarnByUserAndNum(userDbId, warnNumber, out Warn warn);
+			if (!result)
+			{
+				await ctx.RespondAsync("Failed to get the warn from the database.");
+				return;
+			}
+			if (warn.Persistent)
+			{
+				await ctx.RespondAsync("Warn is already persistent");
+				return;
+			}
+			warn.Persistent = true;
+			result = repo.Update(warn);
+			if (!result)
+			{
+				await ctx.RespondAsync("Failed to update the warn table.");
+				return;
+			}
+			await ctx.RespondAsync(warn.ID + "\n" + warn.User + "\n" + warn.Mod + "\n" + warn.Reason + "\n" + warn.Number + "\n" + warn.Level + "\n" + warn.Time + "\n" + warn.Persistent);
 		}
 
 		[Command("allwarns")]

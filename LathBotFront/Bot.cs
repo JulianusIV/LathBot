@@ -1,27 +1,23 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 using DSharpPlus;
 using DSharpPlus.Net;
-using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
-using DSharpPlus.EventArgs;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 
-using Newtonsoft.Json;
-using LathBotFront.Commands;
+using LathBotBack;
 using LathBotBack.Config;
+using LathBotFront.Commands;
 
 namespace LathBotFront
 {
 	public class Bot
 	{
-		#region singleton
+		#region Singleton
 		private static Bot instance = null;
 		private static readonly object padlock = new object();
 		public static Bot Instance
@@ -37,8 +33,6 @@ namespace LathBotFront
 			}
 		}
 		#endregion
-
-		public readonly bool IsInDesignMode = true;
 
 		public DiscordClient Client { get; private set; }
 
@@ -60,8 +54,17 @@ namespace LathBotFront
 			};
 
 			Client = new DiscordClient(config);
-			Client.Ready += OnClientReady;
-			Client.GuildDownloadCompleted += Client_GuildDownloadCompleted;
+
+			//Register client events
+			Client.Ready += Events.OnClientReady;
+			Client.GuildDownloadCompleted += Events.Client_GuildDownloadCompleted;
+			Client.MessageCreated += Events.MessageCreated;
+			Client.MessageUpdated += Events.MessageUpdated;
+			Client.GuildMemberAdded += Events.MemberAdded;
+			Client.MessageReactionAdded += Events.ReactionAdded;
+			Client.MessageReactionRemoved += Events.ReactionRemoved;
+			Client.VoiceStateUpdated += Events.VoiceStateUpdated;
+			Client.ClientErrored += Events.ClientErrored;
 
 			Client.UseInteractivity(new InteractivityConfiguration
 			{
@@ -69,13 +72,46 @@ namespace LathBotFront
 				PollBehaviour = PollBehaviour.KeepEmojis
 			});
 
+			CommandsNextConfiguration commandsConfig = new CommandsNextConfiguration
+			{
+				StringPrefixes = new string[] { ReadConfig.configJson.Prefix },
+				EnableMentionPrefix = true
+			};
+			Commands = Client.UseCommandsNext(commandsConfig);
+
+			//Register commands
+			Commands.RegisterCommands<TechnicalCommands>();
+			Commands.RegisterCommands<WarnCommands>();
+
+			//Register command events
+			Commands.CommandErrored += Events.CommandErrored;
+
+			await Client.ConnectAsync();
+
+			LavalinkNodeConnection lavaNode = null;
+			if (!Holder.Instance.IsInDesignMode)
+			{
+				lavaNode = await ConnectLavaNodeAsync();
+			}
+
+			if (lavaNode != null)
+			{
+				//Register lava commands
+				lavaNode.PlaybackFinished += Events.PlaybackFinished;
+			}
+
+			await Task.Delay(-1);
+		}
+
+		private async Task<LavalinkNodeConnection> ConnectLavaNodeAsync()
+		{
 			ConnectionEndpoint endpoint = new ConnectionEndpoint
 			{
 				Hostname = "173.212.204.145",
 				Port = 2333
 			};
 
-			if (IsInDesignMode)
+			if (Holder.Instance.IsInDesignMode)
 				endpoint.Hostname = "192.168.0.136";
 
 			LavalinkConfiguration lavalinkConfig = new LavalinkConfiguration
@@ -87,40 +123,7 @@ namespace LathBotFront
 
 			LavalinkExtension lavalink = Client.UseLavalink();
 
-			CommandsNextConfiguration commandsConfig = new CommandsNextConfiguration
-			{
-				StringPrefixes = new string[] { ReadConfig.configJson.Prefix },
-				EnableMentionPrefix = true
-			};
-			Commands = Client.UseCommandsNext(commandsConfig);
-
-			//Register commands
-			Commands.RegisterCommands<TechnicalCommands>();
-
-			await Client.ConnectAsync();
-
-			if (!IsInDesignMode)
-			{
-				LavalinkNodeConnection lavaNode = await lavalink.ConnectAsync(lavalinkConfig);
-			}
-
-			await Task.Delay(-1);
-		}
-
-		private Task OnClientReady(DiscordClient sender, ReadyEventArgs e)
-		{
-			//DiscordActivity activity = new DiscordActivity("a Turtle.", ActivityType.Streaming)
-			//{
-			//	StreamUrl = "https://www.twitch.tv/lathland"
-			//};
-			DiscordActivity activity = new DiscordActivity("flamethrower music.", ActivityType.ListeningTo);
-			Client.UpdateStatusAsync(activity);
-			return Task.CompletedTask;
-		}
-
-		private Task Client_GuildDownloadCompleted(DiscordClient sender, GuildDownloadCompletedEventArgs e)
-		{
-			return Task.CompletedTask;
+			return await lavalink.ConnectAsync(lavalinkConfig);
 		}
 	}
 }

@@ -2,10 +2,10 @@ using System;
 using System.Diagnostics;
 using System.Data.SqlClient;
 
-using NUnit.Framework;
-
 using LathBotBack.Repos;
 using LathBotBack.Config;
+
+using NUnit.Framework;
 
 namespace LathBotTest
 {
