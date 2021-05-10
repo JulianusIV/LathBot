@@ -49,6 +49,7 @@ namespace LathBotBack
 		};
 
 		public bool IsInDesignMode { get; private set; }
+		public bool StartUpCompleted = false;
 		public int GoodGuysReactionCount 
 		{
 			get

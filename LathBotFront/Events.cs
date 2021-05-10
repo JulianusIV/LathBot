@@ -36,6 +36,8 @@ namespace LathBotFront
 		{
 			Holder.Instance.Init(sender);
 
+			Holder.Instance.StartUpCompleted = true;
+
 			UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
 			foreach (DiscordMember user in Holder.Instance.Lathland.GetAllMembersAsync().Result)
 			{
@@ -64,7 +66,7 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				if (Holder.Instance.IsInDesignMode)
+				if (Holder.Instance.IsInDesignMode || !Holder.Instance.StartUpCompleted)
 					return;
 				if (e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)) && e.Channel.Id == 726046413816987709)
 				{
@@ -105,6 +107,10 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
+				if (!Holder.Instance.StartUpCompleted)
+				{
+					return;
+				}
 				if (e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)) && e.Channel.Id == 726046413816987709)
 				{
 					string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
@@ -123,6 +129,10 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
+				if (!Holder.Instance.StartUpCompleted)
+				{
+					return;
+				}
 				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
 				bool result = repo.ExistsDcId(e.Member.Id, out bool exists);
 				if (!result)
@@ -149,6 +159,10 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
+				if (!Holder.Instance.StartUpCompleted)
+				{
+					return;
+				}
 				DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
 				if (e.Message.Id == 767050733677314069 && !member.Roles.Contains(e.Guild.GetRole(767050052257447936)))
 				{
@@ -255,6 +269,10 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
+				if (!Holder.Instance.StartUpCompleted)
+				{
+					return;
+				}
 				DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
 				if (e.Message.Id == 767100276028342322)
 				{
@@ -317,6 +335,10 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
+				if (!Holder.Instance.StartUpCompleted)
+				{
+					return;
+				}
 				if (e.Before == null || e.Guild.GetMemberAsync(sender.CurrentUser.Id).Result.VoiceState == null)
 					return;
 				if (e.Before.Channel == e.Guild.GetMemberAsync(sender.CurrentUser.Id).Result.VoiceState.Channel)
