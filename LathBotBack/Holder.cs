@@ -7,6 +7,7 @@ using DSharpPlus.Lavalink;
 using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
+using System;
 
 namespace LathBotBack
 {
@@ -58,9 +59,16 @@ namespace LathBotBack
 				{
 					return int.Parse(entity.Value);
 				}
-				return 4;
+				return _goodGuysReactionCount;
+			}
+			set
+			{
+				_goodGuysReactionCount = value;
 			}
 		}
+		private int _goodGuysReactionCount = 4;
+
+		public DateTime StartTime { get; set; }
 
 		public Dictionary<DiscordGuild, List<LavalinkTrack>> Queues;
 
@@ -97,6 +105,8 @@ namespace LathBotBack
 
 		public async void Init(DiscordClient client)
 		{
+			StartTime = DateTime.Now;
+
 			Lathland = await client.GetGuildAsync(699555747591094344);
 
 			QuestionsChannel = Lathland.GetChannel(721082217119612969);

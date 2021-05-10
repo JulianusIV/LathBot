@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\LathBotPP.txt" />
+    <None Remove="Resources\LathBotTOS.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LathBotPP.txt" />
+    <EmbeddedResource Include="Resources\LathBotTOS.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-00840" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="5.0.0-nightly-00840" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-00840" />
@@ -16,6 +26,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LathBotBack\LathBotBack.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\LathBotPP.txt" />
+    <Resource Include="Resources\LathBotTOS.txt" />
   </ItemGroup>
 
 </Project>
