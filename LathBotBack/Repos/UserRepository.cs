@@ -94,9 +94,9 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("dcid", (long)dcid);
 				DbConnection.Open();
-				using SqlDataReader reader = DbCommand.ExecuteReader();
-				reader.Read();
-				exists = (int)reader[0] > 0;
+				//using SqlDataReader reader = DbCommand.ExecuteReader();
+				//reader.Read();
+				exists = (int)DbCommand.ExecuteScalar() > 0;
 				DbConnection.Close();
 				result = true;
 			}
