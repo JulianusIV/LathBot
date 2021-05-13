@@ -33,48 +33,52 @@ namespace LathBotFront
 			return Task.CompletedTask;
 		}
 
-		internal static async Task Client_GuildDownloadCompleted(DiscordClient sender, GuildDownloadCompletedEventArgs _1)
+		internal static Task Client_GuildDownloadCompleted(DiscordClient sender, GuildDownloadCompletedEventArgs _1)
 		{
-			Holder.Instance.Init(sender);
-
-			Holder.Instance.StartUpCompleted = true;
-
-			int added = 0;
-			UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
-			foreach (DiscordMember user in Holder.Instance.Lathland.GetAllMembersAsync().Result)
+			_ = Task.Run(async () =>
 			{
-				bool result = repo.ExistsDcId(user.Id, out bool exists);
+				Holder.Instance.Init(sender);
+
+				Holder.Instance.StartUpCompleted = true;
+
+				int added = 0;
+				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
+
+				bool result = repo.GetAll(out List<User> list);
 				if (!result)
 				{
-					_ = Holder.Instance.ErrorLogChannel.SendMessageAsync($"Error reading user {user.DisplayName}#{user.Discriminator} ({user.Id})");
-					continue;
+					_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error getting all users in database.");
+					return;
 				}
-				if (!exists)
+				IReadOnlyCollection<DiscordMember> allMembers = await Holder.Instance.Lathland.GetAllMembersAsync();
+				IEnumerable<DiscordMember> toAdd = allMembers.Where(x => !list.Any(y => y.DcID == x.Id));
+				foreach (var item in toAdd)
 				{
-					User entity = new User { DcID = user.Id };
+					User entity = new User { DcID = item.Id };
+					DiscordMember mem = await Holder.Instance.Lathland.GetMemberAsync(item.Id);
 					result = repo.Create(ref entity);
 					if (!result)
 					{
-						_ = Holder.Instance.ErrorLogChannel.SendMessageAsync($"Error adding user {user.DisplayName}#{user.Discriminator} ({user.Id}) to the database");
+						_ = Holder.Instance.ErrorLogChannel.SendMessageAsync($"Error adding user {item.DisplayName}#{item.Discriminator} ({item.Id}) to the database");
 						continue;
 					}
-					DiscordMember mem = await Holder.Instance.Lathland.GetMemberAsync(user.Id);
 					_ = Holder.Instance.TimerChannel.SendMessageAsync($"Added user {mem.DisplayName}#{mem.Discriminator} ({mem.Id}) on startup");
 					added++;
 				}
-			}
-			bool res = repo.CountAll(out int allInDb);
-			string strAllInDb;
-			if (!res)
-			{
-				await Holder.Instance.ErrorLogChannel.SendMessageAsync("Error counting all users in database");
-				strAllInDb = "unknown";
-			}
-			else
-			{
-				strAllInDb = allInDb.ToString();
-			}
-			await Holder.Instance.TimerChannel.SendMessageAsync(added > 0 ? $"Added {added} Users, {strAllInDb} entries in database, {Holder.Instance.Lathland.MemberCount} members in guild." : "Startup completed");
+				bool res = repo.CountAll(out int allInDb);
+				string strAllInDb;
+				if (!res)
+				{
+					await Holder.Instance.ErrorLogChannel.SendMessageAsync("Error counting all users in database");
+					strAllInDb = "unknown";
+				}
+				else
+				{
+					strAllInDb = allInDb.ToString();
+				}
+				await Holder.Instance.TimerChannel.SendMessageAsync(added > 0 ? $"Added {added} Users, {strAllInDb} entries in database, {Holder.Instance.Lathland.MemberCount} members in guild." : "Startup completed");
+			});
+			return Task.CompletedTask;
 		}
 
 		internal static Task MessageCreated(DiscordClient _2, MessageCreateEventArgs e)

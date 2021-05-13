@@ -13,7 +13,7 @@ namespace LathBotFront.Commands
 	public class AuditCommands : BaseCommandModule
 	{
 		[Command("register")]
-		[RequireRoles(RoleCheckMode.Any, "Bot Management")]
+		[RequireRoles(RoleCheckMode.Any, "Bot Management", "Senate of Lathland (ADM)", "Plague Guard (Mods)")]
 		public async Task Register(CommandContext ctx)
 		{
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
