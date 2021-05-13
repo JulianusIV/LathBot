@@ -6,6 +6,7 @@ using LathBotBack.Repos;
 using LathBotBack.Config;
 
 using NUnit.Framework;
+using LathBotBack;
 
 namespace LathBotTest
 {
@@ -63,8 +64,7 @@ namespace LathBotTest
 			}
 			catch (Exception e)
 			{
-				//TODO: Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 		}
 
@@ -137,8 +137,7 @@ namespace LathBotTest
 			}
 			catch (Exception e)
 			{
-				//TODO: Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 		}
 	}

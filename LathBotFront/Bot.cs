@@ -69,6 +69,9 @@ namespace LathBotFront
 			//Register timer events
 			Holder.Instance.WarnTimer.Elapsed += Events.TimerTick;
 
+			//Register Logger events
+			Holder.Instance.Logger.RaiseLogEvent += Events.OnLog;
+
 			Client.UseInteractivity(new InteractivityConfiguration
 			{
 				Timeout = TimeSpan.FromMinutes(5),

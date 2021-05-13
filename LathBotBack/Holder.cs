@@ -9,6 +9,7 @@ using DSharpPlus.Lavalink;
 using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
+using LathBotBack.Logging;
 
 namespace LathBotBack
 {
@@ -87,6 +88,8 @@ namespace LathBotBack
 		public DiscordMessage StaffQuestions { get; set; }
 
 		public Timer WarnTimer = new Timer(3600000);
+
+		public LoggingPublisher Logger = new LoggingPublisher();
 
 		public readonly DiscordEmbedBuilder LathQuestionsEmbed = new DiscordEmbedBuilder
 		{
