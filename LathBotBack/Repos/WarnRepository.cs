@@ -42,8 +42,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//TODO: Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -87,8 +86,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//TODO Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -131,8 +129,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//TODO: Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -166,8 +163,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//TODO: Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -197,8 +193,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//TODO: Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -235,8 +230,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//TODO: Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -278,8 +272,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//TODO: Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -315,8 +308,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//TODO: Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -345,8 +337,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				//TODO: Add logging
-				Debug.WriteLine(e.Message);
+				Holder.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{

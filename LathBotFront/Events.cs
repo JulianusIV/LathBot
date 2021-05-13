@@ -17,6 +17,7 @@ using LathBotBack;
 using LathBotBack.Repos;
 using LathBotBack.Models;
 using LathBotBack.Config;
+using LathBotBack.Logging;
 
 namespace LathBotFront
 {
@@ -535,6 +536,11 @@ namespace LathBotFront
 			{
 				_ = Holder.Instance.TimerChannel.SendMessageAsync("Timer ticked, no warns pardoned.");
 			}
+		}
+
+		internal static void OnLog(object sender, LoggingEventArgs e)
+		{
+			Holder.Instance.ErrorLogChannel.SendMessageAsync(e.Message);
 		}
 	}
 }
