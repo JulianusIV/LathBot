@@ -1,18 +1,17 @@
-﻿using LathBotBack.Base;
-using LathBotBack.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using System;
 using System.Diagnostics;
-using System.Text;
+using System.Data.SqlClient;
+
+using LathBotBack.Base;
+using LathBotBack.Models;
 
 namespace LathBotBack.Repos
 {
-	class VariableRepository : RepositoryBase
+	public class VariableRepository : RepositoryBase
 	{
 		public VariableRepository(string connectionString) : base(connectionString) { }
 
-		public bool Create(Variable entity)
+		public bool Create(ref Variable entity)
 		{
 			bool result = false;
 
@@ -22,19 +21,24 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("name", entity.Name);
 				DbCommand.Parameters.AddWithValue("val", entity.Value);
-				using (DbConnection)
-				using (SqlDataReader reader = DbCommand.ExecuteReader())
-				{
-					DbConnection.Open();
-					reader.Read();
-					entity.ID = (int)reader["VarId"];
-				}
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				entity.ID = (int)reader["VarId"];
+				DbConnection.Close();
 				result = true;
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -50,25 +54,30 @@ namespace LathBotBack.Repos
 				DbCommand.CommandText = "SELECT VarName, VarValue FROM Variables WHERE VarId = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
-				using (DbConnection)
-				using (SqlDataReader reader = DbCommand.ExecuteReader())
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				entity = new Variable
 				{
-					DbConnection.Open();
-					reader.Read();
-					entity = new Variable
-					{
-						ID = id,
-						Name = (string)reader["VarName"],
-						Value = (string)reader["VarValue"]
-					};
-				}
+					ID = id,
+					Name = (string)reader["VarName"],
+					Value = (string)reader["VarValue"]
+				};
+				DbConnection.Close();
 
 				result = true;
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -85,18 +94,23 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.AddWithValue("name", entity.Name);
 				DbCommand.Parameters.AddWithValue("val", entity.Value);
 				DbCommand.Parameters.AddWithValue("id", entity.ID);
-				using (DbConnection)
-				{
-					DbConnection.Open();
-					DbCommand.ExecuteNonQuery();
-				}
+				DbConnection.Open();
+				DbCommand.ExecuteNonQuery();
+				DbConnection.Close();
 
 				result = true;
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -111,18 +125,23 @@ namespace LathBotBack.Repos
 				DbCommand.CommandText = "DELETE FROM Variables WHERE VarId = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
-				using (DbConnection)
-				{
-					DbConnection.Open();
-					DbCommand.ExecuteNonQuery();
-				}
+				DbConnection.Open();
+				DbCommand.ExecuteNonQuery();
+				DbConnection.Close();
 
 				result = true;
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;

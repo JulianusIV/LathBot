@@ -262,3 +262,4 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 config.json
+app.config

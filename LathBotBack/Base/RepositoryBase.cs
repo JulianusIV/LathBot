@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Text;
+using System.Data.SqlClient;
 
 namespace LathBotBack.Base
 {
-	class RepositoryBase
+	public class RepositoryBase
 	{
 		public SqlConnection DbConnection { get; set; }
 		public SqlCommand DbCommand { get; set; }

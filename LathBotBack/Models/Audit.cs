@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LathBotBack.Models
+﻿namespace LathBotBack.Models
 {
-	class Audit
+	public class Audit
 	{
 		public int Mod{ get; set; }
 		public int Warns { get; set; }
@@ -13,5 +9,21 @@ namespace LathBotBack.Models
 		public int Unmutes { get; set; }
 		public int Kicks { get; set; }
 		public int Bans { get; set; }
+
+		public Audit()
+		{
+
+		}
+
+		public Audit(int modId)
+		{
+			Mod = modId;
+			Warns = 0;
+			Pardons = 0;
+			Mutes = 0;
+			Unmutes = 0;
+			Kicks = 0;
+			Bans = 0;
+		}
 	}
 }

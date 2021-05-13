@@ -1,18 +1,152 @@
-﻿using LathBotBack.Base;
-using LathBotBack.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using System;
 using System.Diagnostics;
-using System.Text;
+using System.Data.SqlClient;
+using System.Collections.Generic;
+
+using LathBotBack.Base;
+using LathBotBack.Models;
 
 namespace LathBotBack.Repos
 {
-	class UserRepository : RepositoryBase
+	public class UserRepository : RepositoryBase
 	{
 		public UserRepository(string connectionString) : base(connectionString) { }
 
-		public bool Create(User entity)
+		public bool GetAll(out List<User> list)
+		{
+			bool result = false;
+			list = new List<User>();
+
+			try
+			{
+				DbCommand.CommandText = "SELECT * FROM Users;";
+				DbCommand.Parameters.Clear();
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				while (reader.Read())
+				{
+					long temp = (long)reader["UserDcId"];
+					list.Add(new User
+					{
+						DcID = (ulong)temp,
+						ID = (int)reader["UserDbId"]
+					});
+				}
+				DbConnection.Close();
+				result = true;
+			}
+			catch (Exception e)
+			{
+				//TODO: Add logging
+				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
+		public bool CountAll(out int amount)
+		{
+			bool result = false;
+			amount = 0;
+
+			try
+			{
+				DbCommand.CommandText = "SELECT COUNT(UserDcId) FROM Users;";
+				DbCommand.Parameters.Clear();
+				DbConnection.Open();
+				amount = (int)DbCommand.ExecuteScalar();
+				DbConnection.Close();
+				result = true;
+			}
+			catch (Exception e)
+			{
+				//TODO: Add logging
+				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
+		public bool ExistsDcId(ulong dcid, out bool exists)
+		{
+			bool result = false;
+			exists = false;
+
+			try
+			{
+				DbCommand.CommandText = "SELECT COUNT(UserDcId) FROM Users WHERE UserDcId = @dcid;";
+				DbCommand.Parameters.Clear();
+				DbCommand.Parameters.AddWithValue("dcid", (long)dcid);
+				DbConnection.Open();
+				exists = (int)DbCommand.ExecuteScalar() > 0;
+				DbConnection.Close();
+				result = true;
+			}
+			catch (Exception e)
+			{
+				//TODO: Add logging
+				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
+		public bool GetIdByDcId(ulong DcId, out int id)
+		{
+			bool result = false;
+			id = 0;
+
+			try
+			{
+				DbCommand.CommandText = "SELECT UserDbId FROM Users WHERE UserDcId = @dcid;";
+				DbCommand.Parameters.Clear();
+				DbCommand.Parameters.AddWithValue("dcid", (long)DcId);
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				id = (int)reader["UserDbId"];
+				DbConnection.Close();
+
+				result = true;
+			}
+			catch (Exception e)
+			{
+				//TODO: Add logging
+				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
+		public bool Create(ref User entity)
 		{
 			bool result = false;
 
@@ -20,20 +154,26 @@ namespace LathBotBack.Repos
 			{
 				DbCommand.CommandText = "INSERT INTO Users (UserDcId) OUTPUT INSERTED.UserDbId VALUES (@DcId);";
 				DbCommand.Parameters.Clear();
-				DbCommand.Parameters.AddWithValue("DcId", entity.DcID);
-				using (DbConnection)
-				using (SqlDataReader reader = DbCommand.ExecuteReader())
-				{
-					DbConnection.Open();
-					entity.ID = (int)reader["UserDbId"];
-				}
+				DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				entity.ID = (int)reader["UserDbId"];
+				DbConnection.Close();
 
 				result = true;
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -49,24 +189,30 @@ namespace LathBotBack.Repos
 				DbCommand.CommandText = "SELECT UserDcId FROM Users WHERE UserDbId = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
-				using (DbConnection)
-				using (SqlDataReader reader = DbCommand.ExecuteReader())
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				long temp = (long)reader["UserDcId"];
+				entity = new User
 				{
-					DbConnection.Open();
-					reader.Read();
-					entity = new User
-					{
-						ID = id,
-						DcID = (ulong)reader["UserDcId"]
-					};
-				}
+					ID = id,
+					DcID = (ulong)temp
+				};
+				DbConnection.Close();
 
 				result = true;
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -80,20 +226,25 @@ namespace LathBotBack.Repos
 			{
 				DbCommand.CommandText = "UPDATE Users SET UserDcId = @DcId WHERE UserDbId = @id;";
 				DbCommand.Parameters.Clear();
-				DbCommand.Parameters.AddWithValue("DcId", entity.DcID);
+				DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
 				DbCommand.Parameters.AddWithValue("id", entity.ID);
-				using (DbConnection)
-				{
-					DbConnection.Open();
-					DbCommand.ExecuteNonQuery();
-				}
+				DbConnection.Open();
+				DbCommand.ExecuteNonQuery();
+				DbConnection.Close();
 
 				result = true;
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
@@ -108,18 +259,23 @@ namespace LathBotBack.Repos
 				DbCommand.CommandText = "DELETE FROM Users WHERE UserDbId = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
-				using (DbConnection)
-				{
-					DbConnection.Open();
-					DbCommand.ExecuteNonQuery();
-				}
+				DbConnection.Open();
+				DbCommand.ExecuteNonQuery();
+				DbConnection.Close();
 
 				result = true;
 			}
 			catch (Exception e)
 			{
-				//Add logging
+				//TODO: Add logging
 				Debug.WriteLine(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
 			}
 
 			return result;
