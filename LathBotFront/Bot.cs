@@ -119,7 +119,7 @@ namespace LathBotFront
 		{
 			ConnectionEndpoint endpoint = new ConnectionEndpoint
 			{
-				Hostname = "173.212.204.145",
+				Hostname = "server.local",
 				Port = 2333
 			};
 
