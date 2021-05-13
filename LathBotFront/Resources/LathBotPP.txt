@@ -1,0 +1,8 @@
+These policies (“Privacy Policy”) are an agreement between Lathbot (“we”, “us”, or “our”) and you (“you”, or “your”). By interacting with the Lathbot Discord bot (the “Bot”, collectively referred to as the “Service”) you agree to this Privacy Policy entirely. If you do not agree, you shall cease using the Service.
+
+We do not collect nor process any personal data, according to the Article 4 of the General Data Protection Regulation laws. We only collect data made available by Discord, Inc. (“Discord”) through their Application Programming Interface (“Discord’s API”) according to the Discord Developer Terms of Service available at https://discord.com/developers/docs/legal.
+
+We might also use cookies and similar technologies to provide the Service. Cookies are pieces of data stored on your computer, and which can be used later by the Service. You can disable cookies using the settings in your web browser, instructions should be available in its user manual. However, some features might malfunction or stop working completely.
+
+Wherever you live, you consent to the processing of the aforementioned data in Germany, where our servers are located. We only process data served by Discord’s API and, in the event storage is required in order for us to provide a feature of the Service, the Service will store this data indefinitely to provide aspects of the Service.
+Additionally, we reserve the right to monitor the Service usage (e.g. commands issued) to identify issues within the Service or to understand how the Service is used in an effort to improve it.
