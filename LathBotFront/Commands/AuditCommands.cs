@@ -13,12 +13,12 @@ namespace LathBotFront.Commands
 	public class AuditCommands : BaseCommandModule
 	{
 		[Command("register")]
-		[RequireRoles(RoleCheckMode.Any, "Bot Management", "Senate of Lathland (ADM)", "Plague Guard (Mods)")]
-		public async Task Register(CommandContext ctx)
+		[RequireRoles(RoleCheckMode.Any, "Bot Management")]
+		public async Task Register(CommandContext ctx, DiscordMember mod)
 		{
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
 			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
-			bool result = urepo.GetIdByDcId(ctx.Member.Id, out int userId);
+			bool result = urepo.GetIdByDcId(mod.Id, out int userId);
 			if (!result)
 			{
 				await ctx.RespondAsync("Error reading the user from the database.");
@@ -30,6 +30,7 @@ namespace LathBotFront.Commands
 				await ctx.RespondAsync("Error creating the User.");
 				return;
 			}
+			await ctx.RespondAsync("Successfully created an entry for the user.");
 		}
 
 		[Command("audit")]
