@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 
 using LathBotBack.Base;
@@ -6,25 +7,33 @@ using LathBotBack.Models;
 
 namespace LathBotBack.Repos
 {
-	public class VariableRepository : RepositoryBase
+	public class ModRepository : RepositoryBase
 	{
-		public VariableRepository(string connectionString) : base(connectionString) { }
+		public ModRepository(string connectionString) : base(connectionString) { }
 
-		public bool Create(ref Variable entity)
+		public bool GetAll(out List<Mod> list)
 		{
 			bool result = false;
+			list = null;
 
 			try
 			{
-				DbCommand.CommandText = "INSERT INTO Variables (VarName, VarValue) OUTPUT INSERTED.VarId VALUES (@name, @val);";
+				DbCommand.CommandText = "SELECT * FROM Mods;";
 				DbCommand.Parameters.Clear();
-				DbCommand.Parameters.AddWithValue("name", entity.Name);
-				DbCommand.Parameters.AddWithValue("val", entity.Value);
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
-				reader.Read();
-				entity.ID = (int)reader["VarId"];
+				list = new List<Mod>();
+				while (reader.Read())
+				{
+					list.Add(new Mod
+					{
+						Id = (int)reader["Id"],
+						DbId = (int)reader["ModDbId"],
+						Timezone = (string)reader["Timezone"]
+					});
+				}
 				DbConnection.Close();
+
 				result = true;
 			}
 			catch (Exception e)
@@ -42,24 +51,57 @@ namespace LathBotBack.Repos
 			return result;
 		}
 
-		public bool Read(int id, out Variable entity)
+		public bool Create(ref Mod entity)
+		{
+			bool result = false;
+
+			try
+			{
+				DbCommand.CommandText = "INSERT INTO Mods (ModDbId, Timezone) OUTPUT INSERTED.Id VALUES (@dbid, @tz);";
+				DbCommand.Parameters.Clear();
+				DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
+				DbCommand.Parameters.AddWithValue("tz", entity.Timezone);
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				entity.Id = (int)reader["Id"];
+				DbConnection.Close();
+
+				result = true;
+			}
+			catch (Exception e)
+			{
+				Holder.Instance.Logger.Log(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
+		public bool Read(int id, out Mod entity)
 		{
 			bool result = false;
 			entity = null;
 
 			try
 			{
-				DbCommand.CommandText = "SELECT VarName, VarValue FROM Variables WHERE VarId = @id;";
+				DbCommand.CommandText = "SELECT * FROM Mods WHERE Id = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
 				reader.Read();
-				entity = new Variable
+				entity = new Mod
 				{
-					ID = id,
-					Name = (string)reader["VarName"],
-					Value = (string)reader["VarValue"]
+					Id = id,
+					DbId = (int)reader["ModDbId"],
+					Timezone = (string)reader["Timezone"]
 				};
 				DbConnection.Close();
 
@@ -80,17 +122,16 @@ namespace LathBotBack.Repos
 			return result;
 		}
 
-		public bool Update(Variable entity)
+		public bool Update(Mod entity)
 		{
 			bool result = false;
 
 			try
 			{
-				DbCommand.CommandText = "UPDATE Variables SET VarName = @name, VarValue = @val WHERE VarId = @id;";
+				DbCommand.CommandText = "UPDATE Mods SET ModDbId = @dbid, Timezone = @tz WHERE Id = @id;";
 				DbCommand.Parameters.Clear();
-				DbCommand.Parameters.AddWithValue("name", entity.Name);
-				DbCommand.Parameters.AddWithValue("val", entity.Value);
-				DbCommand.Parameters.AddWithValue("id", entity.ID);
+				DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
+				DbCommand.Parameters.AddWithValue("tz", entity.Timezone);
 				DbConnection.Open();
 				DbCommand.ExecuteNonQuery();
 				DbConnection.Close();
@@ -118,7 +159,7 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "DELETE FROM Variables WHERE VarId = @id;";
+				DbCommand.CommandText = "DELETE FROM Mods WHERE Id = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
 				DbConnection.Open();

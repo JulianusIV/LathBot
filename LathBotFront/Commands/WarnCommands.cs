@@ -628,7 +628,7 @@ namespace LathBotFront.Commands
 						DiscordChannel directChannel = await member.CreateDmChannelAsync();
 						await directChannel.SendMessageAsync(embed).ConfigureAwait(false);
 					}
-					catch
+					catch (Exception e)
 					{
 						DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 						{
@@ -645,6 +645,8 @@ namespace LathBotFront.Commands
 
 						DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
 						await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+
+						Holder.Instance.Logger.Log("Had to send low level warn to #warnings because of following error:\n" + e.Message);
 					}
 					finally
 					{
