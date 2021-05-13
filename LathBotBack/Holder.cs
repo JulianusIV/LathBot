@@ -112,7 +112,7 @@ namespace LathBotBack
 		{
 			StartTime = DateTime.Now;
 
-
+			WarnTimer.Start();
 
 			Lathland = await client.GetGuildAsync(699555747591094344);
 
