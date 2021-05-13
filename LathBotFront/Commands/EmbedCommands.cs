@@ -112,7 +112,7 @@ namespace LathBotFront.Commands
                     Text = "The rules here are not meant to be exhaustive, but those are sensible guidelines. " +
                     "In the end, the moderation team is human exception handlers and may handle disruptive situations not covered by the rules. " +
                     "Abide by their decisions. If you disagree, please keep any discussion in DMs or private channels as to not unnecessarily clog chat. " +
-                    "The Plague Guards do not need to justify themselves in front of anyone but the Senate, the current owner and Lathrix if he chooses to interfere."
+                    "The Plague Guards do not need to justify themselves in front of anyone but the Senate and Lathrix if he chooses to interfere."
                 }
             };
 
@@ -174,7 +174,7 @@ namespace LathBotFront.Commands
                     Text = "The rules here are not meant to be exhaustive, but those are sensible guidelines. " +
                         "In the end, the moderation team is human exception handlers and may handle disruptive situations not covered by the rules. " +
                         "Abide by their decisions. If you disagree, please keep any discussion in DMs or private channels as to not unnecessarily clog chat. " +
-                        "The Plague Guards do not need to justify themselves in front of anyone but the Senate, the current owner and Lathrix if he chooses to interfere."
+                        "The Plague Guards do not need to justify themselves in front of anyone but the Senate and Lathrix if he chooses to interfere."
                 }
             };
 

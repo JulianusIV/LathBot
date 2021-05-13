@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Data.SqlClient;
+using System.Collections.Generic;
 
 using LathBotBack.Base;
 using LathBotBack.Models;
-using System.Collections.Generic;
 
 namespace LathBotBack.Repos
 {
@@ -63,7 +63,7 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "SELECT * FROM Warns WHERE UserDbId = @id;";
+				DbCommand.CommandText = "SELECT * FROM Warns WHERE UserDbId = @id ORDER BY WarnNumber ASC;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", UserDbId);
 				DbConnection.Open();
@@ -191,9 +191,7 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("userid", id);
 				DbConnection.Open();
-				using SqlDataReader reader = DbCommand.ExecuteReader();
-				reader.Read();
-				amount = (int)reader[0];
+				amount = (int)DbCommand.ExecuteScalar();
 				DbConnection.Close();
 				result = true;
 			}

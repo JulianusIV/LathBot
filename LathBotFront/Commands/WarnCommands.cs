@@ -467,7 +467,6 @@ namespace LathBotFront.Commands
 							tryagain = false;
 							pointsDeducted = points;
 							await pointsMessage.DeleteAsync();
-							return;
 						}
 						else
 						{
@@ -518,7 +517,7 @@ namespace LathBotFront.Commands
 					{
 						await reasonMessage.DeleteAsync();
 						reason = "/";
-						tryagain = false;
+						tryagainReason = false;
 					}
 					else if (reasonResult.Result.Content.Length >= 250)
 					{
@@ -531,7 +530,7 @@ namespace LathBotFront.Commands
 					{
 						reason = reasonResult.Result.Content;
 						await reasonMessage.DeleteAsync().ConfigureAwait(false);
-						tryagain = false;
+						tryagainReason = false;
 					}
 				}
 				#endregion
@@ -592,7 +591,7 @@ namespace LathBotFront.Commands
 					}
 					else
 					{
-						audit.Mutes++;
+						audit.Warns++;
 						bool updateResult = auditRepo.Update(audit);
 						if (!updateResult)
 						{
@@ -857,6 +856,24 @@ namespace LathBotFront.Commands
 				await ctx.RespondAsync("There has been an error deleting the warn from the database");
 				return;
 			}
+			result = repo.GetAllByUser(warn.User, out List<Warn> others);
+			if (!result)
+			{
+				await ctx.RespondAsync("Error reading other warns from the database.");
+			}
+
+			int counter = 0;
+			foreach (var item in others)
+			{
+				counter++;
+				item.Number = counter;
+				result = repo.Update(item);
+				if (!result)
+				{
+					_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error updating the database.");
+					break;
+				}
+			}
 			#region Audit
 			AuditRepository auditRepo = new AuditRepository(ReadConfig.configJson.ConnectionString);
 			UserRepository userrepo = new UserRepository(ReadConfig.configJson.ConnectionString);
@@ -874,11 +891,11 @@ namespace LathBotFront.Commands
 				}
 				else
 				{
-					audit.Mutes++;
+					audit.Pardons++;
 					bool updateResult = auditRepo.Update(audit);
 					if (!updateResult)
 					{
-						await ctx.RespondAsync("There was a problem reading to th Audit table");
+						await ctx.RespondAsync("There was a problem writing to the Audit table");
 					}
 				}
 			}
@@ -1050,7 +1067,12 @@ namespace LathBotFront.Commands
 				await ctx.RespondAsync("Failed to get the warn from the database.");
 				return;
 			}
-			if (warn.Persistent)
+			if (warn.Level > 10)
+			{
+				await ctx.RespondAsync("Warn is already persistent by level");
+				return;
+			}
+			else if (warn.Persistent)
 			{
 				await ctx.RespondAsync("Warn is already persistent");
 				return;
@@ -1062,7 +1084,48 @@ namespace LathBotFront.Commands
 				await ctx.RespondAsync("Failed to update the warn table.");
 				return;
 			}
-			await ctx.RespondAsync(warn.ID + "\n" + warn.User + "\n" + warn.Mod + "\n" + warn.Reason + "\n" + warn.Number + "\n" + warn.Level + "\n" + warn.Time + "\n" + warn.Persistent);
+
+			result = urepo.Read(warn.Mod, out User mod);
+			if (!result)
+			{
+				await ctx.RespondAsync("Error reading the moderator from the database. (But warn has been persistet)");
+				return;
+			}
+			DiscordMember moderator = await ctx.Guild.GetMemberAsync(mod.DcID);
+			DiscordEmbedBuilder builder = new DiscordEmbedBuilder
+			{
+				Title = $"Persistet warn {warn.ID}",
+				Description = warn.Reason,
+				Color = DiscordColor.Red,
+				Footer = new DiscordEmbedBuilder.EmbedFooter
+				{
+					IconUrl = moderator.AvatarUrl,
+					Text = $"{moderator.DisplayName}#{moderator.Discriminator} ({moderator.Id})"
+				}
+			};
+			builder.AddField("Level:", warn.Level.ToString());
+			builder.AddField("Number:", warn.Number.ToString());
+			builder.AddField("Time of the Warn:", warn.Time.ToString("yyyy-mm-ddTHH:mm:ss.ffff"));
+			builder.AddField("Persistent:", warn.Persistent.ToString());
+			await ctx.RespondAsync(builder);
+
+			DiscordEmbedBuilder dmBuilder = new DiscordEmbedBuilder
+			{
+				Title = "Persistent warns",
+				Description = "One of your warns has been persistet and will no longer expire. The warn will only ever be removed after manual review by an Admin.",
+				Color = DiscordColor.Red,
+				Footer = new DiscordEmbedBuilder.EmbedFooter
+				{
+					IconUrl = ctx.Member.AvatarUrl,
+					Text = $"{ctx.Member.DisplayName}#{ctx.Member.Discriminator} ({ctx.Member.Id})"
+				}
+			};
+
+			dmBuilder.AddField("Reason: ", warn.Reason);
+			dmBuilder.AddField("Level:", warn.Level.ToString());
+			dmBuilder.AddField("Number:", warn.Number.ToString());
+			dmBuilder.AddField("Time of the Warn:", warn.Time.ToString("yyyy-mm-ddTHH:mm:ss.ffff"));
+			await member.SendMessageAsync(dmBuilder);
 		}
 
 		[Command("allwarns")]

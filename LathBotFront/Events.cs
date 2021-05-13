@@ -16,6 +16,9 @@ using LathBotBack;
 using LathBotBack.Repos;
 using LathBotBack.Models;
 using LathBotBack.Config;
+using System.Timers;
+using Microsoft.AspNetCore.Components;
+using System.Web;
 
 namespace LathBotFront
 {
@@ -38,6 +41,7 @@ namespace LathBotFront
 
 			Holder.Instance.StartUpCompleted = true;
 
+			int added = 0;
 			UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
 			foreach (DiscordMember user in Holder.Instance.Lathland.GetAllMembersAsync().Result)
 			{
@@ -58,14 +62,36 @@ namespace LathBotFront
 					}
 					DiscordMember mem = await Holder.Instance.Lathland.GetMemberAsync(user.Id);
 					_ = Holder.Instance.TimerChannel.SendMessageAsync($"Added user {mem.DisplayName}#{mem.Discriminator} ({mem.Id}) on startup");
+					added++;
 				}
 			}
+			bool res = repo.CountAll(out int allInDb);
+			string strAllInDb;
+			if (!res)
+			{
+				await Holder.Instance.ErrorLogChannel.SendMessageAsync("Error counting all users in database");
+				strAllInDb = "unknown";
+			}
+			else
+			{
+				strAllInDb = allInDb.ToString();
+			}
+			await Holder.Instance.TimerChannel.SendMessageAsync(added > 0 ? $"Added {added} Users, {strAllInDb} entries in database, {Holder.Instance.Lathland.MemberCount} members in guild." : "Startup completed");
 		}
 
 		internal static Task MessageCreated(DiscordClient _2, MessageCreateEventArgs e)
 		{
 			_ = Task.Run(async () =>
 			{
+				if (e.Channel.Id == 713284112638672917 || e.Channel.Id == 720543453376937996)
+				{
+					await e.Channel.CrosspostMessageAsync(e.Message).ConfigureAwait(false);
+					return;
+				}
+				if (e.Author.Id == 708083256439996497)
+					return;
+				if (e.Channel.IsPrivate)
+					return;
 				if (Holder.Instance.IsInDesignMode || !Holder.Instance.StartUpCompleted)
 					return;
 				if (e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)) && e.Channel.Id == 726046413816987709)
@@ -78,13 +104,6 @@ namespace LathBotFront
 						await e.Channel.SendMessageAsync("No links allowed in here.");
 					}
 				}
-				if (e.Channel.Id == 713284112638672917 || e.Channel.Id == 720543453376937996)
-				{
-					await e.Channel.CrosspostMessageAsync(e.Message).ConfigureAwait(false);
-					return;
-				}
-				if (e.Author.Id == 708083256439996497)
-					return;
 				if (e.Channel.Id == Holder.Instance.QuestionsChannel.Id || e.Channel.Id == Holder.Instance.StaffChannel.Id)
 				{
 					await e.Channel.TriggerTypingAsync();
@@ -419,6 +438,101 @@ namespace LathBotFront
 				}
 			});
 			return Task.CompletedTask;
+		}
+
+		internal async static void TimerTick(object sender, ElapsedEventArgs e)
+		{
+			WarnRepository repo = new WarnRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			bool result = repo.GetAll(out List<Warn> list);
+			if (!result)
+			{
+				_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error getting all warns in TimerTick.");
+				return;
+			}
+			int pardoned = 0;
+			foreach (var item in list)
+			{
+				if ((item.Level > 0 && item.Level < 6 && item.Time <= DateTime.Now - TimeSpan.FromDays(14) ||
+					item.Level > 5 && item.Level < 11 && item.Time <= DateTime.Now - TimeSpan.FromDays(56)) &&
+					!item.Persistent)
+				{
+					pardoned++;
+					result = repo.Delete(item.ID);
+					if (!result)
+					{
+						_ = Holder.Instance.ErrorLogChannel.SendMessageAsync($"Error deleting warn {item.ID} from {item.Time}, level {item.Level}.");
+					}
+					result = repo.GetAllByUser(item.User, out List<Warn> others);
+					if (!result)
+					{
+						_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error reading other warns from the database.");
+					}
+
+					int counter = 0;
+					foreach (var warn in others)
+					{
+						counter++;
+						warn.Number = counter;
+						result = repo.Update(warn);
+						if (!result)
+						{
+							_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error updating the database.");
+							break;
+						}
+					}
+
+					result = urepo.Read(item.ID, out User entity);
+					if (!result)
+					{
+						_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error reading a user from the database");
+						continue;
+					}
+					result = urepo.Read(item.ID, out User modEntity);
+					if (!result)
+					{
+						_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error reading a user from the database");
+						continue;
+					}
+					try
+					{
+						DiscordMember member = await Holder.Instance.Lathland.GetMemberAsync(entity.DcID);
+						DiscordMember moderator = await Holder.Instance.Lathland.GetMemberAsync(modEntity.DcID);
+						DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+						{
+							Color = DiscordColor.Green,
+							Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
+							Title = $"Pardoned warn number {item.Number} of {member.DisplayName}#{member.Discriminator} ({member.Id})",
+							Description = $"Warn from {item.Time}.",
+							Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = moderator.AvatarUrl, Text = moderator.DisplayName }
+						};
+						DiscordEmbed embed = embedBuilder.Build();
+
+						_ = Holder.Instance.WarnsChannel.SendMessageAsync(embed).ConfigureAwait(false);
+					}
+					catch
+					{
+						DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+						{
+							Color = DiscordColor.Green,
+							Title = $"Pardoned warn of {entity.DcID}",
+							Description = $"Warn from {item.Time}.",
+							Footer = new DiscordEmbedBuilder.EmbedFooter { Text = modEntity.DcID.ToString() }
+						};
+						DiscordEmbed embed = embedBuilder.Build();
+
+						_ = Holder.Instance.WarnsChannel.SendMessageAsync(embed).ConfigureAwait(false);
+					}
+				}
+			}
+			if (pardoned >= 0)
+			{
+				_ = Holder.Instance.TimerChannel.SendMessageAsync($"Timer ticked, {pardoned} warns pardoned.");
+			}
+			else
+			{
+				_ = Holder.Instance.TimerChannel.SendMessageAsync("Timer ticked, no warns pardoned.");
+			}
 		}
 	}
 }

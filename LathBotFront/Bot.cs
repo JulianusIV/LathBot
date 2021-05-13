@@ -66,6 +66,9 @@ namespace LathBotFront
 			Client.VoiceStateUpdated += Events.VoiceStateUpdated;
 			Client.ClientErrored += Events.ClientErrored;
 
+			//Register timer events
+			Holder.Instance.WarnTimer.Elapsed += Events.TimerTick;
+
 			Client.UseInteractivity(new InteractivityConfiguration
 			{
 				Timeout = TimeSpan.FromMinutes(5),
@@ -87,6 +90,7 @@ namespace LathBotFront
 			Commands.RegisterCommands<RuleCommands>();
 			Commands.RegisterCommands<TechnicalCommands>();
 			Commands.RegisterCommands<WarnCommands>();
+			Commands.RegisterCommands<AuditCommands>();
 
 			//Register command events
 			Commands.CommandErrored += Events.CommandErrored;

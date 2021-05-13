@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Data.SqlClient;
+using System.Collections.Generic;
 
 using LathBotBack.Base;
 using LathBotBack.Models;
-using System.Collections.Generic;
 
 namespace LathBotBack.Repos
 {
@@ -61,9 +61,7 @@ namespace LathBotBack.Repos
 				DbCommand.CommandText = "SELECT COUNT(UserDcId) FROM Users;";
 				DbCommand.Parameters.Clear();
 				DbConnection.Open();
-				using SqlDataReader reader = DbCommand.ExecuteReader();
-				reader.Read();
-				amount = (int)reader[0];
+				amount = (int)DbCommand.ExecuteScalar();
 				DbConnection.Close();
 				result = true;
 			}
@@ -94,8 +92,6 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("dcid", (long)dcid);
 				DbConnection.Open();
-				//using SqlDataReader reader = DbCommand.ExecuteReader();
-				//reader.Read();
 				exists = (int)DbCommand.ExecuteScalar() > 0;
 				DbConnection.Close();
 				result = true;
@@ -123,13 +119,13 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "SELECT UserDcId FROM Users WHERE UserDcId = @dcid;";
+				DbCommand.CommandText = "SELECT UserDbId FROM Users WHERE UserDcId = @dcid;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("dcid", (long)DcId);
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
 				reader.Read();
-				id = (int)reader["UserDcId"];
+				id = (int)reader["UserDbId"];
 				DbConnection.Close();
 
 				result = true;

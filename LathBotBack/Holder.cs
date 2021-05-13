@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Timers;
+using System.Collections.Generic;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -7,7 +9,6 @@ using DSharpPlus.Lavalink;
 using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
-using System;
 
 namespace LathBotBack
 {
@@ -80,9 +81,12 @@ namespace LathBotBack
 		public DiscordChannel GoodGuysChannel { get; private set; }
 		public DiscordChannel ErrorLogChannel { get; private set; }
 		public DiscordChannel TimerChannel { get; private set; }
+		public DiscordChannel WarnsChannel { get; private set; }
 
 		public DiscordMessage LathQuestions { get; set; }
 		public DiscordMessage StaffQuestions { get; set; }
+
+		public Timer WarnTimer = new Timer(3600000);
 
 		public readonly DiscordEmbedBuilder LathQuestionsEmbed = new DiscordEmbedBuilder
 		{
@@ -108,6 +112,8 @@ namespace LathBotBack
 		{
 			StartTime = DateTime.Now;
 
+
+
 			Lathland = await client.GetGuildAsync(699555747591094344);
 
 			QuestionsChannel = Lathland.GetChannel(721082217119612969);
@@ -115,6 +121,7 @@ namespace LathBotBack
 			GoodGuysChannel = Lathland.GetChannel(795654190143766578);
 			ErrorLogChannel = Lathland.GetChannel(787423655566376970);
 			TimerChannel = Lathland.GetChannel(771830187171250217);
+			WarnsChannel = Lathland.GetChannel(722186358906421369);
 
 			if (IsInDesignMode)
 				return;

@@ -1,0 +1,3 @@
+05/12/2021 20:42:18:
+Could not find a suitable overload for the command.
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)

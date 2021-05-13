@@ -9,5 +9,21 @@
 		public int Unmutes { get; set; }
 		public int Kicks { get; set; }
 		public int Bans { get; set; }
+
+		public Audit()
+		{
+
+		}
+
+		public Audit(int modId)
+		{
+			Mod = modId;
+			Warns = 0;
+			Pardons = 0;
+			Mutes = 0;
+			Unmutes = 0;
+			Kicks = 0;
+			Bans = 0;
+		}
 	}
 }
