@@ -256,7 +256,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("clean")]
-		[Description("Purge parstapo-cell and log it to a file")]
+		[Description("Purge muted and log it to a file")]
 		[RequireRoles(RoleCheckMode.Any, "Community Manager (OWN)", "Senate of Lathland (ADM)", "Bot Management", "Plague Guard (Mods)")]
 		public async Task Clean(CommandContext ctx)
 		{
