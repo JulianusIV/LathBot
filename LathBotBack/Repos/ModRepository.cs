@@ -1,7 +1,8 @@
-﻿using LathBotBack.Base;
-using LathBotBack.Models;
-using System;
+﻿using System;
 using System.Data.SqlClient;
+
+using LathBotBack.Base;
+using LathBotBack.Models;
 
 namespace LathBotBack.Repos
 {

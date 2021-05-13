@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
+using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 
 namespace LathBotFront.Commands
 {

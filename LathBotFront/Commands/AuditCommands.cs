@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 
+using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
 using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
-using DSharpPlus.Entities;
 
 namespace LathBotFront.Commands
 {
