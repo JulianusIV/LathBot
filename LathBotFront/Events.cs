@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Timers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -16,9 +17,6 @@ using LathBotBack;
 using LathBotBack.Repos;
 using LathBotBack.Models;
 using LathBotBack.Config;
-using System.Timers;
-using Microsoft.AspNetCore.Components;
-using System.Web;
 
 namespace LathBotFront
 {

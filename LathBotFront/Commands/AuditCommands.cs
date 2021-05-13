@@ -6,6 +6,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
+using DSharpPlus.Entities;
 
 namespace LathBotFront.Commands
 {
@@ -29,6 +30,43 @@ namespace LathBotFront.Commands
 				await ctx.RespondAsync("Error creating the User.");
 				return;
 			}
+		}
+
+		[Command("audit")]
+		[RequireRoles(RoleCheckMode.Any, "Bot Management")]
+		public async Task Audit(CommandContext ctx)
+		{
+			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
+			bool result = urepo.GetIdByDcId(ctx.Member.Id, out int id);
+			if (!result)
+			{
+				await ctx.RespondAsync("Error getting the user from the database");
+				return;
+			}
+			result = repo.Read(id, out Audit audit);
+			if (!result)
+			{
+				await ctx.RespondAsync("Error getting the audit from the database");
+				return;
+			}
+			DiscordEmbedBuilder builder = new DiscordEmbedBuilder
+			{
+				Title = "Moderator:",
+				Description = $"{ctx.Member.DisplayName}#{ctx.Member.Discriminator} ({ctx.Member.Id})",
+				Color = ctx.Member.Color,
+				Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
+				{
+					Url = ctx.Member.AvatarUrl
+				}
+			};
+			builder.AddField("Warn Amount:", audit.Warns.ToString());
+			builder.AddField("Pardon Amount:", audit.Pardons.ToString());
+			builder.AddField("Mute Amount:", audit.Mutes.ToString());
+			builder.AddField("Unmute Amount:", audit.Unmutes.ToString());
+			builder.AddField("Kick Amount:", audit.Kicks.ToString());
+			builder.AddField("Ban Amount:", audit.Bans.ToString());
+			await ctx.RespondAsync(builder);
 		}
 	}
 }
