@@ -123,9 +123,6 @@ namespace LathBotFront
 				Port = 2333
 			};
 
-			if (Holder.Instance.IsInDesignMode)
-				endpoint.Hostname = "192.168.0.136";
-
 			LavalinkConfiguration lavalinkConfig = new LavalinkConfiguration
 			{
 				Password = "youshallnotpass",

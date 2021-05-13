@@ -485,13 +485,13 @@ namespace LathBotFront
 						}
 					}
 
-					result = urepo.Read(item.ID, out User entity);
+					result = urepo.Read(item.User, out User entity);
 					if (!result)
 					{
 						_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error reading a user from the database");
 						continue;
 					}
-					result = urepo.Read(item.ID, out User modEntity);
+					result = urepo.Read(item.Mod, out User modEntity);
 					if (!result)
 					{
 						_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error reading a user from the database");
