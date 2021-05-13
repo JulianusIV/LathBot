@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 
 using LathBotBack.Base;
@@ -9,6 +10,46 @@ namespace LathBotBack.Repos
 	public class ModRepository : RepositoryBase
 	{
 		public ModRepository(string connectionString) : base(connectionString) { }
+
+		public bool GetAll(out List<Mod> list)
+		{
+			bool result = false;
+			list = null;
+
+			try
+			{
+				DbCommand.CommandText = "SELECT * FROM Mods;";
+				DbCommand.Parameters.Clear();
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				list = new List<Mod>();
+				while (reader.Read())
+				{
+					list.Add(new Mod
+					{
+						Id = (int)reader["Id"],
+						DbId = (int)reader["ModDbId"],
+						Timezone = (string)reader["Timezone"]
+					});
+				}
+				DbConnection.Close();
+
+				result = true;
+			}
+			catch (Exception e)
+			{
+				Holder.Instance.Logger.Log(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
 
 		public bool Create(ref Mod entity)
 		{

@@ -8,6 +8,10 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
 using LathBotBack;
+using LathBotBack.Repos;
+using LathBotBack.Config;
+using System.Collections.Generic;
+using LathBotBack.Models;
 
 namespace LathBotFront.Commands
 {
@@ -106,104 +110,38 @@ namespace LathBotFront.Commands
 			};
 			DateTime thisTime = DateTime.Now;
 
-			#region fields
-			try
+			ModRepository repo = new ModRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			bool result = repo.GetAll(out List<Mod> list);
+			if (!result)
 			{
-				DiscordMember chewy = await ctx.Guild.GetMemberAsync(613366102306717712).ConfigureAwait(false);
-				TimeZoneInfo chewyTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Chicago");
-				DateTime chewyTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, chewyTimeZone);
-				discordEmbed.AddField($"{chewy.Username}#{chewy.Discriminator}", chewyTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (chewyTimeZone.IsDaylightSavingTime(chewyTime) ?
-					chewyTimeZone.DaylightName.Substring(0, 6) : chewyTimeZone.StandardName.Substring(0, 6)) + ")");
-			}
-			catch
-			{
+				await ctx.RespondAsync("Error reading mods from database.");
+				return;
 			}
 
-			try
+			foreach (var item in list)
 			{
-				DiscordMember julian = await ctx.Guild.GetMemberAsync(387325006176059394).ConfigureAwait(false);
-				TimeZoneInfo julianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
-				DateTime julianTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, julianTimeZone);
-				discordEmbed.AddField($"{julian.Username}#{julian.Discriminator}", julianTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (julianTimeZone.IsDaylightSavingTime(julianTime) ?
-					julianTimeZone.DaylightName.Substring(0, 6) : julianTimeZone.StandardName.Substring(0, 6)) + ")");
+				result = urepo.Read(item.DbId, out User entity);
+				if (!result)
+				{
+					await ctx.RespondAsync($"Error reading a user from the database.");
+					continue;
+				}
+				DiscordMember mod = await ctx.Guild.GetMemberAsync(entity.DcID);
+				try
+				{
+					TimeZoneInfo modTimeZone = TimeZoneInfo.FindSystemTimeZoneById(item.Timezone);
+					DateTime modTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, modTimeZone);
+					discordEmbed.AddField($"{mod.Username}#{mod.Discriminator}",
+						modTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (modTimeZone.IsDaylightSavingTime(modTime) ?
+						modTimeZone.DaylightName.Substring(0, 6) : modTimeZone.StandardName.Substring(0, 6)) + ")");
+				}
+				catch
+				{
+					await ctx.RespondAsync($"Error creating the embed for user {mod.DisplayName}#{mod.Discriminator} ({mod.Id}).");
+					continue;
+				}
 			}
-			catch
-			{
-			}
-
-			try
-			{
-				DiscordMember parth = await ctx.Guild.GetMemberAsync(289112287250350080).ConfigureAwait(false);
-				TimeZoneInfo parthTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Berlin");
-				DateTime parthTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, parthTimeZone);
-				discordEmbed.AddField($"{parth.Username}#{parth.Discriminator}", parthTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (parthTimeZone.IsDaylightSavingTime(parthTime) ?
-					parthTimeZone.DaylightName.Substring(0, 6) : parthTimeZone.StandardName.Substring(0, 6)) + ")");
-			}
-			catch
-			{
-			}
-
-			try
-			{
-				DiscordMember ava = await ctx.Guild.GetMemberAsync(700373370491109489).ConfigureAwait(false);
-				TimeZoneInfo avaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Amsterdam");
-				DateTime avaTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, avaTimeZone);
-				discordEmbed.AddField($"{ava.Username}#{ava.Discriminator}", avaTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (avaTimeZone.IsDaylightSavingTime(avaTime) ?
-					avaTimeZone.DaylightName.Substring(0, 6) : avaTimeZone.StandardName.Substring(0, 6)) + ")");
-			}
-			catch
-			{
-			}
-
-			try
-			{
-				DiscordMember dodo = await ctx.Guild.GetMemberAsync(228763974299156482).ConfigureAwait(false);
-				TimeZoneInfo dodoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Amsterdam");
-				DateTime dodoTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, dodoTimeZone);
-				discordEmbed.AddField($"{dodo.Username}#{dodo.Discriminator}", dodoTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (dodoTimeZone.IsDaylightSavingTime(dodoTime) ?
-					dodoTimeZone.DaylightName.Substring(0, 6) : dodoTimeZone.StandardName.Substring(0, 6)) + ")");
-			}
-			catch
-			{
-			}
-
-			try
-			{
-				DiscordMember theo = await ctx.Guild.GetMemberAsync(241445303960600576).ConfigureAwait(false);
-				TimeZoneInfo theoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Africa/Johannesburg");
-				DateTime theoTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, theoTimeZone);
-				discordEmbed.AddField($"{theo.Username}#{theo.Discriminator}", theoTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (theoTimeZone.IsDaylightSavingTime(theoTime) ?
-					theoTimeZone.DaylightName.Substring(0, 6) : theoTimeZone.StandardName.Substring(0, 6)) + ")");
-			}
-			catch
-			{
-			}
-
-			try
-			{
-				DiscordMember emr = await ctx.Guild.GetMemberAsync(619694655805718568).ConfigureAwait(false);
-				TimeZoneInfo emrTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles");
-				DateTime emrTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, emrTimeZone);
-				discordEmbed.AddField($"{emr.Username}#{emr.Discriminator}", emrTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (emrTimeZone.IsDaylightSavingTime(emrTime) ?
-					emrTimeZone.DaylightName.Substring(0, 6) : emrTimeZone.StandardName.Substring(0, 6)) + ")");
-			}
-			catch
-			{
-			}
-
-			try
-			{
-				DiscordMember generic = await ctx.Guild.GetMemberAsync(619694655805718568).ConfigureAwait(false);
-				TimeZoneInfo genericTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles");
-				DateTime genericTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, genericTimeZone);
-				discordEmbed.AddField($"{generic.Username}#{generic.Discriminator}", genericTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (genericTimeZone.IsDaylightSavingTime(genericTime) ?
-					genericTimeZone.DaylightName.Substring(0, 6) : genericTimeZone.StandardName.Substring(0, 6)) + ")");
-			}
-			catch
-			{
-			}
-			#endregion
-
 			await ctx.Channel.SendMessageAsync(discordEmbed).ConfigureAwait(false);
 		}
 	}
