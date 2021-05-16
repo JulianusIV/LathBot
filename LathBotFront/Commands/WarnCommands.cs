@@ -750,84 +750,8 @@ namespace LathBotFront.Commands
 				}
 				if (pointsLeft < 11)
 				{
-					#region Punishment
-					WarnCommands warnCommands = new WarnCommands();
 					DiscordMessage punishMessage = await ctx.Channel.SendMessageAsync($"User has {pointsLeft} points left.\n" +
-						$"Should the user be muted :mute:{(pointsLeft < 6 ? ", kicked :mans_shoe:" : "")}{(pointsLeft < 1 ? ", or banned :no_entry_sign:" : "")}?").ConfigureAwait(false);
-					await punishMessage.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":mute:"));
-					if (pointsLeft < 6)
-						await punishMessage.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":mans_shoe:"));
-					if (pointsLeft < 1)
-						await punishMessage.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":no_entry_sign:"));
-					await punishMessage.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":x:"));
-					DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-					var intResult = await interactivity.WaitForReactionAsync(x => x.Message == punishMessage && x.User == ctx.User);
-					switch (intResult.Result.Emoji.ToString())
-					{
-						case ":mute:":
-							DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
-							DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
-							await member.RevokeRoleAsync(verificationRole);
-							await member.GrantRoleAsync(mutedRole);
-							DiscordEmbedBuilder muteEmbedBuilder = new DiscordEmbedBuilder
-							{
-								Color = DiscordColor.Gray,
-								Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
-								Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been muted",
-								Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
-							};
-							DiscordEmbed muteEmbed = muteEmbedBuilder.Build();
-							await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", muteEmbed).ConfigureAwait(false);
-							await warnsChannel.SendMessageAsync($"{member.Mention}", muteEmbed).ConfigureAwait(false);
-							break;
-						case ":mans_shoe:":
-							if (pointsLeft > 6)
-								break;
-							if (ctx.Member.Hierarchy <= member.Hierarchy)
-							{
-								await ctx.Channel.SendMessageAsync("You cant kick someone higher or same rank as you!").ConfigureAwait(false);
-								break;
-							}
-							await member.RemoveAsync();
-							DiscordEmbedBuilder kickEmbedBuilder = new DiscordEmbedBuilder
-							{
-								Color = DiscordColor.DarkButNotBlack,
-								Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
-								Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been kicked",
-								Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
-							};
-							DiscordEmbed kickEmbed = kickEmbedBuilder.Build();
-							await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", kickEmbed).ConfigureAwait(false);
-							await warnsChannel.SendMessageAsync($"{member.Mention}", kickEmbed).ConfigureAwait(false);
-							break;
-						case ":no_entry_sign:":
-							if (pointsLeft > 1)
-								break;
-							if (ctx.Member.Hierarchy <= member.Hierarchy)
-							{
-								await ctx.Channel.SendMessageAsync("You cant ban someone higher or same rank as you!").ConfigureAwait(false);
-								break;
-							}
-							await member.BanAsync();
-							DiscordEmbedBuilder banEmbedBuilder = new DiscordEmbedBuilder
-							{
-								Color = DiscordColor.Black,
-								Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
-								Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been banned",
-								Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
-							};
-							DiscordEmbed banEmbed = banEmbedBuilder.Build();
-							await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", banEmbed).ConfigureAwait(false);
-							await warnsChannel.SendMessageAsync($"{member.Mention}", banEmbed).ConfigureAwait(false);
-							break;
-						case ":x:":
-							await ctx.Channel.SendMessageAsync("No action will be taken").ConfigureAwait(false);
-							break;
-						default:
-							break;
-					}
-					await punishMessage.DeleteAsync().ConfigureAwait(false);
-					#endregion
+						$"By common practice the user should be muted{(pointsLeft < 6 ? ", kicked" : "")}{(pointsLeft < 1 ? ", or banned" : "")}.");
 				}
 			}
 		}
