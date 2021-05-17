@@ -63,7 +63,7 @@ namespace LathBotBack.Repos
 					Id = id,
 					User = (int)reader["UserDbId"],
 					Timestamp = (DateTime)reader["MuteTimestamp"],
-					Duration = (TimeSpan)reader["MuteDuration"]
+					Duration = (int)reader["MuteDuration"]
 				};
 				DbConnection.Close();
 

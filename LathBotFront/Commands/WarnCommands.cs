@@ -1050,7 +1050,7 @@ namespace LathBotFront.Commands
 			dmBuilder.AddField("Reason: ", warn.Reason);
 			dmBuilder.AddField("Level:", warn.Level.ToString());
 			dmBuilder.AddField("Number:", warn.Number.ToString());
-			dmBuilder.AddField("Time of the Warn:", warn.Time.ToString("yyyy-mm-ddTHH:mm:ss.ffff"));
+			dmBuilder.AddField("Time of the Warn:", warn.Time.ToString("yyyy-mm-dd HH:mm:ss.ffff"));
 			await member.SendMessageAsync(dmBuilder);
 		}
 

@@ -132,6 +132,7 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
 				DbCommand.Parameters.AddWithValue("tz", entity.Timezone);
+				DbCommand.Parameters.AddWithValue("id", entity.Id);
 				DbConnection.Open();
 				DbCommand.ExecuteNonQuery();
 				DbConnection.Close();

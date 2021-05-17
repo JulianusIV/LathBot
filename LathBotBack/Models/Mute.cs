@@ -9,6 +9,6 @@ namespace LathBotBack.Models
 		public int Id { get; set; }
 		public int User { get; set; }
 		public DateTime Timestamp { get; set; }
-		public TimeSpan Duration { get; set; }
+		public int Duration { get; set; }
 	}
 }
