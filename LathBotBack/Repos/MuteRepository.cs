@@ -11,6 +11,46 @@ namespace LathBotBack.Repos
 	{
 		public MuteRepository(string connectionString) : base(connectionString) { }
 
+		public bool GetAll(out List<Mute> list)
+		{
+			bool result = false;
+			list = new List<Mute>();
+
+			try
+			{
+				DbCommand.CommandText = "SELECT * FROM Mutes;";
+				DbCommand.Parameters.Clear();
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				while (reader.Read())
+				{
+					list.Add(new Mute
+					{
+						Id = (int)reader["Id"],
+						User = (int)reader["UserDbId"],
+						Timestamp = (DateTime)reader["MuteTimestamp"],
+						Duration = (int)reader["MuteDuration"]
+					});
+				}
+				DbConnection.Close();
+
+				result = true;
+			}
+			catch (Exception e)
+			{
+				Holder.Instance.Logger.Log(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
 		public bool Create(ref Mute entity)
 		{
 			bool result = false;
