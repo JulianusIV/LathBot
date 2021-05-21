@@ -103,9 +103,14 @@ namespace LathBotFront.Commands
 		[Aliases("shuddup")]
 		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
 		[Description("Mute a user")]
-		public async Task Mute(CommandContext ctx, [Description("The user that you want to mute")] DiscordMember member)
+		public async Task Mute(CommandContext ctx, [Description("The user that you want to mute")] DiscordMember member, int duration = 7)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			if (duration > 14 || duration < 2)
+			{
+				await ctx.Channel.SendMessageAsync($"You cant mute someone for {(duration < 2 ? "shorter than 2 days." : "longer than 14 days.")}");
+				return;
+			}
 			if (member.Id == 192037157416730625)
 			{
 				await ctx.Channel.SendMessageAsync("You cant mute Lathrix!");
@@ -131,19 +136,31 @@ namespace LathBotFront.Commands
 				};
 				await ctx.Guild.GetChannel(722905404354592900).SendMessageAsync(discordEmbed.Build());
 			}
-			DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
-			DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
-			await member.RevokeRoleAsync(verificationRole);
-			await member.GrantRoleAsync(mutedRole);
-			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			MuteRepository mrepo = new MuteRepository(ReadConfig.configJson.ConnectionString);
+			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
 			bool userResult = urepo.GetIdByDcId(ctx.Member.Id, out int id);
 			if (!userResult)
 			{
-				await ctx.RespondAsync("There was a problem reading a User");
+				await ctx.RespondAsync("There was a problem reading a User, user has not been muted.");
 			}
 			else
 			{
+				Mute mute = new Mute
+				{
+					User = id,
+					Duration = duration,
+					Timestamp = DateTime.Now
+				};
+				bool result = mrepo.Create(ref mute);
+				if (!result)
+				{
+					await ctx.RespondAsync("There was a problem creating a mute entry, user has not been muted.");
+				}
+				DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
+				DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
+				await member.RevokeRoleAsync(verificationRole);
+				await member.GrantRoleAsync(mutedRole);
 				bool auditResult = repo.Read(id, out Audit audit);
 				if (!auditResult)
 				{
