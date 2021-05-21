@@ -57,6 +57,7 @@ namespace LathBotTest
 				using SqlDataReader reader = _objRepo.DbCommand.ExecuteReader();
 				reader.Read();
 				_obj.User = (int)reader["UserDbId"];
+				_obj.Mod = (int)reader["UserDbId"];
 				_objRepo.DbConnection.Close();
 			}
 			catch (Exception e)
@@ -79,6 +80,7 @@ namespace LathBotTest
 			Assert.IsTrue(result);
 			Assert.AreEqual(_obj.Id, entity.Id);
 			Assert.AreEqual(_obj.User, entity.User);
+			Assert.AreEqual(_obj.Mod, entity.Mod);
 			Assert.AreEqual(_obj.Timestamp, entity.Timestamp);
 			Assert.AreEqual(_obj.Duration, entity.Duration);
 		}
@@ -96,6 +98,7 @@ namespace LathBotTest
 
 			Assert.AreEqual(_obj.Id, entity.Id);
 			Assert.AreEqual(_obj.User, entity.User);
+			Assert.AreEqual(_obj.Mod, entity.Mod);
 			Assert.AreEqual(_obj.Timestamp, entity.Timestamp);
 			Assert.AreEqual(_obj.Duration, entity.Duration);
 		}

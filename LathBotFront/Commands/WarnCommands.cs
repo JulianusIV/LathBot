@@ -143,12 +143,20 @@ namespace LathBotFront.Commands
 			if (!userResult)
 			{
 				await ctx.RespondAsync("There was a problem reading a User, user has not been muted.");
+				return;
 			}
 			else
 			{
+				userResult = urepo.GetIdByDcId(ctx.Member.Id, out int modId);
+				if (!userResult)
+				{
+					await ctx.RespondAsync("There was a problem reading a Mod, user has not been muted.");
+					return;
+				}
 				Mute mute = new Mute
 				{
 					User = id,
+					Mod = modId,
 					Duration = duration,
 					Timestamp = DateTime.Now
 				};
@@ -156,6 +164,7 @@ namespace LathBotFront.Commands
 				if (!result)
 				{
 					await ctx.RespondAsync("There was a problem creating a mute entry, user has not been muted.");
+					return;
 				}
 				DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
 				DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
