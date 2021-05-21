@@ -11,5 +11,6 @@ namespace LathBotBack.Models
 		public int Mod { get; set; }
 		public DateTime Timestamp { get; set; }
 		public int Duration { get; set; }
+		public DateTime LastCheck { get; set; }
 	}
 }
