@@ -103,7 +103,7 @@ namespace LathBotFront.Commands
 		[Aliases("shuddup")]
 		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
 		[Description("Mute a user")]
-		public async Task Mute(CommandContext ctx, [Description("The user that you want to mute")] DiscordMember member, int duration = 7)
+		public async Task Mute(CommandContext ctx, [Description("The user that you want to mute")] DiscordMember member, [Description("When you will be reminded (2 - 14 days, default 7)")] int duration = 7)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
 			if (duration > 14 || duration < 2)
@@ -119,6 +119,11 @@ namespace LathBotFront.Commands
 			else if (ctx.Member.Hierarchy <= member.Hierarchy)
 			{
 				await ctx.Channel.SendMessageAsync("You cant mute someone higher or same rank as you!");
+				return;
+			}
+			else if (member.Roles.Contains(ctx.Guild.GetRole(701446136208293969)))
+			{
+				await ctx.Channel.SendMessageAsync("User is already muted.");
 				return;
 			}
 			else if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
@@ -153,25 +158,53 @@ namespace LathBotFront.Commands
 					await ctx.RespondAsync("There was a problem reading a Mod, user has not been muted.");
 					return;
 				}
-				Mute mute = new Mute
-				{
-					User = id,
-					Mod = modId,
-					Duration = duration,
-					Timestamp = DateTime.Now,
-					LastCheck = DateTime.Now
-				};
-				bool result = mrepo.Create(ref mute);
+
+				bool result = mrepo.IsUserMuted(id, out bool exists);
 				if (!result)
 				{
-					await ctx.RespondAsync("There was a problem creating a mute entry, user has not been muted.");
-					return;
+					await ctx.RespondAsync("Error looking up an existing mute for this user, user will be muted anyways.");
+				}
+				if (exists)
+				{
+					result = mrepo.GetMuteByUser(id, out Mute mute);
+					if (!result)
+					{
+						await ctx.RespondAsync("Error gettign an existing mute for this user, user will not be muted.");
+						return;
+					}
+					mute.Mod = modId;
+					mute.Duration = duration;
+					mute.Timestamp = DateTime.Now;
+					mute.LastCheck = DateTime.Now;
+					result = mrepo.Update(mute);
+					if (!result)
+					{
+						await ctx.RespondAsync("Error updating an existing mute entry for this user, user will not be muted.");
+						return;
+					}
+				}
+				else
+				{
+					Mute mute = new Mute
+					{
+						User = id,
+						Mod = modId,
+						Duration = duration,
+						Timestamp = DateTime.Now,
+						LastCheck = DateTime.Now
+					};
+					result = mrepo.Create(ref mute);
+					if (!result)
+					{
+						await ctx.RespondAsync("There was a problem creating a mute entry, user has not been muted.");
+						return;
+					}
 				}
 				DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
 				DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
 				await member.RevokeRoleAsync(verificationRole);
 				await member.GrantRoleAsync(mutedRole);
-				bool auditResult = repo.Read(id, out Audit audit);
+				bool auditResult = repo.Read(modId, out Audit audit);
 				if (!auditResult)
 				{
 					await ctx.RespondAsync("There was a problem reading an Audit");

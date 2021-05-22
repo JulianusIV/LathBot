@@ -52,6 +52,80 @@ namespace LathBotBack.Repos
 			return result;
 		}
 
+		public bool IsUserMuted(int userId, out bool exists)
+		{
+
+			bool result = false;
+			exists = false;
+
+			try
+			{
+				DbCommand.CommandText = "SELECT COUNT(UserDbId) FROM Mutes WHERE UserDbId = @id;";
+				DbCommand.Parameters.Clear();
+				DbCommand.Parameters.AddWithValue("id", userId);
+				DbConnection.Open();
+				exists = (int)DbCommand.ExecuteScalar() > 0;
+				DbConnection.Close();
+
+				result = true;
+			}
+			catch (Exception e)
+			{
+				Holder.Instance.Logger.Log(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
+		public bool GetMuteByUser(int userId, out Mute entity)
+		{
+
+			bool result = false;
+			entity = null;
+
+			try
+			{
+				DbCommand.CommandText = "SELECT * FROM Mutes WHERE UserDbId = @user;";
+				DbCommand.Parameters.Clear();
+				DbCommand.Parameters.AddWithValue("user", userId);
+				DbConnection.Open();
+				using SqlDataReader reader = DbCommand.ExecuteReader();
+				reader.Read();
+				entity = new Mute
+				{
+					Id = (int)reader["Id"],
+					User = userId,
+					Mod = (int)reader["ModDbId"],
+					Timestamp = (DateTime)reader["MuteTimestamp"],
+					Duration = (int)reader["MuteDuration"],
+					LastCheck = (DateTime)reader["Lastcheck"]
+				};
+				DbConnection.Close();
+
+				result = true;
+			}
+			catch (Exception e)
+			{
+				Holder.Instance.Logger.Log(e.Message);
+			}
+			finally
+			{
+				if (DbConnection.State == System.Data.ConnectionState.Open)
+				{
+					DbConnection.Close();
+				}
+			}
+
+			return result;
+		}
+
 		public bool Create(ref Mute entity)
 		{
 			bool result = false;
