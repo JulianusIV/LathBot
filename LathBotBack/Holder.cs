@@ -87,7 +87,7 @@ namespace LathBotBack
 		public DiscordMessage LathQuestions { get; set; }
 		public DiscordMessage StaffQuestions { get; set; }
 
-		public Timer WarnTimer = new Timer(1000);//new Timer(3600000);
+		public Timer WarnTimer = new Timer(3600000);
 
 		public LoggingPublisher Logger = new LoggingPublisher();
 
