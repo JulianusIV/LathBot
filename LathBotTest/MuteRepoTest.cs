@@ -82,9 +82,9 @@ namespace LathBotTest
 			Assert.AreEqual(_obj.Id, entity.Id);
 			Assert.AreEqual(_obj.User, entity.User);
 			Assert.AreEqual(_obj.Mod, entity.Mod);
-			Assert.AreEqual(_obj.Timestamp, entity.Timestamp);
+			Assert.AreEqual(_obj.Timestamp.ToString("yyyy-MM-ddThh:mm:ss"), entity.Timestamp.ToString("yyyy-MM-ddThh:mm:ss"));
 			Assert.AreEqual(_obj.Duration, entity.Duration);
-			Assert.AreEqual(_obj.LastCheck, entity.LastCheck);
+			Assert.AreEqual(_obj.LastCheck.ToString("yyyy-MM-ddThh:mm:ss"), entity.LastCheck.ToString("yyyy-MM-ddThh:mm:ss"));
 		}
 
 		private void TestUpdate()
@@ -101,9 +101,9 @@ namespace LathBotTest
 			Assert.AreEqual(_obj.Id, entity.Id);
 			Assert.AreEqual(_obj.User, entity.User);
 			Assert.AreEqual(_obj.Mod, entity.Mod);
-			Assert.AreEqual(_obj.Timestamp, entity.Timestamp);
+			Assert.AreEqual(_obj.Timestamp.ToString("yyyy-MM-ddThh:mm:ss"), entity.Timestamp.ToString("yyyy-MM-ddThh:mm:ss"));
 			Assert.AreEqual(_obj.Duration, entity.Duration);
-			Assert.AreEqual(_obj.LastCheck, entity.LastCheck);
+			Assert.AreEqual(_obj.LastCheck.ToString("yyyy-MM-ddThh:mm:ss"), entity.LastCheck.ToString("yyyy-MM-ddThh:mm:ss"));
 		}
 
 		private void TestDelete()

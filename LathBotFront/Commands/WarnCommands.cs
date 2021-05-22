@@ -139,7 +139,7 @@ namespace LathBotFront.Commands
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
 			MuteRepository mrepo = new MuteRepository(ReadConfig.configJson.ConnectionString);
 			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
-			bool userResult = urepo.GetIdByDcId(ctx.Member.Id, out int id);
+			bool userResult = urepo.GetIdByDcId(member.Id, out int id);
 			if (!userResult)
 			{
 				await ctx.RespondAsync("There was a problem reading a User, user has not been muted.");
@@ -158,7 +158,8 @@ namespace LathBotFront.Commands
 					User = id,
 					Mod = modId,
 					Duration = duration,
-					Timestamp = DateTime.Now
+					Timestamp = DateTime.Now,
+					LastCheck = DateTime.Now
 				};
 				bool result = mrepo.Create(ref mute);
 				if (!result)
@@ -195,7 +196,7 @@ namespace LathBotFront.Commands
 			DiscordEmbed embed = embedBuilder.Build();
 			await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", embed);
 			DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-			await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+			//await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
 		}
 
 		[Command("unmute")]

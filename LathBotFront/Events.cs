@@ -445,7 +445,7 @@ namespace LathBotFront
 
 		internal async static void TimerTick(object sender, ElapsedEventArgs e)
 		{
-			await OnTimerMethods.PardonWarns();
+			//await OnTimerMethods.PardonWarns();
 
 			await OnTimerMethods.RemindMutes();
 		}

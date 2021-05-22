@@ -110,6 +110,7 @@ namespace LathBotFront
 
 		public async static Task RemindMutes()
 		{
+			Holder.Instance.WarnTimer.Stop();
 			MuteRepository repo = new MuteRepository(ReadConfig.configJson.ConnectionString);
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
 			bool result = repo.GetAll(out List<Mute> list);
@@ -120,7 +121,7 @@ namespace LathBotFront
 			}
 			foreach (var item in list)
 			{
-				if (item.Timestamp + TimeSpan.FromDays(item.Duration) >= DateTime.Now)
+				if (item.Timestamp + TimeSpan.FromDays(item.Duration) <= DateTime.Now)
 				{
 					result = urepo.Read(item.Mod, out User dbMod);
 					if (!result)
@@ -129,13 +130,13 @@ namespace LathBotFront
 						continue;
 					}
 					DiscordMember mod = await Holder.Instance.Lathland.GetMemberAsync(dbMod.DcID);
-					result = urepo.Read(item.Mod, out User dbUser);
+					result = urepo.Read(item.User, out User dbUser);
 					if (!result)
 					{
 						_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error getting a mod from the database.");
 						continue;
 					}
-					DiscordMember user = await Holder.Instance.Lathland.GetMemberAsync(dbMod.DcID);
+					DiscordMember user = await Holder.Instance.Lathland.GetMemberAsync(dbUser.DcID);
 					if (user.Roles.Contains(Holder.Instance.Lathland.GetRole(701446136208293969)) && DateTime.Now - item.LastCheck > TimeSpan.FromHours(24))
 					{
 						item.LastCheck = DateTime.Now;
@@ -145,16 +146,16 @@ namespace LathBotFront
 							_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error updating a Mutes last timestamp.");
 							continue;
 						}
-						await mod.SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}) you muted at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration}, is now muted for {DateTime.Now - item.Timestamp} days." +
+						await mod.SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}) you muted at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration} days, is now muted for {(DateTime.Now - item.Timestamp):dd} days.\n" +
 							$"You will be reminded again tomorrow.");
 						if ((item.Duration < 8 && (item.Timestamp + TimeSpan.FromDays(item.Duration + 2)) < DateTime.Now) || 
 							(item.Duration > 7 && (item.Timestamp + TimeSpan.FromDays(item.Duration + 1)) < DateTime.Now) ||
 							(item.Duration == 14 && (item.Timestamp + TimeSpan.FromDays(item.Duration)) < DateTime.Now))
 						{
-							await Holder.Instance.Lathland.GetChannel(722905404354592900).SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}), muted by {mod.DisplayName}#{mod.Discriminator} ({mod.Id}) at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration}, is now muted for {DateTime.Now - item.Timestamp} days.");
+							await Holder.Instance.Lathland.GetChannel(722905404354592900).SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}), muted by {mod.DisplayName}#{mod.Discriminator} ({mod.Id}) at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration} days, is now muted for {(DateTime.Now - item.Timestamp):dd} days.");
 						}
 					}
-					else
+					else if (!user.Roles.Contains(Holder.Instance.Lathland.GetRole(701446136208293969)))
 					{
 						result = repo.Delete(item.Id);
 						if (!result)
@@ -165,6 +166,7 @@ namespace LathBotFront
 					}
 				}
 			}
+			Holder.Instance.WarnTimer.Start();
 		}
 	}
 }
