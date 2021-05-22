@@ -196,7 +196,7 @@ namespace LathBotFront.Commands
 			DiscordEmbed embed = embedBuilder.Build();
 			await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", embed);
 			DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-			//await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+			await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
 		}
 
 		[Command("unmute")]
@@ -250,7 +250,7 @@ namespace LathBotFront.Commands
 					bool updateResult = repo.Update(audit);
 					if (!updateResult)
 					{
-						await ctx.RespondAsync("There was a problem reading to th Audit table");
+						await ctx.RespondAsync("There was a problem reading to the Audit table");
 					}
 				}
 			}
