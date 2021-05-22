@@ -12,6 +12,7 @@ using DSharpPlus.Interactivity.Extensions;
 using LathBotBack;
 using LathBotBack.Config;
 using LathBotFront.Commands;
+using System.Net.WebSockets;
 
 namespace LathBotFront
 {
@@ -132,7 +133,17 @@ namespace LathBotFront
 
 			LavalinkExtension lavalink = Client.UseLavalink();
 
-			return await lavalink.ConnectAsync(lavalinkConfig);
+			LavalinkNodeConnection res = null;
+			try
+			{
+				res = await lavalink.ConnectAsync(lavalinkConfig);
+			}
+			catch (WebSocketException e)
+			{
+				Holder.Instance.Logger.Log("Failed to start connection with Lavalink server:\n" + e.Message);
+			}
+
+			return res;
 		}
 	}
 }

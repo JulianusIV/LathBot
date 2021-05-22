@@ -1,35 +1,36 @@
-﻿using System;
+﻿using LathBotBack.Base;
+using LathBotBack.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
-using LathBotBack.Base;
-using LathBotBack.Models;
-
 namespace LathBotBack.Repos
 {
-	public class ModRepository : RepositoryBase
+	public class MuteRepository : RepositoryBase
 	{
-		public ModRepository(string connectionString) : base(connectionString) { }
+		public MuteRepository(string connectionString) : base(connectionString) { }
 
-		public bool GetAll(out List<Mod> list)
+		public bool GetAll(out List<Mute> list)
 		{
 			bool result = false;
-			list = null;
+			list = new List<Mute>();
 
 			try
 			{
-				DbCommand.CommandText = "SELECT * FROM Mods;";
+				DbCommand.CommandText = "SELECT * FROM Mutes;";
 				DbCommand.Parameters.Clear();
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
-				list = new List<Mod>();
 				while (reader.Read())
 				{
-					list.Add(new Mod
+					list.Add(new Mute
 					{
 						Id = (int)reader["Id"],
-						DbId = (int)reader["ModDbId"],
-						Timezone = (string)reader["Timezone"]
+						User = (int)reader["UserDbId"],
+						Mod = (int)reader["ModDbId"],
+						Timestamp = (DateTime)reader["MuteTimestamp"],
+						Duration = (int)reader["MuteDuration"],
+						LastCheck = (DateTime)reader["Lastcheck"]
 					});
 				}
 				DbConnection.Close();
@@ -51,16 +52,19 @@ namespace LathBotBack.Repos
 			return result;
 		}
 
-		public bool Create(ref Mod entity)
+		public bool Create(ref Mute entity)
 		{
 			bool result = false;
 
 			try
 			{
-				DbCommand.CommandText = "INSERT INTO Mods (ModDbId, Timezone) OUTPUT INSERTED.Id VALUES (@dbid, @tz);";
+				DbCommand.CommandText = "INSERT INTO Mutes (UserDbId, ModDbId, MuteTimestamp, MuteDuration, Lastcheck) OUTPUT INSERTED.Id VALUES (@user, @mod, @time, @duration, @lastcheck);";
 				DbCommand.Parameters.Clear();
-				DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
-				DbCommand.Parameters.AddWithValue("tz", entity.Timezone);
+				DbCommand.Parameters.AddWithValue("user", entity.User);
+				DbCommand.Parameters.AddWithValue("mod", entity.Mod);
+				DbCommand.Parameters.AddWithValue("time", entity.Timestamp);
+				DbCommand.Parameters.AddWithValue("duration", entity.Duration);
+				DbCommand.Parameters.AddWithValue("lastcheck", entity.LastCheck);
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
 				reader.Read();
@@ -84,24 +88,27 @@ namespace LathBotBack.Repos
 			return result;
 		}
 
-		public bool Read(int id, out Mod entity)
+		public bool Read(int id, out Mute entity)
 		{
 			bool result = false;
 			entity = null;
 
 			try
 			{
-				DbCommand.CommandText = "SELECT * FROM Mods WHERE Id = @id;";
+				DbCommand.CommandText = "SELECT * FROM Mutes WHERE Id = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
 				reader.Read();
-				entity = new Mod
+				entity = new Mute
 				{
 					Id = id,
-					DbId = (int)reader["ModDbId"],
-					Timezone = (string)reader["Timezone"]
+					User = (int)reader["UserDbId"],
+					Mod = (int)reader["ModDbId"],
+					Timestamp = (DateTime)reader["MuteTimestamp"],
+					Duration = (int)reader["MuteDuration"],
+					LastCheck = (DateTime)reader["Lastcheck"]
 				};
 				DbConnection.Close();
 
@@ -122,16 +129,19 @@ namespace LathBotBack.Repos
 			return result;
 		}
 
-		public bool Update(Mod entity)
+		public bool Update(Mute entity)
 		{
 			bool result = false;
 
 			try
 			{
-				DbCommand.CommandText = "UPDATE Mods SET ModDbId = @dbid, Timezone = @tz WHERE Id = @id;";
+				DbCommand.CommandText = "UPDATE Mutes SET UserDbId = @user, ModDbId = @mod, MuteTimestamp = @time, MuteDuration = @duration, Lastcheck = @lastcheck WHERE Id = @id;";
 				DbCommand.Parameters.Clear();
-				DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
-				DbCommand.Parameters.AddWithValue("tz", entity.Timezone);
+				DbCommand.Parameters.AddWithValue("user", entity.User);
+				DbCommand.Parameters.AddWithValue("mod", entity.Mod);
+				DbCommand.Parameters.AddWithValue("time", entity.Timestamp);
+				DbCommand.Parameters.AddWithValue("duration", entity.Duration);
+				DbCommand.Parameters.AddWithValue("lastcheck", entity.LastCheck);
 				DbCommand.Parameters.AddWithValue("id", entity.Id);
 				DbConnection.Open();
 				DbCommand.ExecuteNonQuery();
@@ -160,7 +170,7 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "DELETE FROM Mods WHERE Id = @id;";
+				DbCommand.CommandText = "DELETE FROM Mutes WHERE Id = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
 				DbConnection.Open();
