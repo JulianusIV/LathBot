@@ -10,6 +10,7 @@ using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Logging;
+using LathBotBack.Enums;
 
 namespace LathBotBack
 {
@@ -74,6 +75,7 @@ namespace LathBotBack
 		public DateTime StartTime { get; set; }
 
 		public Dictionary<DiscordGuild, List<LavalinkTrack>> Queues;
+		public Dictionary<DiscordGuild, Repeaters> Repeats;
 
 		public DiscordGuild Lathland { get; private set; }
 

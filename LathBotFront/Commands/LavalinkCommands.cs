@@ -11,6 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity.Extensions;
 
 using LathBotBack;
+using LathBotBack.Enums;
 
 namespace LathBotFront.Commands
 {
@@ -373,6 +374,38 @@ namespace LathBotFront.Commands
             await conn.StopAsync();
         }
 
+        [Command("repeat")]
+        [Description("")]
+        public async Task Repeat(CommandContext ctx, [RemainingText] string mode)
+		{
+			if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
+			{
+                await ctx.RespondAsync("You are not in a vc.");
+                return;
+			}
+            LavalinkNodeConnection node = ctx.Client.GetLavalink().ConnectedNodes.Values.First();
+            LavalinkGuildConnection conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
+            if (conn == null)
+            {
+                await ctx.RespondAsync("Lavalink not connected");
+                return;
+            }
+            if (conn.CurrentState.CurrentTrack == null)
+            {
+                await ctx.RespondAsync("Nothing playing");
+                return;
+            }
+            await ctx.TriggerTypingAsync();
+			var repeatMode = mode switch
+			{
+				string a when a.ToLower().Contains("all") => Repeaters.all,
+				string b when b.ToLower().Contains("single") => Repeaters.single,
+				_ => Repeaters.all,
+			};
+			Holder.Instance.Repeats.Remove(ctx.Guild);
+            Holder.Instance.Repeats.Add(ctx.Guild, repeatMode);
+		}
+
         [Command("pause")]
         [Description("Pause playback")]
         public async Task Pause(CommandContext ctx)
@@ -426,11 +459,16 @@ namespace LathBotFront.Commands
         [Command("stop")]
         [Aliases("leave")]
         [Description("Stop playback and leave channel")]
-        [RequireRoles(RoleCheckMode.Any, "Bot Management", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Plague Guard (Mods)")]
+        //[RequireRoles(RoleCheckMode.Any, "Bot Management", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Plague Guard (Mods)")]
         public async Task Stop(CommandContext ctx)
         {
             LavalinkNodeConnection node = ctx.Client.GetLavalink().ConnectedNodes.Values.First();
             LavalinkGuildConnection conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
+			if (ctx.Member.VoiceState.Channel != conn.Channel)
+			{
+                await ctx.RespondAsync("You are not in a VC with me.");
+                return;
+			}
             if (conn == null)
             {
                 await ctx.RespondAsync("Lavalink not connected");
