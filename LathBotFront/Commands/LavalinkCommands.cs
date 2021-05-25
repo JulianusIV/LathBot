@@ -405,7 +405,7 @@ namespace LathBotFront.Commands
 
 		[Command("repeatmode")]
 		[Description("Repeat one or all tracks of current queue.")]
-		public async Task RepeatMode(CommandContext ctx, [RemainingText][Description("Repeatmode (\"single\" or \"all\")")] string mode)
+		public async Task RepeatMode(CommandContext ctx, [RemainingText][Description("Repeatmode (\"single\", \"all\" or \"off\")")] string mode)
 		{
 			if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
 			{

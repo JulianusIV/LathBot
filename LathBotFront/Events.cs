@@ -428,7 +428,7 @@ namespace LathBotFront
 					}
 					return;
 				}
-				if (Holder.Instance.Queues?[sender.Guild]?.Count != 0 && Holder.Instance.Queues?[sender.Guild]?.Count != null)
+				else if (Holder.Instance.Queues?[sender.Guild]?.Count != 0 && Holder.Instance.Queues?[sender.Guild]?.Count != null)
 				{
 					await sender.PlayAsync(Holder.Instance.Queues[sender.Guild].First());
 					DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
