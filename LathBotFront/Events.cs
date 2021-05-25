@@ -409,7 +409,7 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				if (Holder.Instance.Repeats[sender.Guild] == Repeaters.single)
+				if (Holder.Instance.Repeats?[sender.Guild] == Repeaters.single)
 				{
 					await sender.PlayAsync(e.Track);
 					return;

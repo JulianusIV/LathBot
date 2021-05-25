@@ -342,7 +342,11 @@ namespace LathBotFront.Commands
             {
                 Title = "Playing: ",
                 Description = "Showing currently playing song",
-                Color = DiscordColor.Red
+                Color = DiscordColor.Red,
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+				{
+                    Text = $"Repeat: {Holder.Instance.Repeats[ctx.Guild]}"
+				}
             };
             builder.AddField($"1: Channel: {conn.CurrentState.CurrentTrack.Author}",
                 $"[{conn.CurrentState.CurrentTrack.Title}]({conn.CurrentState.CurrentTrack.Uri}) - {conn.CurrentState.CurrentTrack.Length}");
@@ -374,9 +378,9 @@ namespace LathBotFront.Commands
             await conn.StopAsync();
         }
 
-        [Command("repeat")]
+        [Command("repeatmode")]
         [Description("Repeat one or all tracks of current queue.")]
-        public async Task Repeat(CommandContext ctx, [RemainingText][Description("Repeatmode (\"single\" or \"all\")")] string mode)
+        public async Task RepeatMode(CommandContext ctx, [RemainingText][Description("Repeatmode (\"single\" or \"all\")")] string mode)
 		{
 			if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
 			{
@@ -400,6 +404,7 @@ namespace LathBotFront.Commands
 			{
 				string a when a.ToLower().Contains("all") => Repeaters.all,
 				string b when b.ToLower().Contains("single") => Repeaters.single,
+				string b when b.ToLower().Contains("off") => Repeaters.off,
 				_ => Repeaters.all,
 			};
 			Holder.Instance.Repeats.Remove(ctx.Guild);
