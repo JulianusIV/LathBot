@@ -412,6 +412,20 @@ namespace LathBotFront
 				if (Holder.Instance.Repeats?[sender.Guild] == Repeaters.single)
 				{
 					await sender.PlayAsync(e.Track);
+					DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+					{
+						Title = "Now playing:",
+						Description = $"[{e.Track.Title}]({e.Track.Uri})",
+						Color = DiscordColor.Red
+					};
+					try
+					{
+						await sender.Guild.GetChannel(788102512455450654).SendMessageAsync(embedBuilder.Build());
+					}
+					catch (NullReferenceException)
+					{
+						await sender.Guild.GetChannel(512370308976607250).SendMessageAsync(embedBuilder.Build());
+					}
 					return;
 				}
 				if (Holder.Instance.Queues?[sender.Guild]?.Count != 0 && Holder.Instance.Queues?[sender.Guild]?.Count != null)
@@ -424,11 +438,11 @@ namespace LathBotFront
 						Color = DiscordColor.Red
 					};
 
+					Holder.Instance.Queues[sender.Guild].RemoveAt(Holder.Instance.Queues[sender.Guild].IndexOf(Holder.Instance.Queues[sender.Guild].First()));
 					if (Holder.Instance.Repeats[sender.Guild] == Repeaters.all)
 					{
-						Holder.Instance.Queues[sender.Guild].Add(Holder.Instance.Queues[sender.Guild].First());
+						Holder.Instance.Queues[sender.Guild].Add(e.Track);
 					}
-					Holder.Instance.Queues[sender.Guild].RemoveAt(Holder.Instance.Queues[sender.Guild].IndexOf(Holder.Instance.Queues[sender.Guild].First()));
 
 					try
 					{
@@ -438,6 +452,25 @@ namespace LathBotFront
 					{
 						await sender.Guild.GetChannel(512370308976607250).SendMessageAsync(embedBuilder.Build());
 					}
+				}
+				else if (Holder.Instance.Repeats[sender.Guild] != Repeaters.off)
+				{
+					await sender.PlayAsync(e.Track);
+					DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+					{
+						Title = "Now playing:",
+						Description = $"[{e.Track.Title}]({e.Track.Uri})",
+						Color = DiscordColor.Red
+					};
+					try
+					{
+						await sender.Guild.GetChannel(788102512455450654).SendMessageAsync(embedBuilder.Build());
+					}
+					catch (NullReferenceException)
+					{
+						await sender.Guild.GetChannel(512370308976607250).SendMessageAsync(embedBuilder.Build());
+					}
+					return;
 				}
 				else
 				{

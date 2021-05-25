@@ -1,3 +1,24 @@
 05/12/2021 20:42:18:
 Could not find a suitable overload for the command.
    at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/25/2021 17:23:20:
+Input string was not in a correct format.
+   at System.Number.ThrowOverflowOrFormatException(ParsingStatus status, TypeCode type)
+   at System.Number.ParseInt32(ReadOnlySpan`1 value, NumberStyles styles, NumberFormatInfo info)
+   at System.Int32.Parse(String s)
+   at LathBotFront.Commands.LavalinkCommands.Play(CommandContext ctx, String search) in D:\Libraries\Documents\GitHub\LathBot\LathBotFront\Commands\LavalinkCommands.cs:line 61
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/25/2021 17:32:58:
+Input string was not in a correct format.
+   at System.Number.ThrowOverflowOrFormatException(ParsingStatus status, TypeCode type)
+   at System.Number.ParseInt32(ReadOnlySpan`1 value, NumberStyles styles, NumberFormatInfo info)
+   at System.Int32.Parse(String s)
+   at LathBotFront.Commands.LavalinkCommands.Play(CommandContext ctx, String search) in D:\Libraries\Documents\GitHub\LathBot\LathBotFront\Commands\LavalinkCommands.cs:line 61
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/25/2021 17:53:52:
+Specified command was not found.
+
+05/25/2021 17:57:18:
+Object reference not set to an instance of an object.
+   at LathBotFront.Commands.LavalinkCommands.Stop(CommandContext ctx) in D:\Libraries\Documents\GitHub\LathBot\LathBotFront\Commands\LavalinkCommands.cs:line 497
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
