@@ -366,7 +366,7 @@ namespace LathBotFront
 					return;
 				if (e.Before.Channel == e.Guild.GetMemberAsync(sender.CurrentUser.Id).Result.VoiceState.Channel)
 				{
-					foreach (DiscordMember member in e.After.Channel.Users)
+					foreach (DiscordMember member in e.Guild.GetMemberAsync(sender.CurrentUser.Id).Result.VoiceState.Channel.Users)
 					{
 						if (!member.IsBot)
 						{
