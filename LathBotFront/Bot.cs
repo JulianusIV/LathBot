@@ -128,7 +128,8 @@ namespace LathBotFront
 			{
 				Password = "youshallnotpass",
 				RestEndpoint = endpoint,
-				SocketEndpoint = endpoint
+				SocketEndpoint = endpoint,
+				SocketAutoReconnect = false
 			};
 
 			LavalinkExtension lavalink = Client.UseLavalink();
