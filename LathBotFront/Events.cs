@@ -98,7 +98,7 @@ namespace LathBotFront
 					return;
 				if (Holder.Instance.IsInDesignMode || !Holder.Instance.StartUpCompleted)
 					return;
-				if (e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)) && e.Channel.Id == 726046413816987709)
+				if (e.Channel.Id == 838088490704568341 && e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)))
 				{
 					string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
 					Regex rg = new Regex(pattern);

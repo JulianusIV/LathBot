@@ -89,14 +89,6 @@ namespace LathBotFront
 
 			//Register commands
 			Commands.RegisterCommands(Assembly.GetExecutingAssembly());
-			//Commands.RegisterCommands<EmbedCommands>();
-			//Commands.RegisterCommands<InfoCommands>();
-			//Commands.RegisterCommands<LavalinkCommands>();
-			//Commands.RegisterCommands<ReactionCommands>();
-			//Commands.RegisterCommands<RuleCommands>();
-			//Commands.RegisterCommands<TechnicalCommands>();
-			//Commands.RegisterCommands<WarnCommands>();
-			//Commands.RegisterCommands<AuditCommands>();
 
 			//Register command events
 			Commands.CommandErrored += Events.CommandErrored;
