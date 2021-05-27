@@ -13,6 +13,7 @@ using LathBotBack;
 using LathBotBack.Config;
 using LathBotFront.Commands;
 using System.Net.WebSockets;
+using System.Reflection;
 
 namespace LathBotFront
 {
@@ -87,14 +88,15 @@ namespace LathBotFront
 			Commands = Client.UseCommandsNext(commandsConfig);
 
 			//Register commands
-			Commands.RegisterCommands<EmbedCommands>();
-			Commands.RegisterCommands<InfoCommands>();
-			Commands.RegisterCommands<LavalinkCommands>();
-			Commands.RegisterCommands<ReactionCommands>();
-			Commands.RegisterCommands<RuleCommands>();
-			Commands.RegisterCommands<TechnicalCommands>();
-			Commands.RegisterCommands<WarnCommands>();
-			Commands.RegisterCommands<AuditCommands>();
+			Commands.RegisterCommands(Assembly.GetExecutingAssembly());
+			//Commands.RegisterCommands<EmbedCommands>();
+			//Commands.RegisterCommands<InfoCommands>();
+			//Commands.RegisterCommands<LavalinkCommands>();
+			//Commands.RegisterCommands<ReactionCommands>();
+			//Commands.RegisterCommands<RuleCommands>();
+			//Commands.RegisterCommands<TechnicalCommands>();
+			//Commands.RegisterCommands<WarnCommands>();
+			//Commands.RegisterCommands<AuditCommands>();
 
 			//Register command events
 			Commands.CommandErrored += Events.CommandErrored;

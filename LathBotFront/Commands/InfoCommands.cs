@@ -12,6 +12,7 @@ using LathBotBack.Repos;
 using LathBotBack.Config;
 using System.Collections.Generic;
 using LathBotBack.Models;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace LathBotFront.Commands
 {
@@ -30,7 +31,9 @@ namespace LathBotFront.Commands
 				Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = ctx.Client.CurrentUser.AvatarUrl }
 			};
 			discordEmbed.AddField("Language", "C# using Visual Studio 2019");
-			discordEmbed.AddField("Library", "DSharpPlus, Version 4.0.0-nightly-00801");
+			discordEmbed.AddField("Library", "DSharpPlus, Version:" + ctx.Client.VersionString);
+			discordEmbed.AddField(".NET Core Version: ", PlatformServices.Default.Application.RuntimeFramework.Version.ToString(2));
+			discordEmbed.AddField("Repository", "[GitHub](https://github.com/JulianusIV/LathBot)");
 			TimeSpan uptime = DateTime.Now - Holder.Instance.StartTime;
 			discordEmbed.AddField("Uptime", $"Bot has been running since {uptime}");
 			await ctx.Channel.SendMessageAsync(discordEmbed.Build()).ConfigureAwait(false);
