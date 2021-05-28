@@ -1,5 +1,6 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
+using LathBotBack.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -39,7 +40,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -71,7 +72,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -113,7 +114,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -149,7 +150,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -190,7 +191,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -225,7 +226,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -255,7 +256,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{

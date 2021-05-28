@@ -2,17 +2,18 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using Microsoft.Extensions.PlatformAbstractions;
 
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-using LathBotBack;
 using LathBotBack.Repos;
 using LathBotBack.Config;
-using System.Collections.Generic;
 using LathBotBack.Models;
-using Microsoft.Extensions.PlatformAbstractions;
+using LathBotBack.Services;
 
 namespace LathBotFront.Commands
 {
@@ -34,7 +35,7 @@ namespace LathBotFront.Commands
 			discordEmbed.AddField("Library", "DSharpPlus, Version:" + ctx.Client.VersionString);
 			discordEmbed.AddField(".NET Core Version: ", PlatformServices.Default.Application.RuntimeFramework.Version.ToString(2));
 			discordEmbed.AddField("Repository", "[GitHub](https://github.com/JulianusIV/LathBot)");
-			TimeSpan uptime = DateTime.Now - Holder.Instance.StartTime;
+			TimeSpan uptime = DateTime.Now - StartupService.Instance.StartTime;
 			discordEmbed.AddField("Uptime", $"Bot has been running since {uptime}");
 			await ctx.Channel.SendMessageAsync(discordEmbed.Build()).ConfigureAwait(false);
 		}

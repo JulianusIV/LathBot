@@ -19,6 +19,8 @@ using LathBotBack.Models;
 using LathBotBack.Config;
 using LathBotBack.Logging;
 using LathBotBack.Enums;
+using LathBotBack.Base;
+using LathBotBack.Services;
 
 namespace LathBotFront
 {
@@ -39,9 +41,7 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				Holder.Instance.Init(sender);
-
-				Holder.Instance.StartUpCompleted = true;
+				BaseService<SystemService>.Instance.Init(sender);
 
 				int added = 0;
 				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
@@ -49,36 +49,36 @@ namespace LathBotFront
 				bool result = repo.GetAll(out List<User> list);
 				if (!result)
 				{
-					_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error getting all users in database.");
+					_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting all users in database.");
 					return;
 				}
-				IReadOnlyCollection<DiscordMember> allMembers = await Holder.Instance.Lathland.GetAllMembersAsync();
+				IReadOnlyCollection<DiscordMember> allMembers = await DiscordObjectService.Instance.Lathland.GetAllMembersAsync();
 				IEnumerable<DiscordMember> toAdd = allMembers.Where(x => !list.Any(y => y.DcID == x.Id));
 				foreach (var item in toAdd)
 				{
 					User entity = new User { DcID = item.Id };
-					DiscordMember mem = await Holder.Instance.Lathland.GetMemberAsync(item.Id);
+					DiscordMember mem = await DiscordObjectService.Instance.Lathland.GetMemberAsync(item.Id);
 					result = repo.Create(ref entity);
 					if (!result)
 					{
-						_ = Holder.Instance.ErrorLogChannel.SendMessageAsync($"Error adding user {item.DisplayName}#{item.Discriminator} ({item.Id}) to the database");
+						_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync($"Error adding user {item.DisplayName}#{item.Discriminator} ({item.Id}) to the database");
 						continue;
 					}
-					_ = Holder.Instance.TimerChannel.SendMessageAsync($"Added user {mem.DisplayName}#{mem.Discriminator} ({mem.Id}) on startup");
+					_ = DiscordObjectService.Instance.TimerChannel.SendMessageAsync($"Added user {mem.DisplayName}#{mem.Discriminator} ({mem.Id}) on startup");
 					added++;
 				}
 				bool res = repo.CountAll(out int allInDb);
 				string strAllInDb;
 				if (!res)
 				{
-					await Holder.Instance.ErrorLogChannel.SendMessageAsync("Error counting all users in database");
+					await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error counting all users in database");
 					strAllInDb = "unknown";
 				}
 				else
 				{
 					strAllInDb = allInDb.ToString();
 				}
-				await Holder.Instance.TimerChannel.SendMessageAsync(added > 0 ? $"Added {added} Users, {strAllInDb} entries in database, {Holder.Instance.Lathland.MemberCount} members in guild." : "Startup completed");
+				await DiscordObjectService.Instance.TimerChannel.SendMessageAsync(added > 0 ? $"Added {added} Users, {strAllInDb} entries in database, {DiscordObjectService.Instance.Lathland.MemberCount} members in guild." : "Startup completed");
 			});
 			return Task.CompletedTask;
 		}
@@ -96,7 +96,7 @@ namespace LathBotFront
 					return;
 				if (e.Channel.IsPrivate)
 					return;
-				if (Holder.Instance.IsInDesignMode || !Holder.Instance.StartUpCompleted)
+				if (StartupService.Instance.IsInDesignMode || !StartupService.Instance.StartUpCompleted)
 					return;
 				if (e.Channel.Id == 838088490704568341 && e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)))
 				{
@@ -108,18 +108,18 @@ namespace LathBotFront
 						await e.Channel.SendMessageAsync("No links allowed in here.");
 					}
 				}
-				if (e.Channel.Id == Holder.Instance.QuestionsChannel.Id || e.Channel.Id == Holder.Instance.StaffChannel.Id)
+				if (e.Channel.Id == DiscordObjectService.Instance.QuestionsChannel.Id || e.Channel.Id == DiscordObjectService.Instance.StaffChannel.Id)
 				{
 					await e.Channel.TriggerTypingAsync();
-					if (e.Channel.Id == Holder.Instance.QuestionsChannel.Id)
+					if (e.Channel.Id == DiscordObjectService.Instance.QuestionsChannel.Id)
 					{
-						await Holder.Instance.LathQuestions.DeleteAsync();
-						Holder.Instance.LathQuestions = await Holder.Instance.QuestionsChannel.SendMessageAsync(Holder.Instance.LathQuestionsEmbed);
+						await DiscordObjectService.Instance.LathQuestions.DeleteAsync();
+						DiscordObjectService.Instance.LathQuestions = await DiscordObjectService.Instance.QuestionsChannel.SendMessageAsync(DiscordObjectService.Instance.LathQuestionsEmbed);
 					}
-					else if (e.Channel.Id == Holder.Instance.StaffChannel.Id)
+					else if (e.Channel.Id == DiscordObjectService.Instance.StaffChannel.Id)
 					{
-						await Holder.Instance.StaffQuestions.DeleteAsync();
-						Holder.Instance.StaffQuestions = await Holder.Instance.StaffChannel.SendMessageAsync(Holder.Instance.StaffQuestionsEmbed);
+						await DiscordObjectService.Instance.StaffQuestions.DeleteAsync();
+						DiscordObjectService.Instance.StaffQuestions = await DiscordObjectService.Instance.StaffChannel.SendMessageAsync(DiscordObjectService.Instance.StaffQuestionsEmbed);
 					}
 				}
 			});
@@ -130,10 +130,8 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				if (!Holder.Instance.StartUpCompleted)
-				{
+				if (!StartupService.Instance.StartUpCompleted)
 					return;
-				}
 				if (e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)) && e.Channel.Id == 726046413816987709)
 				{
 					string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
@@ -152,7 +150,7 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				if (!Holder.Instance.StartUpCompleted)
+				if (!StartupService.Instance.StartUpCompleted)
 				{
 					return;
 				}
@@ -160,7 +158,7 @@ namespace LathBotFront
 				bool result = repo.ExistsDcId(e.Member.Id, out bool exists);
 				if (!result)
 				{
-					await Holder.Instance.ErrorLogChannel.SendMessageAsync($"Error adding member {e.Member.DisplayName}#{e.Member.Discriminator} ({e.Member.Id})");
+					await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync($"Error adding member {e.Member.DisplayName}#{e.Member.Discriminator} ({e.Member.Id})");
 					return;
 				}
 				if (!exists)
@@ -169,10 +167,10 @@ namespace LathBotFront
 					result = repo.Create(ref user);
 					if (!result)
 					{
-						await Holder.Instance.ErrorLogChannel.SendMessageAsync($"Error adding member {e.Member.DisplayName}#{e.Member.Discriminator} ({e.Member.Id})");
+						await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync($"Error adding member {e.Member.DisplayName}#{e.Member.Discriminator} ({e.Member.Id})");
 						return;
 					}
-					await Holder.Instance.TimerChannel.SendMessageAsync($"Added user {e.Member.DisplayName}#{e.Member.Discriminator} ({e.Member.Id}) on join");
+					await DiscordObjectService.Instance.TimerChannel.SendMessageAsync($"Added user {e.Member.DisplayName}#{e.Member.Discriminator} ({e.Member.Id}) on join");
 				}
 			});
 			return Task.CompletedTask;
@@ -182,7 +180,7 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				if (!Holder.Instance.StartUpCompleted)
+				if (!StartupService.Instance.StartUpCompleted)
 				{
 					return;
 				}
@@ -257,9 +255,9 @@ namespace LathBotFront
 					if (e.Message.Timestamp < DateTime.Now - TimeSpan.FromHours(2))
 						return;
 					var reacts = await e.Message.GetReactionsAsync(DiscordEmoji.FromGuildEmote(sender, 723564837338349578));
-					if (reacts.Count >= Holder.Instance.GoodGuysReactionCount)
+					if (reacts.Count >= GoodGuysService.Instance.GoodGuysReactionCount)
 					{
-						IReadOnlyList<DiscordMessage> messages = await Holder.Instance.GoodGuysChannel.GetMessagesAsync(20);
+						IReadOnlyList<DiscordMessage> messages = await DiscordObjectService.Instance.GoodGuysChannel.GetMessagesAsync(20);
 
 						foreach (DiscordMessage entry in messages)
 							if (entry.Content.Contains(e.Message.Id.ToString()))
@@ -281,7 +279,7 @@ namespace LathBotFront
 						{
 							discordEmbed.ImageUrl = e.Message.Attachments[0].Url;
 						}
-						await Holder.Instance.GoodGuysChannel.SendMessageAsync(e.Message.Id.ToString(), discordEmbed.Build()).ConfigureAwait(false);
+						await DiscordObjectService.Instance.GoodGuysChannel.SendMessageAsync(e.Message.Id.ToString(), discordEmbed.Build()).ConfigureAwait(false);
 					}
 				}
 			});
@@ -292,7 +290,7 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				if (!Holder.Instance.StartUpCompleted)
+				if (!StartupService.Instance.StartUpCompleted)
 				{
 					return;
 				}
@@ -358,7 +356,7 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				if (!Holder.Instance.StartUpCompleted)
+				if (!StartupService.Instance.StartUpCompleted)
 				{
 					return;
 				}
@@ -375,8 +373,8 @@ namespace LathBotFront
 					}
 					LavalinkNodeConnection node = sender.GetLavalink().ConnectedNodes.Values.First();
 					LavalinkGuildConnection conn = node.GetGuildConnection(e.Guild);
-					if (Holder.Instance.Queues != null && Holder.Instance.Queues.ContainsKey(e.Guild))
-						Holder.Instance.Queues.Remove(e.Guild);
+					if (LavalinkService.Instance.Queues != null && LavalinkService.Instance.Queues.ContainsKey(e.Guild))
+						LavalinkService.Instance.Queues.Remove(e.Guild);
 					await conn.StopAsync();
 					await conn.DisconnectAsync();
 					e.Handled = true;
@@ -390,7 +388,7 @@ namespace LathBotFront
 			_ = Task.Run(async () =>
 			{
 				await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine).ConfigureAwait(false);
-				await Holder.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace).ConfigureAwait(false);
+				await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace).ConfigureAwait(false);
 			});
 			return Task.CompletedTask;
 		}
@@ -400,7 +398,7 @@ namespace LathBotFront
 			_ = Task.Run(async () =>
 			{
 				await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine).ConfigureAwait(false);
-				await Holder.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace).ConfigureAwait(false);
+				await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace).ConfigureAwait(false);
 			});
 			return Task.CompletedTask;
 		}
@@ -409,7 +407,7 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				if (Holder.Instance.Repeats?[sender.Guild] == Repeaters.single)
+				if (LavalinkService.Instance.Repeats?[sender.Guild] == Repeaters.single)
 				{
 					await sender.PlayAsync(e.Track);
 					DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
@@ -428,20 +426,20 @@ namespace LathBotFront
 					}
 					return;
 				}
-				else if (Holder.Instance.Queues?[sender.Guild]?.Count != 0 && Holder.Instance.Queues?[sender.Guild]?.Count != null)
+				else if (LavalinkService.Instance.Queues?[sender.Guild]?.Count != 0 && LavalinkService.Instance.Queues?[sender.Guild]?.Count != null)
 				{
-					await sender.PlayAsync(Holder.Instance.Queues[sender.Guild].First());
+					await sender.PlayAsync(LavalinkService.Instance.Queues[sender.Guild].First());
 					DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 					{
 						Title = "Now playing:",
-						Description = $"[{Holder.Instance.Queues[sender.Guild].First().Title}]({Holder.Instance.Queues[sender.Guild].First().Uri})",
+						Description = $"[{LavalinkService.Instance.Queues[sender.Guild].First().Title}]({LavalinkService.Instance.Queues[sender.Guild].First().Uri})",
 						Color = DiscordColor.Red
 					};
 
-					Holder.Instance.Queues[sender.Guild].RemoveAt(Holder.Instance.Queues[sender.Guild].IndexOf(Holder.Instance.Queues[sender.Guild].First()));
-					if (Holder.Instance.Repeats[sender.Guild] == Repeaters.all)
+					LavalinkService.Instance.Queues[sender.Guild].RemoveAt(LavalinkService.Instance.Queues[sender.Guild].IndexOf(LavalinkService.Instance.Queues[sender.Guild].First()));
+					if (LavalinkService.Instance.Repeats[sender.Guild] == Repeaters.all)
 					{
-						Holder.Instance.Queues[sender.Guild].Add(e.Track);
+						LavalinkService.Instance.Queues[sender.Guild].Add(e.Track);
 					}
 
 					try
@@ -453,7 +451,7 @@ namespace LathBotFront
 						await sender.Guild.GetChannel(512370308976607250).SendMessageAsync(embedBuilder.Build());
 					}
 				}
-				else if (Holder.Instance.Repeats[sender.Guild] != Repeaters.off)
+				else if (LavalinkService.Instance.Repeats[sender.Guild] != Repeaters.off)
 				{
 					await sender.PlayAsync(e.Track);
 					DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
@@ -475,7 +473,7 @@ namespace LathBotFront
 				else
 				{
 					await sender.DisconnectAsync();
-					Holder.Instance.Queues.Remove(sender.Guild);
+					LavalinkService.Instance.Queues.Remove(sender.Guild);
 					try
 					{
 						await sender.Guild.GetChannel(788102512455450654).SendMessageAsync("Queue ended, leaving VC.");
@@ -498,7 +496,7 @@ namespace LathBotFront
 
 		internal static void OnLog(object sender, LoggingEventArgs e)
 		{
-			Holder.Instance.ErrorLogChannel.SendMessageAsync(e.Message);
+			DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Message);
 		}
 	}
 }

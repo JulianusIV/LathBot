@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 
 using LathBotBack.Base;
 using LathBotBack.Models;
+using LathBotBack.Services;
 
 namespace LathBotBack.Repos
 {
@@ -29,7 +30,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -67,7 +68,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -99,7 +100,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
@@ -129,7 +130,7 @@ namespace LathBotBack.Repos
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 			finally
 			{
