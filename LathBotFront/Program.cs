@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace LathBotFront
 {
 	public class Program
@@ -8,6 +10,10 @@ namespace LathBotFront
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 #pragma warning restore IDE0060 // Remove unused parameter
 		{
+			//10 second startup delay to wait for database because docker-compose is an asshole
+			Task.Delay(10000);
+
+			//Startup
 			Bot.Instance.RunAsync().GetAwaiter().GetResult();
 		}
 	}
