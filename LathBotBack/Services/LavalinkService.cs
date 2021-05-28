@@ -1,12 +1,11 @@
-﻿using DSharpPlus;
+﻿using System.Collections.Generic;
+
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
+
 using LathBotBack.Base;
 using LathBotBack.Enums;
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace LathBotBack.Services
 {

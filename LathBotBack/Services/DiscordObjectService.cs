@@ -1,9 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+
 using LathBotBack.Base;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LathBotBack.Services
 {
