@@ -110,7 +110,6 @@ namespace LathBotFront
 
 		public async static Task RemindMutes()
 		{
-			Holder.Instance.WarnTimer.Stop();
 			MuteRepository repo = new MuteRepository(ReadConfig.configJson.ConnectionString);
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
 			bool result = repo.GetAll(out List<Mute> list);
@@ -166,7 +165,6 @@ namespace LathBotFront
 					}
 				}
 			}
-			Holder.Instance.WarnTimer.Start();
 		}
 	}
 }
