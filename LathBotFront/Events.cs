@@ -41,8 +41,6 @@ namespace LathBotFront
 			{
 				Holder.Instance.Init(sender);
 
-				Holder.Instance.StartUpCompleted = true;
-
 				int added = 0;
 				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
 
