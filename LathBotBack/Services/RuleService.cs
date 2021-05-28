@@ -4,7 +4,7 @@ using LathBotBack.Models;
 
 namespace LathBotBack.Services
 {
-	class RuleService : BaseService<RuleService>
+	public class RuleService : BaseService<RuleService>
 	{
 		public static Rule[] rules;
 

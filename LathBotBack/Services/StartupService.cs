@@ -7,7 +7,7 @@ using System.Text;
 
 namespace LathBotBack.Services
 {
-	class StartupService : BaseService<StartupService>
+	public class StartupService : BaseService<StartupService>
 	{
 		public bool IsInDesignMode { get; private set; }
 		public bool StartUpCompleted = false;
