@@ -9,7 +9,7 @@ using LathBotBack.Enums;
 
 namespace LathBotBack.Services
 {
-	class LavalinkService : BaseService<LavalinkService>
+	public class LavalinkService : BaseService<LavalinkService>
 	{
 		public Dictionary<DiscordGuild, List<LavalinkTrack>> Queues;
 		public Dictionary<DiscordGuild, Repeaters> Repeats;

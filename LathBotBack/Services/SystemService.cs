@@ -7,7 +7,7 @@ using LathBotBack.Logging;
 
 namespace LathBotBack.Services
 {
-	class SystemService : BaseService<SystemService>
+	public class SystemService : BaseService<SystemService>
 	{
 		public Timer WarnTimer = new Timer(3600000);
 

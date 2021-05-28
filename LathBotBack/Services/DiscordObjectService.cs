@@ -5,7 +5,7 @@ using LathBotBack.Base;
 
 namespace LathBotBack.Services
 {
-	class DiscordObjectService : BaseService<DiscordObjectService>
+	public class DiscordObjectService : BaseService<DiscordObjectService>
 	{
 		public DiscordGuild Lathland { get; private set; }
 
