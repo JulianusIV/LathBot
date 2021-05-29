@@ -1343,7 +1343,7 @@ namespace LathBotFront.Commands
 			builder.WithComponents(components);
 			DiscordMessage message = await builder.SendAsync(ctx.Channel);
 			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
-			var interactivityResult = await interactivity.WaitForButtonAsync(message);
+			var interactivityResult = await interactivity.WaitForButtonAsync(message, user);
 
 			await message.DeleteAsync();
 			if (interactivityResult.Result.Id == "abort")

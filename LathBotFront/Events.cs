@@ -492,6 +492,11 @@ namespace LathBotFront
 			await OnTimerMethods.PardonWarns();
 
 			await OnTimerMethods.RemindMutes();
+
+			if (DateTime.Now.Hour > DateTime.Parse("2020-01-01 12:00:00").Hour)
+			{
+				await OnTimerMethods.DailyFacts();
+			}
 		}
 
 		internal static void OnLog(object sender, LoggingEventArgs e)

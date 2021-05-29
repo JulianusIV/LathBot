@@ -5,9 +5,11 @@ using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
 using LathBotBack.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace LathBotFront
@@ -167,5 +169,33 @@ namespace LathBotFront
 				}
 			}
 		}
+
+		public async static Task DailyFacts()
+		{
+			WebClient client = new WebClient();
+			string content = client.DownloadString("https://useless-facts.sameerkumar.website/api");
+
+			FactJsonObject configJson = JsonConvert.DeserializeObject<FactJsonObject>(content);
+
+			DiscordMessageBuilder builder = new DiscordMessageBuilder
+			{
+				Embed = new DiscordEmbedBuilder
+				{
+					Title = "Todays totally not useless fact:",
+					Description = configJson.Data,
+					Color = DiscordColor.Blurple
+				},
+				Content = DiscordObjectService.Instance.Lathland.GetRole(848307821703200828).Mention
+			};
+			builder.WithAllowedMentions(Mentions.All);
+
+			await DiscordObjectService.Instance.DailyFactsChannel.SendMessageAsync(builder);
+		}
+	}
+
+	class FactJsonObject
+	{
+		[JsonProperty("data")]
+		public string Data { get; set; }
 	}
 }
