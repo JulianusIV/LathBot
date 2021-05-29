@@ -12,6 +12,7 @@ using DSharpPlus.Interactivity.Extensions;
 
 using LathBotBack;
 using LathBotBack.Enums;
+using LathBotBack.Services;
 
 namespace LathBotFront.Commands
 {
@@ -59,9 +60,9 @@ namespace LathBotFront.Commands
 			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
 			var selection = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User);
 			LavalinkTrack track = loadResult.Tracks.ElementAt(int.Parse(selection.Result.Content) - 1);
-			if (Holder.Instance.Queues != null && Holder.Instance.Queues.ContainsKey(ctx.Guild))
+			if (LavalinkService.Instance.Queues != null && LavalinkService.Instance.Queues.ContainsKey(ctx.Guild))
 			{
-				Holder.Instance.Queues[ctx.Guild].Add(track);
+				LavalinkService.Instance.Queues[ctx.Guild].Add(track);
 				DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 				{
 					Title = "Added to playlist:",
@@ -72,15 +73,15 @@ namespace LathBotFront.Commands
 			}
 			else if (conn.CurrentState.CurrentTrack != null)
 			{
-				if (Holder.Instance.Queues == null)
+				if (LavalinkService.Instance.Queues == null)
 				{
-					Holder.Instance.Queues = new Dictionary<DiscordGuild, List<LavalinkTrack>>();
-					Holder.Instance.Repeats = new Dictionary<DiscordGuild, Repeaters>
+					LavalinkService.Instance.Queues = new Dictionary<DiscordGuild, List<LavalinkTrack>>();
+					LavalinkService.Instance.Repeats = new Dictionary<DiscordGuild, Repeaters>
 					{
 						{ ctx.Guild, Repeaters.off }
 					};
 				}
-				Holder.Instance.Queues.Add(ctx.Guild, new List<LavalinkTrack> { track });
+				LavalinkService.Instance.Queues.Add(ctx.Guild, new List<LavalinkTrack> { track });
 				DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 				{
 					Title = "Added to playlist:",
@@ -92,7 +93,7 @@ namespace LathBotFront.Commands
 			else
 			{
 				await conn.PlayAsync(track);
-				Holder.Instance.Repeats = new Dictionary<DiscordGuild, Repeaters>
+				LavalinkService.Instance.Repeats = new Dictionary<DiscordGuild, Repeaters>
 				{
 					{ ctx.Guild, Repeaters.off }
 				};
@@ -150,9 +151,9 @@ namespace LathBotFront.Commands
 			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
 			var selection = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User);
 			LavalinkTrack track = loadResult.Tracks.ElementAt(int.Parse(selection.Result.Content));
-			if (Holder.Instance.Queues.ContainsKey(ctx.Guild))
+			if (LavalinkService.Instance.Queues.ContainsKey(ctx.Guild))
 			{
-				Holder.Instance.Queues[ctx.Guild].Add(track);
+				LavalinkService.Instance.Queues[ctx.Guild].Add(track);
 				DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 				{
 					Title = "Added to playlist:",
@@ -163,15 +164,15 @@ namespace LathBotFront.Commands
 			}
 			else if (conn.CurrentState.CurrentTrack != null)
 			{
-				if (Holder.Instance.Queues == null)
+				if (LavalinkService.Instance.Queues == null)
 				{
-					Holder.Instance.Queues = new Dictionary<DiscordGuild, List<LavalinkTrack>>();
-					Holder.Instance.Repeats = new Dictionary<DiscordGuild, Repeaters>
+					LavalinkService.Instance.Queues = new Dictionary<DiscordGuild, List<LavalinkTrack>>();
+					LavalinkService.Instance.Repeats = new Dictionary<DiscordGuild, Repeaters>
 					{
 						{ ctx.Guild, Repeaters.off }
 					};
 				}
-				Holder.Instance.Queues.Add(ctx.Guild, new List<LavalinkTrack> { track });
+				LavalinkService.Instance.Queues.Add(ctx.Guild, new List<LavalinkTrack> { track });
 				DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 				{
 					Title = "Added to playlist:",
@@ -183,7 +184,7 @@ namespace LathBotFront.Commands
 			else
 			{
 				await conn.PlayAsync(track);
-				Holder.Instance.Repeats = new Dictionary<DiscordGuild, Repeaters>
+				LavalinkService.Instance.Repeats = new Dictionary<DiscordGuild, Repeaters>
 				{
 					{ ctx.Guild, Repeaters.off }
 				};
@@ -225,15 +226,15 @@ namespace LathBotFront.Commands
 
 			foreach (LavalinkTrack track in loadResult.Tracks)
 			{
-				if (Holder.Instance.Queues != null && Holder.Instance.Queues.ContainsKey(ctx.Guild))
-					Holder.Instance.Queues[ctx.Guild].Add(track);
+				if (LavalinkService.Instance.Queues != null && LavalinkService.Instance.Queues.ContainsKey(ctx.Guild))
+					LavalinkService.Instance.Queues[ctx.Guild].Add(track);
 				else if (conn.CurrentState.CurrentTrack != null)
 				{
-					Holder.Instance.Queues = new Dictionary<DiscordGuild, List<LavalinkTrack>>
+					LavalinkService.Instance.Queues = new Dictionary<DiscordGuild, List<LavalinkTrack>>
 					{
 						{ ctx.Guild, new List<LavalinkTrack> { track } }
 					};
-					Holder.Instance.Repeats = new Dictionary<DiscordGuild, Repeaters>
+					LavalinkService.Instance.Repeats = new Dictionary<DiscordGuild, Repeaters>
 					{
 						{ ctx.Guild, Repeaters.off }
 					};
@@ -276,12 +277,12 @@ namespace LathBotFront.Commands
 				return;
 			}
 			Random random = new Random();
-			for (int index = Holder.Instance.Queues[conn.Guild].Count; index > 0; index--)
+			for (int index = LavalinkService.Instance.Queues[conn.Guild].Count; index > 0; index--)
 			{
 				int rngRes = random.Next(0, index);
-				LavalinkTrack temp = Holder.Instance.Queues[conn.Guild][0];
-				Holder.Instance.Queues[conn.Guild][0] = Holder.Instance.Queues[conn.Guild][rngRes];
-				Holder.Instance.Queues[conn.Guild][rngRes] = temp;
+				LavalinkTrack temp = LavalinkService.Instance.Queues[conn.Guild][0];
+				LavalinkService.Instance.Queues[conn.Guild][0] = LavalinkService.Instance.Queues[conn.Guild][rngRes];
+				LavalinkService.Instance.Queues[conn.Guild][rngRes] = temp;
 			}
 		}
 
@@ -317,12 +318,12 @@ namespace LathBotFront.Commands
 			List<Page> pages = new List<Page>();
 			int index = 1;
 			int counter = 1;
-			if (!Holder.Instance.Queues.ContainsKey(conn.Guild))
+			if (!LavalinkService.Instance.Queues.ContainsKey(conn.Guild))
 			{
 				await ctx.RespondAsync(builder.Build());
 				return;
 			}
-			foreach (LavalinkTrack track in Holder.Instance.Queues[conn.Guild])
+			foreach (LavalinkTrack track in LavalinkService.Instance.Queues[conn.Guild])
 			{
 				index++;
 				counter++;
@@ -333,9 +334,9 @@ namespace LathBotFront.Commands
 					builder.ClearFields();
 					counter = 0;
 				}
-				else if (index == Holder.Instance.Queues[conn.Guild].Count + 1)
+				else if (index == LavalinkService.Instance.Queues[conn.Guild].Count + 1)
 				{
-					builder.WithFooter($"Repeat: {Holder.Instance.Repeats[ctx.Guild]}");
+					builder.WithFooter($"Repeat: {LavalinkService.Instance.Repeats[ctx.Guild]}");
 					pages.Add(new Page { Embed = builder.Build() });
 				}
 			}
@@ -370,7 +371,7 @@ namespace LathBotFront.Commands
 				Color = DiscordColor.Red,
 				Footer = new DiscordEmbedBuilder.EmbedFooter
 				{
-					Text = $"Repeat: {Holder.Instance.Repeats[ctx.Guild]}"
+					Text = $"Repeat: {LavalinkService.Instance.Repeats[ctx.Guild]}"
 				}
 			};
 			builder.AddField($"1: Channel: {conn.CurrentState.CurrentTrack.Author}",
@@ -432,8 +433,8 @@ namespace LathBotFront.Commands
 				string b when b.ToLower().Contains("off") => Repeaters.off,
 				_ => Repeaters.all,
 			};
-			Holder.Instance.Repeats?.Remove(ctx.Guild);
-			Holder.Instance.Repeats.Add(ctx.Guild, repeatMode);
+			LavalinkService.Instance.Repeats?.Remove(ctx.Guild);
+			LavalinkService.Instance.Repeats.Add(ctx.Guild, repeatMode);
 		}
 
 		[Command("pause")]
@@ -511,7 +512,7 @@ namespace LathBotFront.Commands
 			}
 			try
 			{
-				Holder.Instance.Queues.Remove(ctx.Guild);
+				LavalinkService.Instance.Queues.Remove(ctx.Guild);
 			}
 			catch { }
 			await conn.StopAsync();

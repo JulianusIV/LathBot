@@ -16,6 +16,7 @@ using LathBotBack;
 using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
+using LathBotBack.Services;
 
 namespace LathBotFront.Commands
 {
@@ -376,6 +377,11 @@ namespace LathBotFront.Commands
 				await ctx.RespondAsync("You cant ban someone higher or same rank as you!").ConfigureAwait(false);
 				return;
 			}
+			else if (string.IsNullOrEmpty(reason))
+			{
+				await ctx.RespondAsync("Please provide a reason");
+				return;
+			}
 			await ctx.Guild.BanMemberAsync(user.Id, reason: reason);
 			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
@@ -466,20 +472,20 @@ namespace LathBotFront.Commands
 
 				#region message
 				DiscordMessage message = await ctx.Channel.SendMessageAsync("```" +
-					$"Rule 1 {Holder.rules[0].RuleText} - {Holder.rules[0].MinPoints}-{Holder.rules[0].MaxPoints} Points\n" +
-					$"Rule 2 {Holder.rules[1].RuleText} - {Holder.rules[1].MinPoints}-{Holder.rules[1].MaxPoints} Points\n" +
-					$"Rule 3 {Holder.rules[2].RuleText} - {Holder.rules[2].MinPoints}-{Holder.rules[2].MaxPoints} Points\n" +
-					$"Rule 4 {Holder.rules[3].RuleText} - {Holder.rules[3].MinPoints}-{Holder.rules[3].MaxPoints} Points\n" +
-					$"Rule 5 {Holder.rules[4].RuleText} - {Holder.rules[4].MinPoints}-{Holder.rules[4].MaxPoints} Points\n" +
-					$"Rule 6 {Holder.rules[5].RuleText} - {Holder.rules[5].MinPoints}-{Holder.rules[5].MaxPoints} Points\n" +
-					$"Rule 7 {Holder.rules[6].RuleText} - {Holder.rules[6].MinPoints}-{Holder.rules[6].MaxPoints} Points\n" +
-					$"Rule 8 {Holder.rules[7].RuleText} - {Holder.rules[7].MinPoints}-{Holder.rules[7].MaxPoints} Points\n" +
-					$"Rule 9 {Holder.rules[8].RuleText} - {Holder.rules[8].MinPoints}-{Holder.rules[8].MaxPoints} Points\n" +
-					$"Rule 10 {Holder.rules[9].RuleText} - {Holder.rules[9].MinPoints}-{Holder.rules[9].MaxPoints} Points\n" +
-					$"Rule 11 {Holder.rules[10].RuleText} - {Holder.rules[10].MinPoints}-{Holder.rules[10].MaxPoints} Points\n" +
-					$"Rule 12 {Holder.rules[11].RuleText} - {Holder.rules[11].MinPoints}-{Holder.rules[11].MaxPoints} Points\n" +
-					$"Rule 13 {Holder.rules[12].RuleText} - {Holder.rules[12].MinPoints}-{Holder.rules[12].MaxPoints} Points\n" +
-					$"Other - {Holder.rules[13].MinPoints}-{Holder.rules[13].MaxPoints} Points" +
+					$"Rule 1 {RuleService.rules[0].RuleText} - {RuleService.rules[0].MinPoints}-{RuleService.rules[0].MaxPoints} Points\n" +
+					$"Rule 2 {RuleService.rules[1].RuleText} - {RuleService.rules[1].MinPoints}-{RuleService.rules[1].MaxPoints} Points\n" +
+					$"Rule 3 {RuleService.rules[2].RuleText} - {RuleService.rules[2].MinPoints}-{RuleService.rules[2].MaxPoints} Points\n" +
+					$"Rule 4 {RuleService.rules[3].RuleText} - {RuleService.rules[3].MinPoints}-{RuleService.rules[3].MaxPoints} Points\n" +
+					$"Rule 5 {RuleService.rules[4].RuleText} - {RuleService.rules[4].MinPoints}-{RuleService.rules[4].MaxPoints} Points\n" +
+					$"Rule 6 {RuleService.rules[5].RuleText} - {RuleService.rules[5].MinPoints}-{RuleService.rules[5].MaxPoints} Points\n" +
+					$"Rule 7 {RuleService.rules[6].RuleText} - {RuleService.rules[6].MinPoints}-{RuleService.rules[6].MaxPoints} Points\n" +
+					$"Rule 8 {RuleService.rules[7].RuleText} - {RuleService.rules[7].MinPoints}-{RuleService.rules[7].MaxPoints} Points\n" +
+					$"Rule 9 {RuleService.rules[8].RuleText} - {RuleService.rules[8].MinPoints}-{RuleService.rules[8].MaxPoints} Points\n" +
+					$"Rule 10 {RuleService.rules[9].RuleText} - {RuleService.rules[9].MinPoints}-{RuleService.rules[9].MaxPoints} Points\n" +
+					$"Rule 11 {RuleService.rules[10].RuleText} - {RuleService.rules[10].MinPoints}-{RuleService.rules[10].MaxPoints} Points\n" +
+					$"Rule 12 {RuleService.rules[11].RuleText} - {RuleService.rules[11].MinPoints}-{RuleService.rules[11].MaxPoints} Points\n" +
+					$"Rule 13 {RuleService.rules[12].RuleText} - {RuleService.rules[12].MinPoints}-{RuleService.rules[12].MaxPoints} Points\n" +
+					$"Other - {RuleService.rules[13].MinPoints}-{RuleService.rules[13].MaxPoints} Points" +
 					"```").ConfigureAwait(false);
 				#endregion
 
@@ -493,20 +499,20 @@ namespace LathBotFront.Commands
 				#region switch
 				Rule rule = (reaction.Result.Emoji.ToString()) switch
 				{
-					"🇦" => Holder.rules[0],
-					"🇧" => Holder.rules[1],
-					"🇨" => Holder.rules[2],
-					"🇩" => Holder.rules[3],
-					"🇪" => Holder.rules[4],
-					"🇫" => Holder.rules[5],
-					"🇬" => Holder.rules[6],
-					"🇭" => Holder.rules[7],
-					"🇮" => Holder.rules[8],
-					"🇯" => Holder.rules[9],
-					"🇰" => Holder.rules[10],
-					"🇱" => Holder.rules[11],
-					"🇲" => Holder.rules[12],
-					"🇴" => Holder.rules[13],
+					"🇦" => RuleService.rules[0],
+					"🇧" => RuleService.rules[1],
+					"🇨" => RuleService.rules[2],
+					"🇩" => RuleService.rules[3],
+					"🇪" => RuleService.rules[4],
+					"🇫" => RuleService.rules[5],
+					"🇬" => RuleService.rules[6],
+					"🇭" => RuleService.rules[7],
+					"🇮" => RuleService.rules[8],
+					"🇯" => RuleService.rules[9],
+					"🇰" => RuleService.rules[10],
+					"🇱" => RuleService.rules[11],
+					"🇲" => RuleService.rules[12],
+					"🇴" => RuleService.rules[13],
 					_ => null
 				};
 				#endregion
@@ -706,7 +712,7 @@ namespace LathBotFront.Commands
 						DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
 						await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
 
-						Holder.Instance.Logger.Log("Had to send low level warn to #warnings because of following error:\n" + e.Message);
+						SystemService.Instance.Logger.Log("Had to send low level warn to #warnings because of following error:\n" + e.Message);
 					}
 					finally
 					{
@@ -856,7 +862,7 @@ namespace LathBotFront.Commands
 				result = repo.Update(item);
 				if (!result)
 				{
-					_ = Holder.Instance.ErrorLogChannel.SendMessageAsync("Error updating the database.");
+					_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error updating the database.");
 					break;
 				}
 			}

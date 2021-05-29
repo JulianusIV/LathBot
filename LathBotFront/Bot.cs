@@ -14,6 +14,7 @@ using LathBotBack.Config;
 using LathBotFront.Commands;
 using System.Net.WebSockets;
 using System.Reflection;
+using LathBotBack.Services;
 
 namespace LathBotFront
 {
@@ -69,10 +70,10 @@ namespace LathBotFront
 			Client.ClientErrored += Events.ClientErrored;
 
 			//Register timer events
-			Holder.Instance.WarnTimer.Elapsed += Events.TimerTick;
+			SystemService.Instance.WarnTimer.Elapsed += Events.TimerTick;
 
 			//Register Logger events
-			Holder.Instance.Logger.RaiseLogEvent += Events.OnLog;
+			SystemService.Instance.Logger.RaiseLogEvent += Events.OnLog;
 
 			Client.UseInteractivity(new InteractivityConfiguration
 			{
@@ -96,7 +97,7 @@ namespace LathBotFront
 			await Client.ConnectAsync();
 
 			LavalinkNodeConnection lavaNode = null;
-			if (!Holder.Instance.IsInDesignMode)
+			if (!StartupService.Instance.IsInDesignMode)
 			{
 				lavaNode = await ConnectLavaNodeAsync();
 			}
@@ -135,7 +136,7 @@ namespace LathBotFront
 			}
 			catch (WebSocketException e)
 			{
-				Holder.Instance.Logger.Log("Failed to start connection with Lavalink server:\n" + e.Message);
+				SystemService.Instance.Logger.Log("Failed to start connection with Lavalink server:\n" + e.Message);
 			}
 
 			return res;

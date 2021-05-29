@@ -2,6 +2,7 @@
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
+using LathBotBack.Services;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -63,7 +64,7 @@ namespace LathBotTest
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 		}
 
@@ -130,7 +131,7 @@ namespace LathBotTest
 			}
 			catch (Exception e)
 			{
-				Holder.Instance.Logger.Log(e.Message);
+				SystemService.Instance.Logger.Log(e.Message);
 			}
 		}
 	}

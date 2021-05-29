@@ -14,6 +14,7 @@ using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Commands.TimeZoneConverter;
+using LathBotBack.Services;
 
 namespace LathBotFront.Commands
 {
@@ -234,7 +235,7 @@ namespace LathBotFront.Commands
 		[RequireRoles(RoleCheckMode.Any, "Senate of Lathland (ADM)", "Bot Management", "Plague Guard (Mods)")]
 		public async Task BoardCount(CommandContext ctx, [Description("New limit")] int newCount)
 		{
-			Holder.Instance.GoodGuysReactionCount = newCount;
+			GoodGuysService.Instance.GoodGuysReactionCount = newCount;
 
 			VariableRepository repo = new VariableRepository(ReadConfig.configJson.ConnectionString);
 
@@ -254,7 +255,7 @@ namespace LathBotFront.Commands
 		[Description("see how much it currently takes to get on the GoodGuys board")]
 		public async Task GetCount(CommandContext ctx)
 		{
-			await ctx.RespondAsync(Holder.Instance.GoodGuysReactionCount.ToString());
+			await ctx.RespondAsync(GoodGuysService.Instance.GoodGuysReactionCount.ToString());
 		}
 
 		[Command("clean")]

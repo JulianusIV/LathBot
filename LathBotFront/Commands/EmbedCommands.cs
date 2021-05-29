@@ -5,6 +5,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
 using LathBotBack;
+using LathBotBack.Services;
 
 namespace LathBotFront.Commands
 {
@@ -116,19 +117,19 @@ namespace LathBotFront.Commands
                 }
             };
 
-            embedBuilderRules.AddField("Rule 1:", Holder.rules[0].RuleText);
-            embedBuilderRules.AddField("Rule 2:", Holder.rules[1].RuleText);
-            embedBuilderRules.AddField("Rule 3:", Holder.rules[2].RuleText);
-            embedBuilderRules.AddField("Rule 4:", Holder.rules[3].RuleText);
-            embedBuilderRules.AddField("Rule 5:", Holder.rules[4].RuleText);
-            embedBuilderRules.AddField("Rule 6:", Holder.rules[5].RuleText);
-            embedBuilderRules.AddField("Rule 7:", Holder.rules[6].RuleText);
-            embedBuilderRules.AddField("Rule 8:", Holder.rules[7].RuleText);
-            embedBuilderRules.AddField("Rule 9:", Holder.rules[8].RuleText);
-            embedBuilderRules.AddField("Rule 10:", Holder.rules[9].RuleText);
-            embedBuilderRules.AddField("Rule 11:", Holder.rules[10].RuleText);
-            embedBuilderRules.AddField("Rule 12:", Holder.rules[11].RuleText);
-            embedBuilderRules.AddField("Rule 13:", Holder.rules[12].RuleText);
+            embedBuilderRules.AddField("Rule 1:", RuleService.rules[0].RuleText);
+            embedBuilderRules.AddField("Rule 2:", RuleService.rules[1].RuleText);
+            embedBuilderRules.AddField("Rule 3:", RuleService.rules[2].RuleText);
+            embedBuilderRules.AddField("Rule 4:", RuleService.rules[3].RuleText);
+            embedBuilderRules.AddField("Rule 5:", RuleService.rules[4].RuleText);
+            embedBuilderRules.AddField("Rule 6:", RuleService.rules[5].RuleText);
+            embedBuilderRules.AddField("Rule 7:", RuleService.rules[6].RuleText);
+            embedBuilderRules.AddField("Rule 8:", RuleService.rules[7].RuleText);
+            embedBuilderRules.AddField("Rule 9:", RuleService.rules[8].RuleText);
+            embedBuilderRules.AddField("Rule 10:", RuleService.rules[9].RuleText);
+            embedBuilderRules.AddField("Rule 11:", RuleService.rules[10].RuleText);
+            embedBuilderRules.AddField("Rule 12:", RuleService.rules[11].RuleText);
+            embedBuilderRules.AddField("Rule 13:", RuleService.rules[12].RuleText);
             embedBuilderRules.AddField("Annotation", "Having a invisible nickname " +
                 "AND profile picture as well as copying someones nick and pfp (impersonation) " +
                 "will be seen as trying to avoid staff and is warnable!\n" +
@@ -178,19 +179,19 @@ namespace LathBotFront.Commands
                 }
             };
 
-            embedBuilderRules.AddField("Rule 1:", Holder.rules[0].RuleText);
-            embedBuilderRules.AddField("Rule 2:", Holder.rules[1].RuleText);
-            embedBuilderRules.AddField("Rule 3:", Holder.rules[2].RuleText);
-            embedBuilderRules.AddField("Rule 4:", Holder.rules[3].RuleText);
-            embedBuilderRules.AddField("Rule 5:", Holder.rules[4].RuleText);
-            embedBuilderRules.AddField("Rule 6:", Holder.rules[5].RuleText);
-            embedBuilderRules.AddField("Rule 7:", Holder.rules[6].RuleText);
-            embedBuilderRules.AddField("Rule 8:", Holder.rules[7].RuleText);
-            embedBuilderRules.AddField("Rule 9:", Holder.rules[8].RuleText);
-            embedBuilderRules.AddField("Rule 10:", Holder.rules[9].RuleText);
-            embedBuilderRules.AddField("Rule 11:", Holder.rules[10].RuleText);
-            embedBuilderRules.AddField("Rule 12:", Holder.rules[11].RuleText);
-            embedBuilderRules.AddField("Rule 13:", Holder.rules[12].RuleText);
+            embedBuilderRules.AddField("Rule 1:", RuleService.rules[0].RuleText);
+            embedBuilderRules.AddField("Rule 2:", RuleService.rules[1].RuleText);
+            embedBuilderRules.AddField("Rule 3:", RuleService.rules[2].RuleText);
+            embedBuilderRules.AddField("Rule 4:", RuleService.rules[3].RuleText);
+            embedBuilderRules.AddField("Rule 5:", RuleService.rules[4].RuleText);
+            embedBuilderRules.AddField("Rule 6:", RuleService.rules[5].RuleText);
+            embedBuilderRules.AddField("Rule 7:", RuleService.rules[6].RuleText);
+            embedBuilderRules.AddField("Rule 8:", RuleService.rules[7].RuleText);
+            embedBuilderRules.AddField("Rule 9:", RuleService.rules[8].RuleText);
+            embedBuilderRules.AddField("Rule 10:", RuleService.rules[9].RuleText);
+            embedBuilderRules.AddField("Rule 11:", RuleService.rules[10].RuleText);
+            embedBuilderRules.AddField("Rule 12:", RuleService.rules[11].RuleText);
+            embedBuilderRules.AddField("Rule 13:", RuleService.rules[12].RuleText);
             embedBuilderRules.AddField("Annotation", "Having a invisible nickname " +
                 "AND profile picture as well as copying someones nick and pfp (impersonation) " +
                 "will be seen as trying to avoid staff and is warnable!\n" +

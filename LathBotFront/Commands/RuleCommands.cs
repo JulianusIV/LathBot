@@ -5,6 +5,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
 using LathBotBack;
+using LathBotBack.Services;
 
 namespace LathBotFront.Commands
 {
@@ -22,8 +23,8 @@ namespace LathBotFront.Commands
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder
             {
                 Color = new DiscordColor(101, 24, 201),
-                Title = $"Rule {Holder.rules[ruleNum - 1].RuleNum}:",
-                Description = Holder.rules[ruleNum - 1].RuleText
+                Title = $"Rule {RuleService.rules[ruleNum - 1].RuleNum}:",
+                Description = RuleService.rules[ruleNum - 1].RuleText
             };
             await ctx.RespondAsync(builder.Build());
         }
