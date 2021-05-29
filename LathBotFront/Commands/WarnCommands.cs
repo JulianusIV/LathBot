@@ -12,7 +12,6 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity.Extensions;
 
-using LathBotBack;
 using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
@@ -127,7 +126,10 @@ namespace LathBotFront.Commands
 				await ctx.Channel.SendMessageAsync("User is already muted.");
 				return;
 			}
-			else if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
+			if (await AreYouSure(ctx, member, "mute"))
+				return;
+
+			if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
 			{
 				DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
 				{
@@ -317,6 +319,8 @@ namespace LathBotFront.Commands
 				await ctx.Channel.SendMessageAsync("You cant kick someone higher or same rank as you!");
 				return;
 			}
+			if (await AreYouSure(ctx, member, "kick"))
+				return;
 			await member.RemoveAsync();
 			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
@@ -377,7 +381,9 @@ namespace LathBotFront.Commands
 				await ctx.RespondAsync("You cant ban someone higher or same rank as you!").ConfigureAwait(false);
 				return;
 			}
-			else if (string.IsNullOrEmpty(reason))
+			if (await AreYouSure(ctx, user, "ban"))
+				return;
+			if (string.IsNullOrEmpty(reason))
 			{
 				await ctx.RespondAsync("Please provide a reason");
 				return;
@@ -1305,6 +1311,47 @@ namespace LathBotFront.Commands
 				return "Be careful!";
 			else
 				return "You really gotta listen to the mods better!"; ;
+		}
+		
+		private async Task<bool> AreYouSure(CommandContext ctx, DiscordUser user, string operation)
+		{
+			DiscordMember member = null;
+			if (ctx.Guild.Members.ContainsKey(user.Id))
+			{
+				member = await ctx.Guild.GetMemberAsync(user.Id);
+			}
+
+			DiscordMessageBuilder builder = new DiscordMessageBuilder
+			{
+				Content = "Are you fucking sure about that?",
+				Embed = new DiscordEmbedBuilder
+				{
+					Title = "Member you selected:",
+					Description = member == null ? user.ToString() : member.ToString(),
+					Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
+					{
+						Url = user.AvatarUrl
+					},
+					Color = member == null ? new DiscordColor("#FF0000") : member.Color
+				}
+			};
+			List<DiscordComponent> components = new List<DiscordComponent>
+			{
+				new DiscordButtonComponent(ButtonStyle.Danger, "sure", "Yes I fucking am!"),
+				new DiscordButtonComponent(ButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
+			};
+			builder.WithComponents(components);
+			DiscordMessage message = await builder.SendAsync(ctx.Channel);
+			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
+			var interactivityResult = await interactivity.WaitForButtonAsync(message);
+
+			await message.DeleteAsync();
+			if (interactivityResult.Result.Id == "abort")
+			{
+				await ctx.RespondAsync($"Okay i will not {operation} the user.");
+				return true;
+			}
+			return false;
 		}
 	}
 }
