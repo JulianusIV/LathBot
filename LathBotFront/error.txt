@@ -22,3 +22,77 @@ Specified command was not found.
 Object reference not set to an instance of an object.
    at LathBotFront.Commands.LavalinkCommands.Stop(CommandContext ctx) in D:\Libraries\Documents\GitHub\LathBot\LathBotFront\Commands\LavalinkCommands.cs:line 497
    at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 12:24:30:
+Specified command was not found.
+
+05/29/2021 12:27:48:
+Specified command was not found.
+
+05/29/2021 12:28:05:
+Specified command was not found.
+
+05/29/2021 12:30:53:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Ping(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 40
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 12:40:31:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Ping(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 40
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 12:41:47:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Ping(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 40
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 12:50:40:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Ping(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 41
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 12:56:41:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Ping(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 41
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 13:25:38:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Test(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 42
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 13:26:08:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Test(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 42
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 13:26:59:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Test(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 42
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 13:27:19:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Test(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 42
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 13:27:27:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Test(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 42
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 13:27:50:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Test(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 42
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 13:28:08:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Test(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 42
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/29/2021 13:28:26:
+Bad request: 400
+   at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
+   at LathBotFront.Commands.TechnicalCommands.Test(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 42
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)

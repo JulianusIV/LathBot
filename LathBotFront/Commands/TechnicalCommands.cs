@@ -9,12 +9,12 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity.Extensions;
 
-using LathBotBack;
 using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
-using LathBotBack.Commands.TimeZoneConverter;
 using LathBotBack.Services;
+using LathBotBack.Commands.TimeZoneConverter;
+using DSharpPlus.EventArgs;
 
 namespace LathBotFront.Commands
 {
@@ -24,7 +24,22 @@ namespace LathBotFront.Commands
 		[Description("Pong")]
 		public async Task Ping(CommandContext ctx)
 		{
-			await ctx.Channel.SendMessageAsync("My ping is on bloody " + ctx.Client.Ping + "ms").ConfigureAwait(false);
+			await ctx.Channel.SendMessageAsync("My ping is on bloody " + ctx.Client.Ping + "ms");
+		}
+
+		[Command("test")]
+		[RequireRoles(RoleCheckMode.Any, "Bot Management")]
+		public async Task Test(CommandContext ctx)
+		{
+			DiscordMessageBuilder builder = new DiscordMessageBuilder
+			{
+				Content = "test"
+			};
+			List<DiscordComponent> components = new List<DiscordComponent>();
+			var comp = new DiscordButtonComponent(ButtonStyle.Primary, "test", "test", emoji: new DiscordComponentEmoji(DiscordEmoji.FromUnicode("✅")));
+			components.Add(comp);
+			builder.WithComponents(components);
+			DiscordMessage message = await ctx.RespondAsync(builder);
 		}
 
 		[Command("freeze")]

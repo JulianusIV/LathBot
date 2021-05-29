@@ -1,40 +1,35 @@
 ﻿using DSharpPlus;
 
 using LathBotBack.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace LathBotBack.Base
 {
-	public abstract class BaseService<T> where T : class, new()
+	public class BaseService
 	{
-		#region Singleton
-		private static T instance;
-		private static readonly object padlock = new object();
-		public static T Instance
+		public static void InitAll(DiscordClient client)
 		{
-			get
-			{
-				lock (padlock)
-				{
-					if (instance != null)
-						instance = new T();
-					return instance;
-				}
-			}
-		}
-		#endregion
-
-		public void InitAll(DiscordClient client)
-		{
-			if (SystemService.instance != null)
+			if (StartupService.Instance.InitCompleted)
 				return;
-			DiscordObjectService.Instance.Init(client);
-			GoodGuysService.Instance.Init(client);
-			LavalinkService.Instance.Init(client);
-			RuleService.Instance.Init(client);
-			StartupService.Instance.Init(client);
-			SystemService.Instance.Init(client);
+
+			AppDomain domain = AppDomain.CurrentDomain;
+			Assembly assembly = domain.GetAssemblies().Single(x => x.FullName.Contains("LathBotBack"));
+			Type[] types = assembly.GetTypes();
+			IEnumerable<Type> services = types.Where(x => x.IsSubclassOf(typeof(BaseService)));
+			foreach (Type service in services)
+			{
+				PropertyInfo property = service.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+				BaseService serviceInstance = (BaseService)property.GetValue(null, null);
+				serviceInstance.Init(client);
+			}
+
+			StartupService.Instance.InitCompleted = true;
 		}
 
-		public abstract void Init(DiscordClient client);
+		public virtual void Init(DiscordClient client) { }
 	}
 }

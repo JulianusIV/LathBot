@@ -5,8 +5,25 @@ using LathBotBack.Models;
 
 namespace LathBotBack.Services
 {
-	public class RuleService : BaseService<RuleService>
+	public class RuleService : BaseService
 	{
+		#region Singleton
+		private static RuleService instance;
+		private static readonly object padlock = new object();
+		public static RuleService Instance
+		{
+			get
+			{
+				lock (padlock)
+				{
+					if (instance == null)
+						instance = new RuleService();
+					return instance;
+				}
+			}
+		}
+		#endregion
+
 		public static Rule[] rules;
 
 		public override void Init(DiscordClient client)

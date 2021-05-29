@@ -5,8 +5,25 @@ using LathBotBack.Base;
 
 namespace LathBotBack.Services
 {
-	public class DiscordObjectService : BaseService<DiscordObjectService>
+	public class DiscordObjectService : BaseService
 	{
+		#region Singleton
+		private static DiscordObjectService instance;
+		private static readonly object padlock = new object();
+		public static DiscordObjectService Instance
+		{
+			get
+			{
+				lock (padlock)
+				{
+					if (instance == null)
+						instance = new DiscordObjectService();
+					return instance;
+				}
+			}
+		}
+		#endregion
+
 		public DiscordGuild Lathland { get; private set; }
 
 		public DiscordChannel QuestionsChannel { get; private set; }

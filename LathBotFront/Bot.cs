@@ -89,7 +89,8 @@ namespace LathBotFront
 			Commands = Client.UseCommandsNext(commandsConfig);
 
 			//Register commands
-			Commands.RegisterCommands(Assembly.GetExecutingAssembly());
+			Commands.RegisterCommands<TechnicalCommands>();
+			//Commands.RegisterCommands(Assembly.GetExecutingAssembly());
 
 			//Register command events
 			Commands.CommandErrored += Events.CommandErrored;

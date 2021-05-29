@@ -41,7 +41,7 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				BaseService<SystemService>.Instance.Init(sender);
+				BaseService.InitAll(sender);
 
 				int added = 0;
 				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
