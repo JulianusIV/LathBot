@@ -5,9 +5,11 @@ using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
 using LathBotBack.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace LathBotFront
@@ -148,7 +150,7 @@ namespace LathBotFront
 						}
 						await mod.SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}) you muted at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration} days, is now muted for {(DateTime.Now - item.Timestamp):dd} days.\n" +
 							$"You will be reminded again tomorrow.");
-						if ((item.Duration < 8 && (item.Timestamp + TimeSpan.FromDays(item.Duration + 2)) < DateTime.Now) || 
+						if ((item.Duration < 8 && (item.Timestamp + TimeSpan.FromDays(item.Duration + 2)) < DateTime.Now) ||
 							(item.Duration > 7 && (item.Timestamp + TimeSpan.FromDays(item.Duration + 1)) < DateTime.Now) ||
 							(item.Duration == 14 && (item.Timestamp + TimeSpan.FromDays(item.Duration)) < DateTime.Now))
 						{
@@ -167,5 +169,38 @@ namespace LathBotFront
 				}
 			}
 		}
+
+		public async static Task DailyFacts()
+		{
+			IReadOnlyList<DiscordMessage> lastmessageList = await DiscordObjectService.Instance.DailyFactsChannel.GetMessagesAsync(1);
+			DiscordMessage lastmessage = lastmessageList.First();
+			if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(23))
+			{
+				WebClient client = new WebClient();
+				string content = client.DownloadString("https://useless-facts.sameerkumar.website/api");
+
+				FactJsonObject configJson = JsonConvert.DeserializeObject<FactJsonObject>(content);
+
+				DiscordMessageBuilder builder = new DiscordMessageBuilder
+				{
+					Embed = new DiscordEmbedBuilder
+					{
+						Title = "Todays totally not useless fact:",
+						Description = configJson.Data,
+						Color = DiscordColor.Blurple
+					},
+					Content = DiscordObjectService.Instance.Lathland.GetRole(848307821703200828).Mention
+				};
+				builder.WithAllowedMentions(Mentions.All);
+
+				await DiscordObjectService.Instance.DailyFactsChannel.SendMessageAsync(builder);
+			}
+		}
+	}
+
+	class FactJsonObject
+	{
+		[JsonProperty("data")]
+		public string Data { get; set; }
 	}
 }

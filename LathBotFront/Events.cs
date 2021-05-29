@@ -242,6 +242,9 @@ namespace LathBotFront
 						case "🕒":
 							await member.GrantRoleAsync(e.Guild.GetRole(821483418491289622)); //History
 							break;
+						case "❗":
+							await member.GrantRoleAsync(e.Guild.GetRole(848307821703200828)); //Facts
+							break;
 						default:
 							break;
 					}
@@ -343,6 +346,9 @@ namespace LathBotFront
 							break;
 						case "🕒":
 							await member.RevokeRoleAsync(e.Guild.GetRole(821483418491289622)); //History
+							break;
+						case "❗":
+							await member.RevokeRoleAsync(e.Guild.GetRole(848307821703200828)); //Facts
 							break;
 						default:
 							break;
@@ -492,6 +498,8 @@ namespace LathBotFront
 			await OnTimerMethods.PardonWarns();
 
 			await OnTimerMethods.RemindMutes();
+
+			await OnTimerMethods.DailyFacts();
 		}
 
 		internal static void OnLog(object sender, LoggingEventArgs e)

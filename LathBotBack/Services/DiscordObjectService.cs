@@ -32,6 +32,7 @@ namespace LathBotBack.Services
 		public DiscordChannel ErrorLogChannel { get; private set; }
 		public DiscordChannel TimerChannel { get; private set; }
 		public DiscordChannel WarnsChannel { get; private set; }
+		public DiscordChannel DailyFactsChannel { get; private set; }
 
 		public DiscordMessage LathQuestions { get; set; }
 		public DiscordMessage StaffQuestions { get; set; }
@@ -66,6 +67,7 @@ namespace LathBotBack.Services
 			ErrorLogChannel = Lathland.GetChannel(787423655566376970);
 			TimerChannel = Lathland.GetChannel(771830187171250217);
 			WarnsChannel = Lathland.GetChannel(722186358906421369);
+			DailyFactsChannel = Lathland.GetChannel(848240982880550932);
 
 			if (StartupService.Instance.IsInDesignMode)
 				return;
