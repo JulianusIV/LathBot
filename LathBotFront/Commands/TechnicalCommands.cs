@@ -14,7 +14,6 @@ using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
 using LathBotBack.Commands.TimeZoneConverter;
-using DSharpPlus.EventArgs;
 
 namespace LathBotFront.Commands
 {
