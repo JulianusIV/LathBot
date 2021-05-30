@@ -14,6 +14,7 @@ using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
 using LathBotBack.Commands.TimeZoneConverter;
+using DSharpPlus.EventArgs;
 
 namespace LathBotFront.Commands
 {
@@ -39,6 +40,10 @@ namespace LathBotFront.Commands
 			components.Add(comp);
 			builder.WithComponents(components);
 			DiscordMessage message = await ctx.RespondAsync(builder);
+
+			var interactivity = ctx.Client.GetInteractivity();
+			InteractivityResult<ComponentInteractionCreateEventArgs> res = await interactivity.WaitForButtonAsync(message, ctx.User);
+			await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.Pong, new DiscordInteractionResponseBuilder { Content = "pong?"});
 		}
 
 		[Command("freeze")]

@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="error.txt" />
     <None Remove="Resources\LathBotPP.txt" />
     <None Remove="Resources\LathBotTOS.txt" />
   </ItemGroup>

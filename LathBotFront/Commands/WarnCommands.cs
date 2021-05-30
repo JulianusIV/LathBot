@@ -16,6 +16,7 @@ using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace LathBotFront.Commands
 {
@@ -458,26 +459,9 @@ namespace LathBotFront.Commands
 			else
 			{
 				#region GetRule
-				DiscordEmoji[] discordEmojis = new DiscordEmoji[14]
+				DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder
 				{
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_a:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_b:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_c:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_d:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_e:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_f:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_g:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_h:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_i:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_j:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_k:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_l:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_m:"),
-					DiscordEmoji.FromName(ctx.Client, ":regional_indicator_o:"),
-				};
-
-				#region message
-				DiscordMessage message = await ctx.Channel.SendMessageAsync("```" +
+					Content = "```" +
 					$"Rule 1 {RuleService.rules[0].RuleText} - {RuleService.rules[0].MinPoints}-{RuleService.rules[0].MaxPoints} Points\n" +
 					$"Rule 2 {RuleService.rules[1].RuleText} - {RuleService.rules[1].MinPoints}-{RuleService.rules[1].MaxPoints} Points\n" +
 					$"Rule 3 {RuleService.rules[2].RuleText} - {RuleService.rules[2].MinPoints}-{RuleService.rules[2].MaxPoints} Points\n" +
@@ -492,37 +476,26 @@ namespace LathBotFront.Commands
 					$"Rule 12 {RuleService.rules[11].RuleText} - {RuleService.rules[11].MinPoints}-{RuleService.rules[11].MaxPoints} Points\n" +
 					$"Rule 13 {RuleService.rules[12].RuleText} - {RuleService.rules[12].MinPoints}-{RuleService.rules[12].MaxPoints} Points\n" +
 					$"Other - {RuleService.rules[13].MinPoints}-{RuleService.rules[13].MaxPoints} Points" +
-					"```").ConfigureAwait(false);
-				#endregion
-
-				foreach (DiscordEmoji emoji in discordEmojis)
-				{
-					await message.CreateReactionAsync(emoji).ConfigureAwait(false);
-				}
-
-				var reaction = await interactivity.WaitForReactionAsync(x => x.User == ctx.User && x.Message == message).ConfigureAwait(false);
-
-				#region switch
-				Rule rule = (reaction.Result.Emoji.ToString()) switch
-				{
-					"🇦" => RuleService.rules[0],
-					"🇧" => RuleService.rules[1],
-					"🇨" => RuleService.rules[2],
-					"🇩" => RuleService.rules[3],
-					"🇪" => RuleService.rules[4],
-					"🇫" => RuleService.rules[5],
-					"🇬" => RuleService.rules[6],
-					"🇭" => RuleService.rules[7],
-					"🇮" => RuleService.rules[8],
-					"🇯" => RuleService.rules[9],
-					"🇰" => RuleService.rules[10],
-					"🇱" => RuleService.rules[11],
-					"🇲" => RuleService.rules[12],
-					"🇴" => RuleService.rules[13],
-					_ => null
+					"```"
 				};
-				#endregion
+				for (int i = 0; i < Math.Round(value:(RuleService.rules.Length - 1) / (double)5, MidpointRounding.ToPositiveInfinity); i++)
+				{
+					List<DiscordComponent> row = new List<DiscordComponent>();
+					for (int index = i * 5; index < ((((i * 5) + 5) > RuleService.rules.Length - 1) ? RuleService.rules.Length : (i * 5) + 5); index++)
+					{
+						row.Add(new DiscordButtonComponent
+						(
+							ButtonStyle.Primary,
+							RuleService.rules[index].RuleNum.ToString(),
+							$"Rule {RuleService.rules[index].RuleNum}: {RuleService.rules[index].ShortDesc}"
+						));
+					}
+					messageBuilder.WithComponents(row);
+				}
+				DiscordMessage message = await ctx.Channel.SendMessageAsync(messageBuilder);
 
+				var reaction = await interactivity.WaitForButtonAsync(message, ctx.Member).ConfigureAwait(false);
+				Rule rule = RuleService.rules.Single(x => x.RuleNum.ToString() == reaction.Result.Id);
 				await message.DeleteAsync();
 				#endregion
 				#region GetPoints
@@ -1048,7 +1021,7 @@ namespace LathBotFront.Commands
 
 		[Command("persist")]
 		[RequireRoles(RoleCheckMode.Any, "Bot Management", "Senate of Lathland (ADM)")]
-		public async Task Persist(CommandContext ctx, [Description("Member that got warned")]DiscordMember member, [Description("The number of the warn")]int warnNumber)
+		public async Task Persist(CommandContext ctx, [Description("Member that got warned")] DiscordMember member, [Description("The number of the warn")] int warnNumber)
 		{
 			await ctx.Channel.TriggerTypingAsync();
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
@@ -1139,7 +1112,7 @@ namespace LathBotFront.Commands
 				await ctx.RespondAsync("There has been an error reading the warns from the database");
 				return;
 			}
-			
+
 			DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 			{
 				Title = $"Showing all warnings in the server",
@@ -1312,7 +1285,7 @@ namespace LathBotFront.Commands
 			else
 				return "You really gotta listen to the mods better!"; ;
 		}
-		
+
 		private async Task<bool> AreYouSure(CommandContext ctx, DiscordUser user, string operation)
 		{
 			DiscordMember member = null;
