@@ -96,3 +96,10 @@ Bad request: 400
    at DSharpPlus.Net.DiscordApiClient.CreateMessageAsync(UInt64 channel_id, DiscordMessageBuilder builder)
    at LathBotFront.Commands.TechnicalCommands.Test(CommandContext ctx) in C:\Users\Julian\source\GitHub\LathBot\LathBotFront\Commands\TechnicalCommands.cs:line 42
    at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+05/30/2021 18:37:47:
+Sequence contains no elements
+   at System.Linq.ThrowHelper.ThrowNoElementsException()
+   at System.Linq.Enumerable.First[TSource](IEnumerable`1 source)
+   at DSharpPlus.Interactivity.InteractivityExtension.SendPaginatedMessageAsync(DiscordChannel c, DiscordUser u, IEnumerable`1 pages, PaginationEmojis emojis, Nullable`1 behaviour, Nullable`1 deletion, Nullable`1 timeoutoverride)
+   at LathBotFront.Commands.WarnCommands.AllWarns(CommandContext ctx) in D:\Libraries\Documents\GitHub\LathBot\LathBotFront\Commands\WarnCommands.cs:line 846
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)

@@ -16,7 +16,6 @@ using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace LathBotFront.Commands
 {
@@ -429,7 +428,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("warn")]
-		[RequirePermissions(DSharpPlus.Permissions.KickMembers)]
+		[RequireUserPermissions(DSharpPlus.Permissions.KickMembers)]
 		[Description("Warn a user (for more information go to #staff-information and look at the warn documentation)")]
 		public async Task Warn(CommandContext ctx, [Description("The user that you want to warn")] DiscordMember member, [Description("a link to the warned message (will get deleted and logged)")] DiscordMessage messageLink = null)
 		{
@@ -437,7 +436,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("warn")]
-		[RequirePermissions(DSharpPlus.Permissions.KickMembers)]
+		[RequireUserPermissions(DSharpPlus.Permissions.KickMembers)]
 		[Description("Warn a user (for more information go to #staff-information and look at the warn documentation)")]
 		public async Task Warn(CommandContext ctx, [Description("a link to the warned message (will get deleted and logged)")] DiscordMessage message)
 		{
@@ -744,10 +743,10 @@ namespace LathBotFront.Commands
 
 		[Command("allwarns")]
 		[Description("Display all currently unpardoned warns")]
-		[RequireRoles(RoleCheckMode.Any, "Bot Management", "Plague Guard (Mods)", "Senate of Lathland (ADM)", "Trial Plague")]
+		[RequireUserPermissions(DSharpPlus.Permissions.KickMembers)]
 		public async Task AllWarns(CommandContext ctx)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			WarnRepository repo = new WarnRepository(ReadConfig.configJson.ConnectionString);
 			bool result = repo.GetAll(out List<Warn> warns);
 			if (!result)
@@ -756,23 +755,21 @@ namespace LathBotFront.Commands
 				return;
 			}
 
+			int index = 0;
+			int indicator = 0;
+			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			List<Page> pages = new List<Page>();
 			DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 			{
 				Title = $"Showing all warnings in the server",
 				Color = ctx.Guild.GetMemberAsync(192037157416730625).Result.Color,
 				Description = "Use -warns <User> to get more information on a specific user"
 			};
-
-			DiscordMessage message = await ctx.Channel.SendMessageAsync("­");
-			int index = 0;
-			int indicator = 0;
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
 			foreach (Warn warn in warns)
 			{
 				index++;
 				indicator++;
-				if (indicator == 10 && index != warns.Count)
+				if (indicator == 10 || index == warns.Count)
 				{
 					result = urepo.Read(warn.Mod, out User mod);
 					if (!result)
@@ -807,25 +804,13 @@ namespace LathBotFront.Commands
 							$"Points: -{warn.Level}; Date: {warn.Time}; Warned by {moderator.DisplayName}#{moderator.Discriminator}");
 					}
 
-					await message.ModifyAsync("", embedBuilder.Build()).ConfigureAwait(false);
-
-					InteractivityExtension interactivity = ctx.Client.GetInteractivity();
-					await message.CreateReactionAsync(DiscordEmoji.FromUnicode("▶️"));
-					await message.CreateReactionAsync(DiscordEmoji.FromUnicode("⏹️"));
-					var reaction = await interactivity.WaitForReactionAsync(x => x.User == ctx.User && x.Message == message).ConfigureAwait(false);
-					switch (reaction.Result.Emoji.ToString())
+					pages.Add(new Page { Embed = embedBuilder.Build() });
+					embedBuilder = new DiscordEmbedBuilder
 					{
-						case "▶️":
-							await message.DeleteAllReactionsAsync().ConfigureAwait(false);
-							embedBuilder.ClearFields();
-							break;
-						case "⏹️":
-							await message.DeleteAllReactionsAsync().ConfigureAwait(false);
-							return;
-						default:
-							break;
-					}
-					await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+						Title = $"Showing all warnings in the server",
+						Color = ctx.Guild.GetMemberAsync(192037157416730625).Result.Color,
+						Description = "Use -warns <User> to get more information on a specific user"
+					};
 				}
 				else
 				{
@@ -863,8 +848,7 @@ namespace LathBotFront.Commands
 					}
 				}
 			}
-
-			await message.ModifyAsync("", embedBuilder.Build()).ConfigureAwait(false);
+			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages);
 		}
 
 		[Command("sql")]
