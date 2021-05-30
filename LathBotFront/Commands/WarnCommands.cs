@@ -429,376 +429,19 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("warn")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
+		[RequirePermissions(DSharpPlus.Permissions.KickMembers)]
 		[Description("Warn a user (for more information go to #staff-information and look at the warn documentation)")]
 		public async Task Warn(CommandContext ctx, [Description("The user that you want to warn")] DiscordMember member, [Description("a link to the warned message (will get deleted and logged)")] DiscordMessage messageLink = null)
 		{
-			if (member.Id == 192037157416730625)
-			{
-				await ctx.Channel.SendMessageAsync("You cant warn Lathrix!");
-				return;
-			}
-			else if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
-			{
-				DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
-				{
-					Color = ctx.Member.Color,
-					Title = $"Trial Plague {ctx.Member.Nickname} just used a moderation command",
-					Description = $"[Link to usage]({ctx.Message.JumpLink})",
-					Footer = new DiscordEmbedBuilder.EmbedFooter
-					{
-						IconUrl = ctx.Member.AvatarUrl,
-						Text = $"{ctx.Member.Username}#{ctx.Member.Discriminator} ({ctx.Member.Id})"
-					}
-				};
-				await ctx.Guild.GetChannel(722905404354592900).SendMessageAsync(discordEmbed.Build());
-			}
-			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
-			if (await ctx.Guild.GetMemberAsync(member.Id) == null)
-				await ctx.Channel.SendMessageAsync($"User {member.DisplayName} is not on this server anymore, you can't warn them!");
-			else
-			{
-				#region GetRule
-				DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder
-				{
-					Content = "```" +
-					$"Rule 1 {RuleService.rules[0].RuleText} - {RuleService.rules[0].MinPoints}-{RuleService.rules[0].MaxPoints} Points\n" +
-					$"Rule 2 {RuleService.rules[1].RuleText} - {RuleService.rules[1].MinPoints}-{RuleService.rules[1].MaxPoints} Points\n" +
-					$"Rule 3 {RuleService.rules[2].RuleText} - {RuleService.rules[2].MinPoints}-{RuleService.rules[2].MaxPoints} Points\n" +
-					$"Rule 4 {RuleService.rules[3].RuleText} - {RuleService.rules[3].MinPoints}-{RuleService.rules[3].MaxPoints} Points\n" +
-					$"Rule 5 {RuleService.rules[4].RuleText} - {RuleService.rules[4].MinPoints}-{RuleService.rules[4].MaxPoints} Points\n" +
-					$"Rule 6 {RuleService.rules[5].RuleText} - {RuleService.rules[5].MinPoints}-{RuleService.rules[5].MaxPoints} Points\n" +
-					$"Rule 7 {RuleService.rules[6].RuleText} - {RuleService.rules[6].MinPoints}-{RuleService.rules[6].MaxPoints} Points\n" +
-					$"Rule 8 {RuleService.rules[7].RuleText} - {RuleService.rules[7].MinPoints}-{RuleService.rules[7].MaxPoints} Points\n" +
-					$"Rule 9 {RuleService.rules[8].RuleText} - {RuleService.rules[8].MinPoints}-{RuleService.rules[8].MaxPoints} Points\n" +
-					$"Rule 10 {RuleService.rules[9].RuleText} - {RuleService.rules[9].MinPoints}-{RuleService.rules[9].MaxPoints} Points\n" +
-					$"Rule 11 {RuleService.rules[10].RuleText} - {RuleService.rules[10].MinPoints}-{RuleService.rules[10].MaxPoints} Points\n" +
-					$"Rule 12 {RuleService.rules[11].RuleText} - {RuleService.rules[11].MinPoints}-{RuleService.rules[11].MaxPoints} Points\n" +
-					$"Rule 13 {RuleService.rules[12].RuleText} - {RuleService.rules[12].MinPoints}-{RuleService.rules[12].MaxPoints} Points\n" +
-					$"Other - {RuleService.rules[13].MinPoints}-{RuleService.rules[13].MaxPoints} Points" +
-					"```"
-				};
-				for (int i = 0; i < Math.Round(value:(RuleService.rules.Length - 1) / (double)5, MidpointRounding.ToPositiveInfinity); i++)
-				{
-					List<DiscordComponent> row = new List<DiscordComponent>();
-					for (int index = i * 5; index < ((((i * 5) + 5) > RuleService.rules.Length - 1) ? RuleService.rules.Length : (i * 5) + 5); index++)
-					{
-						row.Add(new DiscordButtonComponent
-						(
-							ButtonStyle.Primary,
-							RuleService.rules[index].RuleNum.ToString(),
-							$"Rule {RuleService.rules[index].RuleNum}: {RuleService.rules[index].ShortDesc}"
-						));
-					}
-					messageBuilder.WithComponents(row);
-				}
-				DiscordMessage message = await ctx.Channel.SendMessageAsync(messageBuilder);
+			await WarnAsync(ctx, member, messageLink);
+		}
 
-				var reaction = await interactivity.WaitForButtonAsync(message, ctx.Member).ConfigureAwait(false);
-				Rule rule = RuleService.rules.Single(x => x.RuleNum.ToString() == reaction.Result.Id);
-				await message.DeleteAsync();
-				#endregion
-				#region GetPoints
-				bool tryagain = true;
-				int pointsDeducted = 0;
-				while (tryagain)
-				{
-					DiscordMessage pointsMessage = await ctx.Channel.SendMessageAsync($"For this rule you can reduce the users chances by {rule.MinPoints} - {rule.MaxPoints}").ConfigureAwait(false);
-					InteractivityResult<DiscordMessage> interactpointsMessage = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User).ConfigureAwait(false);
-					if (int.TryParse(interactpointsMessage.Result.Content, out int points))
-					{
-						if (rule.MinPoints <= points && rule.MaxPoints >= points)
-						{
-							tryagain = false;
-							pointsDeducted = points;
-							await pointsMessage.DeleteAsync();
-						}
-						else
-						{
-							DiscordMessage buffoon = await ctx.Channel.SendMessageAsync("Buffoon").ConfigureAwait(false);
-							await pointsMessage.DeleteAsync().ConfigureAwait(false);
-							await Task.Delay(1000);
-							await buffoon.DeleteAsync().ConfigureAwait(false);
-						}
-					}
-					else
-					{
-						DiscordMessage buffoon = await ctx.Channel.SendMessageAsync("Buffoon").ConfigureAwait(false);
-						await pointsMessage.DeleteAsync();
-						await Task.Delay(1000);
-						await buffoon.DeleteAsync();
-					}
-				}
-				#endregion
-				#region GetSeverity
-				int severity = (pointsDeducted) switch
-				{
-					1 => 1,
-					2 => 1,
-					3 => 1,
-					4 => 1,
-					5 => 1,
-					6 => 2,
-					7 => 2,
-					8 => 2,
-					9 => 2,
-					10 => 2,
-					11 => 3,
-					12 => 3,
-					13 => 3,
-					14 => 3,
-					15 => 3,
-					_ => 0
-				};
-				#endregion
-				#region GetReason
-				bool tryagainReason = true;
-				string reason = "/";
-				while (tryagainReason)
-				{
-					DiscordMessage reasonMessage = await ctx.Channel.SendMessageAsync("If needed please state a reason, write ``NONE`` if you dont want to specify.").ConfigureAwait(false);
-					InteractivityResult<DiscordMessage> reasonResult = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User).ConfigureAwait(false);
-					if (reasonResult.Result.Content.Trim().ToUpper() == "NONE")
-					{
-						await reasonMessage.DeleteAsync();
-						reason = "/";
-						tryagainReason = false;
-					}
-					else if (reasonResult.Result.Content.Length >= 250)
-					{
-						DiscordMessage buffoon = await ctx.Channel.SendMessageAsync("Max reason length is 250 characters!").ConfigureAwait(false);
-						await reasonMessage.DeleteAsync().ConfigureAwait(false);
-						await Task.Delay(3000);
-						await buffoon.DeleteAsync().ConfigureAwait(false);
-					}
-					else
-					{
-						reason = reasonResult.Result.Content;
-						await reasonMessage.DeleteAsync().ConfigureAwait(false);
-						tryagainReason = false;
-					}
-				}
-				#endregion
-				#region Write
-				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
-				bool result = repo.GetIdByDcId(member.Id, out int UserDbId);
-				if (!result)
-				{
-					await ctx.RespondAsync("There was an error getting the user from the Database");
-					return;
-				}
-				WarnRepository warnRepo = new WarnRepository(ReadConfig.configJson.ConnectionString);
-				result = warnRepo.GetWarnAmount(UserDbId, out int WarnNumber);
-				if (!result)
-				{
-					await ctx.RespondAsync("There was an error getting the previous warns from the Database");
-					return;
-				}
-				result = repo.GetIdByDcId(ctx.Member.Id, out int ModDbId);
-				if (!result)
-				{
-					await ctx.RespondAsync("There was an error getting the moderator from the database");
-				}
-				if (UserDbId == 0 || ModDbId == 0)
-					return;
-				Warn warn = new Warn
-				{
-					User = UserDbId,
-					Mod = ModDbId,
-					Reason = rule.RuleNum == 0 ? reason : $"Rule {rule.RuleNum}, {reason}",
-					Number = WarnNumber + 1,
-					Level = pointsDeducted,
-					Time = DateTime.Now,
-					Persistent = false
-
-				};
-				result = warnRepo.Create(ref warn);
-				if (!result)
-				{
-					await ctx.RespondAsync("There was an error creating the database entry");
-					return;
-				}
-				#endregion
-				#region Audit
-				AuditRepository auditRepo = new AuditRepository(ReadConfig.configJson.ConnectionString);
-				UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
-				bool userResult = urepo.GetIdByDcId(ctx.Member.Id, out int id);
-				if (!userResult)
-				{
-					await ctx.RespondAsync("There was a problem reading a User");
-				}
-				else
-				{
-					bool auditResult = auditRepo.Read(id, out Audit audit);
-					if (!auditResult)
-					{
-						await ctx.RespondAsync("There was a problem reading an Audit");
-					}
-					else
-					{
-						audit.Warns++;
-						bool updateResult = auditRepo.Update(audit);
-						if (!updateResult)
-						{
-							await ctx.RespondAsync("There was a problem reading to th Audit table");
-						}
-					}
-				}
-				#endregion
-				result = warnRepo.GetRemainingPoints(UserDbId, out int pointsLeft);
-				if (!result)
-				{
-					await ctx.RespondAsync("There was an error reading the remaining points");
-				}
-				#region WarnMessage
-				if (severity == 1)
-				{
-					try
-					{
-						DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
-						{
-							Color = DiscordColor.Yellow,
-							Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = member.AvatarUrl },
-							Title = $"You have been warned for Rule {rule.RuleNum}:",
-							Description = $"{rule.RuleText}\n" +
-								"\n" +
-								$"{reason}",
-							Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
-						};
-
-						embedBuilder.AddField($"{pointsLeft} points remaining", "Please keep any talk of this to DM's");
-
-						DiscordEmbed embed = embedBuilder.Build();
-
-						DiscordChannel directChannel = await member.CreateDmChannelAsync();
-						await directChannel.SendMessageAsync(embed).ConfigureAwait(false);
-					}
-					catch (Exception e)
-					{
-						DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
-						{
-							Color = DiscordColor.Yellow,
-							Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = member.AvatarUrl },
-							Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been warned for Rule {rule.RuleNum}:",
-							Description = $"{rule.RuleText}\n" +
-								"\n" +
-								$"{reason}",
-							Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
-						};
-						embedBuilder.AddField($"{pointsLeft} points remaining", "Please keep any talk of this to DM's");
-						DiscordEmbed embed = embedBuilder.Build();
-
-						DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-						await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
-
-						SystemService.Instance.Logger.Log("Had to send low level warn to #warnings because of following error:\n" + e.Message);
-					}
-					finally
-					{
-						DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
-						{
-							Color = DiscordColor.Yellow,
-							Title = $"Successfully warned {member.DisplayName}#{member.Discriminator} ({member.Id}).",
-							Description = $"Rule {rule.RuleNum}:\n" +
-								"\n" +
-								$"{reason}\n" +
-								"\n" +
-								$"User has {pointsLeft} points left.",
-							Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
-						};
-						DiscordEmbed embed = embedBuilder.Build();
-						await ctx.Channel.SendMessageAsync(embed);
-					}
-				}
-				else if (severity == 2)
-				{
-					DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
-					{
-						Color = DiscordColor.Orange,
-						Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = member.AvatarUrl },
-						Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been warned for Rule {rule.RuleNum}:",
-						Description = $"{rule.RuleText}\n" +
-								"\n" +
-								$"{reason}",
-						Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
-					};
-					embedBuilder.AddField($"{pointsLeft} points remaining", "Please keep any talk of this to DM's");
-					DiscordEmbed embed = embedBuilder.Build();
-
-					DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-					await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
-				}
-				else if (severity == 3)
-				{
-					DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
-					{
-						Color = DiscordColor.Red,
-						Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = member.AvatarUrl },
-						Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been warned for Rule {rule.RuleNum}:",
-						Description = $"{rule.RuleText}\n" +
-								"\n" +
-								$"{reason}",
-						Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
-					};
-					embedBuilder.AddField($"{pointsLeft} points remaining", "Please keep any talk of this to DM's");
-					DiscordEmbed embed = embedBuilder.Build();
-
-					DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-					await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
-				}
-				else
-				{
-					await ctx.Channel.SendMessageAsync("Task successfully failed!");
-				}
-				#endregion
-				if (messageLink != null)
-				{
-					#region Log
-					DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
-					{
-						Author = new DiscordEmbedBuilder.EmbedAuthor
-						{
-							IconUrl = messageLink.Author.AvatarUrl,
-							Name = messageLink.Author.Username
-						},
-						Description = messageLink.Content,
-						Color = ((DiscordMember)messageLink.Author).Color
-					};
-					if (messageLink.Attachments.Count != 0)
-					{
-						try
-						{
-							discordEmbed.ImageUrl = messageLink.Attachments[0].Url;
-							await ctx.Channel.SendMessageAsync(discordEmbed).ConfigureAwait(false);
-						}
-						catch
-						{
-							DiscordMessageBuilder builder = new DiscordMessageBuilder
-							{
-								Embed = discordEmbed
-							};
-							WebClient client = new WebClient();
-							client.DownloadFile(messageLink.Attachments[0].Url, messageLink.Attachments[0].FileName);
-							FileStream stream = new FileStream(messageLink.Attachments[0].FileName, FileMode.Open);
-							builder.WithFile(stream);
-							stream.Close();
-							await ctx.Channel.SendMessageAsync(builder).ConfigureAwait(false);
-							File.Delete(messageLink.Attachments[0].FileName);
-						}
-					}
-					else
-					{
-						await ctx.Channel.SendMessageAsync(discordEmbed).ConfigureAwait(false);
-					}
-					#endregion
-					await messageLink.DeleteAsync().ConfigureAwait(false);
-				}
-				if (pointsLeft < 11)
-				{
-					DiscordMessage punishMessage = await ctx.Channel.SendMessageAsync($"User has {pointsLeft} points left.\n" +
-						$"By common practice the user should be muted{(pointsLeft < 6 ? ", kicked" : "")}{(pointsLeft < 1 ? ", or banned" : "")}.");
-				}
-			}
+		[Command("warn")]
+		[RequirePermissions(DSharpPlus.Permissions.KickMembers)]
+		[Description("Warn a user (for more information go to #staff-information and look at the warn documentation)")]
+		public async Task Warn(CommandContext ctx, [Description("a link to the warned message (will get deleted and logged)")] DiscordMessage message)
+		{
+			await WarnAsync(ctx, await ctx.Guild.GetMemberAsync(message.Author.Id), message);
 		}
 
 		[Command("pardon")]
@@ -1325,6 +968,376 @@ namespace LathBotFront.Commands
 				return true;
 			}
 			return false;
+		}
+
+		private async Task WarnAsync(CommandContext ctx, DiscordMember member, DiscordMessage messageLink = null)
+		{
+			if (member.Id == 192037157416730625)
+			{
+				await ctx.Channel.SendMessageAsync("You cant warn Lathrix!");
+				return;
+			}
+			else if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
+			{
+				DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+				{
+					Color = ctx.Member.Color,
+					Title = $"Trial Plague {ctx.Member.Nickname} just used a moderation command",
+					Description = $"[Link to usage]({ctx.Message.JumpLink})",
+					Footer = new DiscordEmbedBuilder.EmbedFooter
+					{
+						IconUrl = ctx.Member.AvatarUrl,
+						Text = $"{ctx.Member.Username}#{ctx.Member.Discriminator} ({ctx.Member.Id})"
+					}
+				};
+				await ctx.Guild.GetChannel(722905404354592900).SendMessageAsync(discordEmbed.Build());
+			}
+			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
+			if (await ctx.Guild.GetMemberAsync(member.Id) == null)
+				await ctx.Channel.SendMessageAsync($"User {member.DisplayName} is not on this server anymore, you can't warn them!");
+			else
+			{
+				#region GetRule
+				DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder
+				{
+					Content = "```" +
+					$"Rule 1 {RuleService.rules[0].RuleText} - {RuleService.rules[0].MinPoints}-{RuleService.rules[0].MaxPoints} Points\n" +
+					$"Rule 2 {RuleService.rules[1].RuleText} - {RuleService.rules[1].MinPoints}-{RuleService.rules[1].MaxPoints} Points\n" +
+					$"Rule 3 {RuleService.rules[2].RuleText} - {RuleService.rules[2].MinPoints}-{RuleService.rules[2].MaxPoints} Points\n" +
+					$"Rule 4 {RuleService.rules[3].RuleText} - {RuleService.rules[3].MinPoints}-{RuleService.rules[3].MaxPoints} Points\n" +
+					$"Rule 5 {RuleService.rules[4].RuleText} - {RuleService.rules[4].MinPoints}-{RuleService.rules[4].MaxPoints} Points\n" +
+					$"Rule 6 {RuleService.rules[5].RuleText} - {RuleService.rules[5].MinPoints}-{RuleService.rules[5].MaxPoints} Points\n" +
+					$"Rule 7 {RuleService.rules[6].RuleText} - {RuleService.rules[6].MinPoints}-{RuleService.rules[6].MaxPoints} Points\n" +
+					$"Rule 8 {RuleService.rules[7].RuleText} - {RuleService.rules[7].MinPoints}-{RuleService.rules[7].MaxPoints} Points\n" +
+					$"Rule 9 {RuleService.rules[8].RuleText} - {RuleService.rules[8].MinPoints}-{RuleService.rules[8].MaxPoints} Points\n" +
+					$"Rule 10 {RuleService.rules[9].RuleText} - {RuleService.rules[9].MinPoints}-{RuleService.rules[9].MaxPoints} Points\n" +
+					$"Rule 11 {RuleService.rules[10].RuleText} - {RuleService.rules[10].MinPoints}-{RuleService.rules[10].MaxPoints} Points\n" +
+					$"Rule 12 {RuleService.rules[11].RuleText} - {RuleService.rules[11].MinPoints}-{RuleService.rules[11].MaxPoints} Points\n" +
+					$"Rule 13 {RuleService.rules[12].RuleText} - {RuleService.rules[12].MinPoints}-{RuleService.rules[12].MaxPoints} Points\n" +
+					$"Other - {RuleService.rules[13].MinPoints}-{RuleService.rules[13].MaxPoints} Points" +
+					"```"
+				};
+				for (int i = 0; i < Math.Round(value: (RuleService.rules.Length - 1) / (double)5, MidpointRounding.ToPositiveInfinity); i++)
+				{
+					List<DiscordComponent> row = new List<DiscordComponent>();
+					for (int index = i * 5; index < ((((i * 5) + 5) > RuleService.rules.Length - 1) ? RuleService.rules.Length : (i * 5) + 5); index++)
+					{
+						row.Add(new DiscordButtonComponent
+						(
+							ButtonStyle.Primary,
+							RuleService.rules[index].RuleNum.ToString(),
+							$"Rule {RuleService.rules[index].RuleNum}: {RuleService.rules[index].ShortDesc}"
+						));
+					}
+					messageBuilder.WithComponents(row);
+				}
+				DiscordMessage message = await ctx.Channel.SendMessageAsync(messageBuilder);
+
+				var reaction = await interactivity.WaitForButtonAsync(message, ctx.Member).ConfigureAwait(false);
+				Rule rule = RuleService.rules.Single(x => x.RuleNum.ToString() == reaction.Result.Id);
+				await message.DeleteAsync();
+				#endregion
+				#region GetPoints
+				bool tryagain = true;
+				int pointsDeducted = 0;
+				while (tryagain)
+				{
+					DiscordMessage pointsMessage = await ctx.Channel.SendMessageAsync($"For this rule you can reduce the users chances by {rule.MinPoints} - {rule.MaxPoints}").ConfigureAwait(false);
+					InteractivityResult<DiscordMessage> interactpointsMessage = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User).ConfigureAwait(false);
+					if (int.TryParse(interactpointsMessage.Result.Content, out int points))
+					{
+						if (rule.MinPoints <= points && rule.MaxPoints >= points)
+						{
+							tryagain = false;
+							pointsDeducted = points;
+							await pointsMessage.DeleteAsync();
+						}
+						else
+						{
+							DiscordMessage buffoon = await ctx.Channel.SendMessageAsync("Buffoon").ConfigureAwait(false);
+							await pointsMessage.DeleteAsync().ConfigureAwait(false);
+							await Task.Delay(1000);
+							await buffoon.DeleteAsync().ConfigureAwait(false);
+						}
+					}
+					else
+					{
+						DiscordMessage buffoon = await ctx.Channel.SendMessageAsync("Buffoon").ConfigureAwait(false);
+						await pointsMessage.DeleteAsync();
+						await Task.Delay(1000);
+						await buffoon.DeleteAsync();
+					}
+				}
+				#endregion
+				#region GetSeverity
+				int severity = (pointsDeducted) switch
+				{
+					1 => 1,
+					2 => 1,
+					3 => 1,
+					4 => 1,
+					5 => 1,
+					6 => 2,
+					7 => 2,
+					8 => 2,
+					9 => 2,
+					10 => 2,
+					11 => 3,
+					12 => 3,
+					13 => 3,
+					14 => 3,
+					15 => 3,
+					_ => 0
+				};
+				#endregion
+				#region GetReason
+				bool tryagainReason = true;
+				string reason = "/";
+				while (tryagainReason)
+				{
+					DiscordMessage reasonMessage = await ctx.Channel.SendMessageAsync("If needed please state a reason, write ``NONE`` if you dont want to specify.").ConfigureAwait(false);
+					InteractivityResult<DiscordMessage> reasonResult = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User).ConfigureAwait(false);
+					if (reasonResult.Result.Content.Trim().ToUpper() == "NONE")
+					{
+						await reasonMessage.DeleteAsync();
+						reason = "/";
+						tryagainReason = false;
+					}
+					else if (reasonResult.Result.Content.Length >= 250)
+					{
+						DiscordMessage buffoon = await ctx.Channel.SendMessageAsync("Max reason length is 250 characters!").ConfigureAwait(false);
+						await reasonMessage.DeleteAsync().ConfigureAwait(false);
+						await Task.Delay(3000);
+						await buffoon.DeleteAsync().ConfigureAwait(false);
+					}
+					else
+					{
+						reason = reasonResult.Result.Content;
+						await reasonMessage.DeleteAsync().ConfigureAwait(false);
+						tryagainReason = false;
+					}
+				}
+				#endregion
+				#region Write
+				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
+				bool result = repo.GetIdByDcId(member.Id, out int UserDbId);
+				if (!result)
+				{
+					await ctx.RespondAsync("There was an error getting the user from the Database");
+					return;
+				}
+				WarnRepository warnRepo = new WarnRepository(ReadConfig.configJson.ConnectionString);
+				result = warnRepo.GetWarnAmount(UserDbId, out int WarnNumber);
+				if (!result)
+				{
+					await ctx.RespondAsync("There was an error getting the previous warns from the Database");
+					return;
+				}
+				result = repo.GetIdByDcId(ctx.Member.Id, out int ModDbId);
+				if (!result)
+				{
+					await ctx.RespondAsync("There was an error getting the moderator from the database");
+				}
+				if (UserDbId == 0 || ModDbId == 0)
+					return;
+				Warn warn = new Warn
+				{
+					User = UserDbId,
+					Mod = ModDbId,
+					Reason = rule.RuleNum == 0 ? reason : $"Rule {rule.RuleNum}, {reason}",
+					Number = WarnNumber + 1,
+					Level = pointsDeducted,
+					Time = DateTime.Now,
+					Persistent = false
+
+				};
+				result = warnRepo.Create(ref warn);
+				if (!result)
+				{
+					await ctx.RespondAsync("There was an error creating the database entry");
+					return;
+				}
+				#endregion
+				#region Audit
+				AuditRepository auditRepo = new AuditRepository(ReadConfig.configJson.ConnectionString);
+				UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+				bool userResult = urepo.GetIdByDcId(ctx.Member.Id, out int id);
+				if (!userResult)
+				{
+					await ctx.RespondAsync("There was a problem reading a User");
+				}
+				else
+				{
+					bool auditResult = auditRepo.Read(id, out Audit audit);
+					if (!auditResult)
+					{
+						await ctx.RespondAsync("There was a problem reading an Audit");
+					}
+					else
+					{
+						audit.Warns++;
+						bool updateResult = auditRepo.Update(audit);
+						if (!updateResult)
+						{
+							await ctx.RespondAsync("There was a problem reading to th Audit table");
+						}
+					}
+				}
+				#endregion
+				result = warnRepo.GetRemainingPoints(UserDbId, out int pointsLeft);
+				if (!result)
+				{
+					await ctx.RespondAsync("There was an error reading the remaining points");
+				}
+				#region WarnMessage
+				if (severity == 1)
+				{
+					try
+					{
+						DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+						{
+							Color = DiscordColor.Yellow,
+							Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = member.AvatarUrl },
+							Title = $"You have been warned for Rule {rule.RuleNum}:",
+							Description = $"{rule.RuleText}\n" +
+								"\n" +
+								$"{reason}",
+							Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
+						};
+
+						embedBuilder.AddField($"{pointsLeft} points remaining", "Please keep any talk of this to DM's");
+
+						DiscordEmbed embed = embedBuilder.Build();
+
+						DiscordChannel directChannel = await member.CreateDmChannelAsync();
+						await directChannel.SendMessageAsync(embed).ConfigureAwait(false);
+					}
+					catch (Exception e)
+					{
+						DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+						{
+							Color = DiscordColor.Yellow,
+							Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = member.AvatarUrl },
+							Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been warned for Rule {rule.RuleNum}:",
+							Description = $"{rule.RuleText}\n" +
+								"\n" +
+								$"{reason}",
+							Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
+						};
+						embedBuilder.AddField($"{pointsLeft} points remaining", "Please keep any talk of this to DM's");
+						DiscordEmbed embed = embedBuilder.Build();
+
+						DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
+						await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+
+						SystemService.Instance.Logger.Log("Had to send low level warn to #warnings because of following error:\n" + e.Message);
+					}
+					finally
+					{
+						DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+						{
+							Color = DiscordColor.Yellow,
+							Title = $"Successfully warned {member.DisplayName}#{member.Discriminator} ({member.Id}).",
+							Description = $"Rule {rule.RuleNum}:\n" +
+								"\n" +
+								$"{reason}\n" +
+								"\n" +
+								$"User has {pointsLeft} points left.",
+							Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
+						};
+						DiscordEmbed embed = embedBuilder.Build();
+						await ctx.Channel.SendMessageAsync(embed);
+					}
+				}
+				else if (severity == 2)
+				{
+					DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+					{
+						Color = DiscordColor.Orange,
+						Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = member.AvatarUrl },
+						Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been warned for Rule {rule.RuleNum}:",
+						Description = $"{rule.RuleText}\n" +
+								"\n" +
+								$"{reason}",
+						Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
+					};
+					embedBuilder.AddField($"{pointsLeft} points remaining", "Please keep any talk of this to DM's");
+					DiscordEmbed embed = embedBuilder.Build();
+
+					DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
+					await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+				}
+				else if (severity == 3)
+				{
+					DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+					{
+						Color = DiscordColor.Red,
+						Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = member.AvatarUrl },
+						Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been warned for Rule {rule.RuleNum}:",
+						Description = $"{rule.RuleText}\n" +
+								"\n" +
+								$"{reason}",
+						Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
+					};
+					embedBuilder.AddField($"{pointsLeft} points remaining", "Please keep any talk of this to DM's");
+					DiscordEmbed embed = embedBuilder.Build();
+
+					DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
+					await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+				}
+				else
+				{
+					await ctx.Channel.SendMessageAsync("Task successfully failed!");
+				}
+				#endregion
+				if (messageLink != null)
+				{
+					#region Log
+					DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+					{
+						Author = new DiscordEmbedBuilder.EmbedAuthor
+						{
+							IconUrl = messageLink.Author.AvatarUrl,
+							Name = messageLink.Author.Username
+						},
+						Description = messageLink.Content,
+						Color = ((DiscordMember)messageLink.Author).Color
+					};
+					if (messageLink.Attachments.Count != 0)
+					{
+						try
+						{
+							discordEmbed.ImageUrl = messageLink.Attachments[0].Url;
+							await ctx.Channel.SendMessageAsync(discordEmbed).ConfigureAwait(false);
+						}
+						catch
+						{
+							DiscordMessageBuilder builder = new DiscordMessageBuilder
+							{
+								Embed = discordEmbed
+							};
+							WebClient client = new WebClient();
+							client.DownloadFile(messageLink.Attachments[0].Url, messageLink.Attachments[0].FileName);
+							FileStream stream = new FileStream(messageLink.Attachments[0].FileName, FileMode.Open);
+							builder.WithFile(stream);
+							stream.Close();
+							await ctx.Channel.SendMessageAsync(builder).ConfigureAwait(false);
+							File.Delete(messageLink.Attachments[0].FileName);
+						}
+					}
+					else
+					{
+						await ctx.Channel.SendMessageAsync(discordEmbed).ConfigureAwait(false);
+					}
+					#endregion
+					await messageLink.DeleteAsync().ConfigureAwait(false);
+				}
+				if (pointsLeft < 11)
+				{
+					DiscordMessage punishMessage = await ctx.Channel.SendMessageAsync($"User has {pointsLeft} points left.\n" +
+						$"By common practice the user should be muted{(pointsLeft < 6 ? ", kicked" : "")}{(pointsLeft < 1 ? ", or banned" : "")}.");
+				}
+			}
 		}
 	}
 }
