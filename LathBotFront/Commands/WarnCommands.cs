@@ -16,6 +16,7 @@ using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
+using DSharpPlus;
 
 namespace LathBotFront.Commands
 {
@@ -101,7 +102,7 @@ namespace LathBotFront.Commands
 
 		[Command("mute")]
 		[Aliases("shuddup")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
+		[RequireUserPermissions(Permissions.KickMembers)]
 		[Description("Mute a user")]
 		public async Task Mute(CommandContext ctx, [Description("The user that you want to mute")] DiscordMember member, [Description("When you will be reminded (2 - 14 days, default 7)")] int duration = 7)
 		{
@@ -236,7 +237,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("unmute")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Trial Plague", "Bot Management")]
+		[RequireUserPermissions(Permissions.KickMembers)]
 		[Description("Unmute a muted user")]
 		public async Task UnMute(CommandContext ctx, [Description("The user that you want to unmute")] DiscordMember member)
 		{
@@ -304,7 +305,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("kick")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Bot Management")]
+		[RequireUserPermissions(Permissions.KickMembers)]
 		[Description("Kick a user")]
 		public async Task Kick(CommandContext ctx, [Description("The user that you want to kick")] DiscordMember member)
 		{
@@ -361,7 +362,7 @@ namespace LathBotFront.Commands
 
 		[Command("ban")]
 		[Aliases("yeet")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Bot Management")]
+		[RequireUserPermissions(Permissions.BanMembers)]
 		[Description("Ban a user")]
 		public async Task Ban(CommandContext ctx, [Description("The user that you want to ban")] DiscordUser user, [RemainingText][Description("Why the user is boing banned")] string reason)
 		{
@@ -428,7 +429,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("warn")]
-		[RequireUserPermissions(DSharpPlus.Permissions.KickMembers)]
+		[RequireUserPermissions(Permissions.KickMembers)]
 		[Description("Warn a user (for more information go to #staff-information and look at the warn documentation)")]
 		public async Task Warn(CommandContext ctx, [Description("The user that you want to warn")] DiscordMember member, [Description("a link to the warned message (will get deleted and logged)")] DiscordMessage messageLink = null)
 		{
@@ -436,7 +437,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("warn")]
-		[RequireUserPermissions(DSharpPlus.Permissions.KickMembers)]
+		[RequireUserPermissions(Permissions.KickMembers)]
 		[Description("Warn a user (for more information go to #staff-information and look at the warn documentation)")]
 		public async Task Warn(CommandContext ctx, [Description("a link to the warned message (will get deleted and logged)")] DiscordMessage message)
 		{
@@ -445,7 +446,7 @@ namespace LathBotFront.Commands
 
 		[Command("pardon")]
 		[Aliases("unwarn")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Bot Management")]
+		[RequireUserPermissions(Permissions.BanMembers)]
 		[Description("Pardon a warn of a user (for more information go to #staff-information and look at the warn documentation)")]
 		public async Task Pardon(CommandContext ctx, [Description("The user that you want to pardon a warn of")] DiscordMember member, [Description("The number of the warn that you want to pardon")] int warnNumber)
 		{
@@ -662,7 +663,7 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("persist")]
-		[RequireRoles(RoleCheckMode.Any, "Bot Management", "Senate of Lathland (ADM)")]
+		[RequireUserPermissions(Permissions.Administrator)]
 		public async Task Persist(CommandContext ctx, [Description("Member that got warned")] DiscordMember member, [Description("The number of the warn")] int warnNumber)
 		{
 			await ctx.Channel.TriggerTypingAsync();
@@ -943,7 +944,7 @@ namespace LathBotFront.Commands
 			builder.WithComponents(components);
 			DiscordMessage message = await builder.SendAsync(ctx.Channel);
 			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
-			var interactivityResult = await interactivity.WaitForButtonAsync(message, user);
+			var interactivityResult = await interactivity.WaitForButtonAsync(message, ctx.User);
 
 			await message.DeleteAsync();
 			if (interactivityResult.Result.Id == "abort")

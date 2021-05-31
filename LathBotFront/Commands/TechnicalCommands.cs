@@ -48,7 +48,7 @@ namespace LathBotFront.Commands
 
 		[Command("freeze")]
 		[Description("Freeze a whole channel when you get too many people spamming to control by other measures")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Plague Guard (Mods)", "Bot Management")]
+		[RequireUserPermissions(Permissions.BanMembers)]
 		public async Task ChFreeze(CommandContext ctx)
 		{
 			IReadOnlyList<DiscordOverwrite> perms = ctx.Channel.PermissionOverwrites;
@@ -66,7 +66,7 @@ namespace LathBotFront.Commands
 
 		[Command("unfreeze")]
 		[Description("Unfreeze a channel after it was previously frozen")]
-		[RequireRoles(RoleCheckMode.Any, "Blood Lord", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Bot Management")]
+		[RequireUserPermissions(Permissions.Administrator)]
 		public async Task ChUnFreeze(CommandContext ctx)
 		{
 			IReadOnlyList<DiscordOverwrite> perms = ctx.Channel.PermissionOverwrites;
@@ -142,7 +142,7 @@ namespace LathBotFront.Commands
 
 		[Command("prune")]
 		[Description("Kick all members without verified role")]
-		[RequireRoles(RoleCheckMode.Any, "Community Manager (OWN)", "Senate of Lathland (ADM)", "Bot Management")]
+		[RequireUserPermissions(Permissions.Administrator)]
 		public async Task Prune(CommandContext ctx)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
@@ -225,7 +225,7 @@ namespace LathBotFront.Commands
 
 		[Command("purgecell")]
 		[Description("Purge parstapo-cell and log it to a file")]
-		[RequireRoles(RoleCheckMode.Any, "Community Manager (OWN)", "Senate of Lathland (ADM)", "Bot Management")]
+		[RequireUserPermissions(Permissions.Administrator)]
 		public async Task PurgeCell(CommandContext ctx)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
@@ -251,7 +251,7 @@ namespace LathBotFront.Commands
 
 		[Command("boardcount")]
 		[Description("Change how many reactions it takes to get on the good guys board")]
-		[RequireRoles(RoleCheckMode.Any, "Senate of Lathland (ADM)", "Bot Management", "Plague Guard (Mods)")]
+		[RequireUserPermissions(Permissions.BanMembers)]
 		public async Task BoardCount(CommandContext ctx, [Description("New limit")] int newCount)
 		{
 			GoodGuysService.Instance.GoodGuysReactionCount = newCount;
@@ -279,7 +279,7 @@ namespace LathBotFront.Commands
 
 		[Command("clean")]
 		[Description("Purge muted and log it to a file")]
-		[RequireRoles(RoleCheckMode.Any, "Community Manager (OWN)", "Senate of Lathland (ADM)", "Bot Management", "Plague Guard (Mods)")]
+		[RequireUserPermissions(Permissions.BanMembers)]
 		public async Task Clean(CommandContext ctx)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);

@@ -490,7 +490,6 @@ namespace LathBotFront.Commands
 		[Command("stop")]
 		[Aliases("leave")]
 		[Description("Stop playback and leave channel")]
-		//[RequireRoles(RoleCheckMode.Any, "Bot Management", "Community Manager (OWN)", "Senate of Lathland (ADM)", "Plague Guard (Mods)")]
 		public async Task Stop(CommandContext ctx)
 		{
 			LavalinkNodeConnection node = ctx.Client.GetLavalink().ConnectedNodes.Values.First();
