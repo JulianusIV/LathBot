@@ -1023,36 +1023,29 @@ namespace LathBotFront.Commands
 				await message.DeleteAsync();
 				#endregion
 				#region GetPoints
-				bool tryagain = true;
-				int pointsDeducted = 0;
-				while (tryagain)
+				int pointsDeducted;
+				DiscordMessageBuilder discordMessage = new DiscordMessageBuilder
 				{
-					DiscordMessage pointsMessage = await ctx.Channel.SendMessageAsync($"For this rule you can reduce the users chances by {rule.MinPoints} - {rule.MaxPoints}").ConfigureAwait(false);
-					InteractivityResult<DiscordMessage> interactpointsMessage = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User).ConfigureAwait(false);
-					if (int.TryParse(interactpointsMessage.Result.Content, out int points))
+					Content = $"For this rule you can reduce the users chances by {rule.MinPoints} - {rule.MaxPoints}"
+				};
+				for (int i = 0; i < 3; i++)
+				{
+					List<DiscordButtonComponent> buttons = new List<DiscordButtonComponent>();
+					for (int index = i * 5; index < (i * 5) + 5; index++)
 					{
-						if (rule.MinPoints <= points && rule.MaxPoints >= points)
-						{
-							tryagain = false;
-							pointsDeducted = points;
-							await pointsMessage.DeleteAsync();
-						}
-						else
-						{
-							DiscordMessage buffoon = await ctx.Channel.SendMessageAsync("Buffoon").ConfigureAwait(false);
-							await pointsMessage.DeleteAsync().ConfigureAwait(false);
-							await Task.Delay(1000);
-							await buffoon.DeleteAsync().ConfigureAwait(false);
-						}
+						buttons.Add(new DiscordButtonComponent
+						(
+							ButtonStyle.Primary,
+							(index + 1).ToString(),
+							(index + 1).ToString(),
+							(index + 1) < rule.MinPoints || (index + 1) > rule.MaxPoints)
+						);
 					}
-					else
-					{
-						DiscordMessage buffoon = await ctx.Channel.SendMessageAsync("Buffoon").ConfigureAwait(false);
-						await pointsMessage.DeleteAsync();
-						await Task.Delay(1000);
-						await buffoon.DeleteAsync();
-					}
+					discordMessage.WithComponents(buttons);
 				}
+				DiscordMessage pointsMessage = await ctx.Channel.SendMessageAsync(discordMessage);
+				var interactpointsMessage = await interactivity.WaitForButtonAsync(message, ctx.User);
+				pointsDeducted = int.Parse(interactpointsMessage.Result.Id);
 				#endregion
 				#region GetSeverity
 				int severity = (pointsDeducted) switch
