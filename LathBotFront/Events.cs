@@ -122,6 +122,26 @@ namespace LathBotFront
 						DiscordObjectService.Instance.StaffQuestions = await DiscordObjectService.Instance.StaffChannel.SendMessageAsync(DiscordObjectService.Instance.StaffQuestionsEmbed);
 					}
 				}
+				if (e.Message.Content.Contains("##"))
+				{
+					int begin = e.Message.Content.IndexOf("##") + 2;
+					if (char.IsDigit(e.Message.Content.ElementAt(begin)))
+					{
+						int end = 0;
+						for (int i = begin + 1; i < e.Message.Content.Length - 1; i++)
+						{
+							if (!char.IsDigit(e.Message.Content.ElementAt(i)))
+							{
+								end = i - 1;
+								break;
+							}
+						}
+						if (end == 0)
+							end = e.Message.Content.Length - 1;
+						await e.Message.RespondAsync("https://github.com/JulianusIV/LathBot/issues/" + e.Message.Content[begin..(end + 1)]);
+					}
+
+				}
 			});
 			return Task.CompletedTask;
 		}
