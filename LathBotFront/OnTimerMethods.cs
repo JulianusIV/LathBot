@@ -174,7 +174,7 @@ namespace LathBotFront
 		{
 			IReadOnlyList<DiscordMessage> lastmessageList = await DiscordObjectService.Instance.DailyFactsChannel.GetMessagesAsync(1);
 			DiscordMessage lastmessage = lastmessageList.First();
-			if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(23))
+			if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(24))
 			{
 				WebClient client = new WebClient();
 				string content = client.DownloadString("https://useless-facts.sameerkumar.website/api");
