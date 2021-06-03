@@ -406,6 +406,59 @@ namespace LathBotFront.Commands
 
 		[Command("repeatmode")]
 		[Description("Repeat one or all tracks of current queue.")]
+		public async Task RepeatMode(CommandContext ctx)
+		{
+			if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
+			{
+				await ctx.RespondAsync("You are not in a vc.");
+				return;
+			}
+			LavalinkNodeConnection node = ctx.Client.GetLavalink().ConnectedNodes.Values.First();
+			LavalinkGuildConnection conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
+			if (conn == null)
+			{
+				await ctx.RespondAsync("Lavalink not connected");
+				return;
+			}
+			if (conn.CurrentState.CurrentTrack == null)
+			{
+				await ctx.RespondAsync("Nothing playing");
+				return;
+			}
+			await ctx.TriggerTypingAsync();
+			Repeaters? current = LavalinkService.Instance.Repeats?[ctx.Guild];
+			DiscordMessageBuilder builder = new DiscordMessageBuilder
+			{
+				Content = "­"
+			};
+			builder.WithComponents(new List<DiscordButtonComponent>
+			{
+				new DiscordButtonComponent(ButtonStyle.Success, "off", "off", current == Repeaters.off, new DiscordComponentEmoji("🚫")),
+				new DiscordButtonComponent(ButtonStyle.Success, "all", "all", current == Repeaters.all, new DiscordComponentEmoji("🔁")),
+				new DiscordButtonComponent(ButtonStyle.Success, "single", "single", current == Repeaters.single, new DiscordComponentEmoji("🔂"))
+			});
+
+			var message = await ctx.RespondAsync(builder);
+
+			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
+
+			var result = await interactivity.WaitForButtonAsync(message, ctx.User);
+
+			var repeatMode = result.Result.Id switch
+			{
+				string a when a.ToLower().Contains("all") => Repeaters.all,
+				string b when b.ToLower().Contains("single") => Repeaters.single,
+				string b when b.ToLower().Contains("off") => Repeaters.off,
+				_ => Repeaters.all,
+			};
+			LavalinkService.Instance.Repeats?.Remove(ctx.Guild);
+			LavalinkService.Instance.Repeats.Add(ctx.Guild, repeatMode);
+
+			await ctx.RespondAsync($"Repeatmode set to: {LavalinkService.Instance.Repeats[ctx.Guild]}");
+		}
+
+		[Command("repeatmode")]
+		[Description("Repeat one or all tracks of current queue.")]
 		public async Task RepeatMode(CommandContext ctx, [RemainingText][Description("Repeatmode (\"single\", \"all\" or \"off\")")] string mode)
 		{
 			if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
@@ -435,6 +488,8 @@ namespace LathBotFront.Commands
 			};
 			LavalinkService.Instance.Repeats?.Remove(ctx.Guild);
 			LavalinkService.Instance.Repeats.Add(ctx.Guild, repeatMode);
+
+			await ctx.RespondAsync($"Repeatmode set to: {LavalinkService.Instance.Repeats[ctx.Guild]}");
 		}
 
 		[Command("pause")]
