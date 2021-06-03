@@ -265,6 +265,9 @@ namespace LathBotFront
 						case "❗":
 							await member.GrantRoleAsync(e.Guild.GetRole(848307821703200828)); //Facts
 							break;
+						case "👾":
+							await member.GrantRoleAsync(e.Guild.GetRole(850029252812210207)); //Reassembly
+							break;
 						default:
 							break;
 					}
@@ -369,6 +372,9 @@ namespace LathBotFront
 							break;
 						case "❗":
 							await member.RevokeRoleAsync(e.Guild.GetRole(848307821703200828)); //Facts
+							break;
+						case "👾":
+							await member.RevokeRoleAsync(e.Guild.GetRole(850029252812210207)); //Reassembly
 							break;
 						default:
 							break;

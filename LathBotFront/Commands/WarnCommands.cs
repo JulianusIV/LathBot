@@ -1044,7 +1044,7 @@ namespace LathBotFront.Commands
 					discordMessage.WithComponents(buttons);
 				}
 				DiscordMessage pointsMessage = await ctx.Channel.SendMessageAsync(discordMessage);
-				var interactpointsMessage = await interactivity.WaitForButtonAsync(pointMessage, ctx.User);
+				var interactpointsMessage = await interactivity.WaitForButtonAsync(pointsMessage, ctx.User);
 				pointsDeducted = int.Parse(interactpointsMessage.Result.Id);
 				await pointsMessage.DeleteAsync();
 				#endregion
