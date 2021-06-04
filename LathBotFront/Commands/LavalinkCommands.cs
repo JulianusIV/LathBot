@@ -284,6 +284,7 @@ namespace LathBotFront.Commands
 				LavalinkService.Instance.Queues[conn.Guild][0] = LavalinkService.Instance.Queues[conn.Guild][rngRes];
 				LavalinkService.Instance.Queues[conn.Guild][rngRes] = temp;
 			}
+			await ctx.RespondAsync("Queue shuffled!");
 		}
 
 		[Command("queue")]
