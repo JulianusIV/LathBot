@@ -2,6 +2,7 @@
 using DSharpPlus.Entities;
 
 using LathBotBack.Base;
+using System.Collections.Generic;
 
 namespace LathBotBack.Services
 {
@@ -36,6 +37,8 @@ namespace LathBotBack.Services
 
 		public DiscordMessage LathQuestions { get; set; }
 		public DiscordMessage StaffQuestions { get; set; }
+		public Dictionary<ulong, DiscordMessage> LastDeletes { get; set; }
+		public Dictionary<ulong, DiscordMessage> LastEdits { get; set; }
 
 		public readonly DiscordEmbedBuilder LathQuestionsEmbed = new DiscordEmbedBuilder
 		{
@@ -85,6 +88,9 @@ namespace LathBotBack.Services
 				LathQuestions = lastLathQuestion;
 			else
 				LathQuestions = await QuestionsChannel.SendMessageAsync(LathQuestionsEmbed).ConfigureAwait(false);
+
+			LastEdits = new Dictionary<ulong, DiscordMessage>();
+			LastDeletes = new Dictionary<ulong, DiscordMessage>();
 		}
 	}
 }

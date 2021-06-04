@@ -63,6 +63,7 @@ namespace LathBotFront
 			Client.GuildDownloadCompleted += Events.Client_GuildDownloadCompleted;
 			Client.MessageCreated += Events.MessageCreated;
 			Client.MessageUpdated += Events.MessageUpdated;
+			Client.MessageDeleted += Events.MessageDeleted;
 			Client.GuildMemberAdded += Events.MemberAdded;
 			Client.MessageReactionAdded += Events.ReactionAdded;
 			Client.MessageReactionRemoved += Events.ReactionRemoved;
@@ -89,14 +90,14 @@ namespace LathBotFront
 			Commands = Client.UseCommandsNext(commandsConfig);
 
 			//Register commands
-			Commands.RegisterCommands<AuditCommands>();
-			Commands.RegisterCommands<EmbedCommands>();
-			Commands.RegisterCommands<InfoCommands>();
-			Commands.RegisterCommands<LavalinkCommands>();
+			//Commands.RegisterCommands<AuditCommands>();
+			//Commands.RegisterCommands<EmbedCommands>();
+			//Commands.RegisterCommands<InfoCommands>();
+			//Commands.RegisterCommands<LavalinkCommands>();
 			Commands.RegisterCommands<ReactionCommands>();
-			Commands.RegisterCommands<RuleCommands>();
-			Commands.RegisterCommands<TechnicalCommands>();
-			Commands.RegisterCommands<WarnCommands>();
+			//Commands.RegisterCommands<RuleCommands>();
+			//Commands.RegisterCommands<TechnicalCommands>();
+			//Commands.RegisterCommands<WarnCommands>();
 
 			//Register command events
 			Commands.CommandErrored += Events.CommandErrored;

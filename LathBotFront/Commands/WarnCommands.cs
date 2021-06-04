@@ -364,7 +364,7 @@ namespace LathBotFront.Commands
 		[Aliases("yeet")]
 		[RequireUserPermissions(Permissions.BanMembers)]
 		[Description("Ban a user")]
-		public async Task Ban(CommandContext ctx, [Description("The user that you want to ban")] DiscordUser user, [RemainingText][Description("Why the user is boing banned")] string reason)
+		public async Task Ban(CommandContext ctx, [Description("The user that you want to ban")] DiscordUser user, [RemainingText][Description("Why the user is being banned")] string reason)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
 			DiscordMember member = null;

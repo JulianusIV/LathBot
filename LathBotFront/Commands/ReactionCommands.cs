@@ -3,6 +3,8 @@
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using LathBotBack.Services;
+using System;
 
 namespace LathBotFront.Commands
 {
@@ -112,6 +114,53 @@ namespace LathBotFront.Commands
             DiscordMessageBuilder builder = new DiscordMessageBuilder
             {
                 Content = $"Thou shalt now REPENT {message}"
+            };
+            await ctx.Channel.SendMessageAsync(builder);
+        }
+
+        [Command("snipe")]
+        [Description("Snipe a deleted message")]
+        public async Task Snipe(CommandContext ctx)
+		{
+            if (!DiscordObjectService.Instance.LastDeletes.ContainsKey(ctx.Channel.Id))
+            {
+                return;
+            }
+            DiscordEmbedBuilder builder = new DiscordEmbedBuilder
+            {
+                Title = "Boom headshot!",
+                Description = DiscordObjectService.Instance.LastDeletes[ctx.Channel.Id].Content,
+                Author = new DiscordEmbedBuilder.EmbedAuthor
+                {
+                    IconUrl = DiscordObjectService.Instance.LastDeletes[ctx.Channel.Id].Author.AvatarUrl,
+                    Name = DiscordObjectService.Instance.LastDeletes[ctx.Channel.Id].Author.Username
+                },
+                Timestamp = DiscordObjectService.Instance.LastDeletes[ctx.Channel.Id].Timestamp,
+                Color = DiscordColor.Blurple,
+            };
+            await ctx.Channel.SendMessageAsync(builder);
+		}
+
+        [Command("snipeedit")]
+        [Aliases("se")]
+        [Description("Snipe an edited message")]
+        public async Task SnipeEdit(CommandContext ctx)
+        {
+			if (!DiscordObjectService.Instance.LastEdits.ContainsKey(ctx.Channel.Id))
+			{
+                return;
+			}
+            DiscordEmbedBuilder builder = new DiscordEmbedBuilder
+            {
+                Title = "Boom headshot!",
+                Description = DiscordObjectService.Instance.LastEdits[ctx.Channel.Id].Content,
+                Author = new DiscordEmbedBuilder.EmbedAuthor
+                {
+                    IconUrl = DiscordObjectService.Instance.LastEdits[ctx.Channel.Id].Author.AvatarUrl,
+                    Name = DiscordObjectService.Instance.LastEdits[ctx.Channel.Id].Author.Username
+                },
+                Timestamp = DiscordObjectService.Instance.LastEdits[ctx.Channel.Id].Timestamp,
+                Color = DiscordColor.Blurple,
             };
             await ctx.Channel.SendMessageAsync(builder);
         }

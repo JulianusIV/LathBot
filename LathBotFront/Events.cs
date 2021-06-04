@@ -83,7 +83,7 @@ namespace LathBotFront
 			return Task.CompletedTask;
 		}
 
-		internal static Task MessageCreated(DiscordClient _2, MessageCreateEventArgs e)
+		internal static Task MessageCreated(DiscordClient _1, MessageCreateEventArgs e)
 		{
 			_ = Task.Run(async () =>
 			{
@@ -146,12 +146,21 @@ namespace LathBotFront
 			return Task.CompletedTask;
 		}
 
-		internal static Task MessageUpdated(DiscordClient _3, MessageUpdateEventArgs e)
+		internal static Task MessageUpdated(DiscordClient _1, MessageUpdateEventArgs e)
 		{
 			_ = Task.Run(async () =>
 			{
 				if (!StartupService.Instance.StartUpCompleted)
 					return;
+
+				if (DiscordObjectService.Instance.LastEdits.ContainsKey(e.Channel.Id))
+				{
+					DiscordObjectService.Instance.LastEdits[e.Channel.Id] = e.MessageBefore;
+				}
+				else
+				{
+					DiscordObjectService.Instance.LastEdits.Add(e.Channel.Id, e.MessageBefore);
+				}
 				if (e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)) && e.Channel.Id == 726046413816987709)
 				{
 					string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
@@ -166,7 +175,27 @@ namespace LathBotFront
 			return Task.CompletedTask;
 		}
 
-		internal static Task MemberAdded(DiscordClient _4, GuildMemberAddEventArgs e)
+		internal static Task MessageDeleted(DiscordClient _1, MessageDeleteEventArgs e)
+		{
+			_ = Task.Run(() =>
+			{
+				if (!StartupService.Instance.StartUpCompleted)
+					return;
+				if (e.Guild.Id != 699555747591094344)
+					return;
+				if (DiscordObjectService.Instance.LastDeletes.ContainsKey(e.Channel.Id))
+				{
+					DiscordObjectService.Instance.LastDeletes[e.Channel.Id] = e.Message;
+				}
+				else
+				{
+					DiscordObjectService.Instance.LastDeletes.Add(e.Channel.Id, e.Message);
+				}
+			});
+			return Task.CompletedTask;
+		}
+
+		internal static Task MemberAdded(DiscordClient _1, GuildMemberAddEventArgs e)
 		{
 			_ = Task.Run(async () =>
 			{
@@ -312,7 +341,7 @@ namespace LathBotFront
 			return Task.CompletedTask;
 		}
 
-		internal static Task ReactionRemoved(DiscordClient _5, MessageReactionRemoveEventArgs e)
+		internal static Task ReactionRemoved(DiscordClient _1, MessageReactionRemoveEventArgs e)
 		{
 			_ = Task.Run(async () =>
 			{
@@ -415,7 +444,7 @@ namespace LathBotFront
 			return Task.CompletedTask;
 		}
 
-		internal static Task ClientErrored(DiscordClient _6, ClientErrorEventArgs e)
+		internal static Task ClientErrored(DiscordClient _1, ClientErrorEventArgs e)
 		{
 			_ = Task.Run(async () =>
 			{
@@ -425,7 +454,7 @@ namespace LathBotFront
 			return Task.CompletedTask;
 		}
 
-		internal static Task CommandErrored(CommandsNextExtension _7, CommandErrorEventArgs e)
+		internal static Task CommandErrored(CommandsNextExtension _1, CommandErrorEventArgs e)
 		{
 			_ = Task.Run(async () =>
 			{
