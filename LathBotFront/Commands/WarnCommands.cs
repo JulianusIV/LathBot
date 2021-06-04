@@ -523,7 +523,8 @@ namespace LathBotFront.Commands
 			};
 			DiscordEmbed embed = embedBuilder.Build();
 			DiscordChannel warningsChannel = ctx.Guild.GetChannel(722186358906421369);
-			await warningsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+			await warningsChannel.SendMessageAsync(member.Mention, embed);
+			await ctx.Channel.SendMessageAsync(ctx.Member.Mention, embed);
 		}
 
 		[Command("warns")]
