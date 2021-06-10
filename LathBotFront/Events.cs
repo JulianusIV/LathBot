@@ -83,6 +83,27 @@ namespace LathBotFront
 			return Task.CompletedTask;
 		}
 
+		internal static Task ComponentTriggered(DiscordClient sender, ComponentInteractionCreateEventArgs e)
+		{
+			_ = Task.Run(async () =>
+			{
+				if (e.Id == "lb_server_verification")
+				{
+					DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
+					await member.GrantRoleAsync(e.Guild.GetRole(767050052257447936));
+					await member.GrantRoleAsync(e.Guild.GetRole(699562710144385095));
+					await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+						new DiscordInteractionResponseBuilder
+						{
+							Content = "You are now verified and can access the rest of the channels.\n\n" +
+							"Make sure to visit <#767098427225145365> to unlock some more channels that you like.",
+							IsEphemeral = true
+						});
+				}
+			});
+			return Task.CompletedTask;
+		}
+
 		internal static Task MessageCreated(DiscordClient _1, MessageCreateEventArgs e)
 		{
 			_ = Task.Run(async () =>

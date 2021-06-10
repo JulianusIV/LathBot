@@ -31,19 +31,21 @@ namespace LathBotFront.Commands
 		[RequireRoles(RoleCheckMode.Any, "Bot Management")]
 		public async Task Test(CommandContext ctx)
 		{
+			DiscordColor color = new DiscordColor("#6518c9");//ctx.Guild.GetMemberAsync(192037157416730625).Result.Color;
 			DiscordMessageBuilder builder = new DiscordMessageBuilder
 			{
-				Content = "test"
+				Embed = new DiscordEmbedBuilder
+				{
+					Title = "Verification",
+					Description = "When you are done reading <#699559050106372116> and <#726553696389038190>, click the button beneath this message to access the other channels.",
+					Color = color
+				}
 			};
 			List<DiscordComponent> components = new List<DiscordComponent>();
-			var comp = new DiscordButtonComponent(ButtonStyle.Primary, "test", "test", emoji: new DiscordComponentEmoji(DiscordEmoji.FromUnicode("✅")));
+			var comp = new DiscordButtonComponent(ButtonStyle.Success, "lb_server_verification", "Verify", emoji: new DiscordComponentEmoji(DiscordEmoji.FromUnicode("✔️")));
 			components.Add(comp);
 			builder.WithComponents(components);
-			DiscordMessage message = await ctx.RespondAsync(builder);
-
-			var interactivity = ctx.Client.GetInteractivity();
-			InteractivityResult<ComponentInteractionCreateEventArgs> res = await interactivity.WaitForButtonAsync(message, ctx.User);
-			await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.Pong, new DiscordInteractionResponseBuilder { Content = "pong?"});
+			await ctx.Channel.SendMessageAsync(builder);
 		}
 
 		[Command("freeze")]

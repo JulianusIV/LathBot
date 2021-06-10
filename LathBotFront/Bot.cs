@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -9,12 +10,9 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 
-using LathBotBack;
 using LathBotBack.Config;
-using LathBotFront.Commands;
-using System.Net.WebSockets;
-using System.Reflection;
 using LathBotBack.Services;
+using LathBotFront.Commands;
 
 namespace LathBotFront
 {
@@ -69,7 +67,8 @@ namespace LathBotFront
 			Client.MessageReactionRemoved += Events.ReactionRemoved;
 			Client.VoiceStateUpdated += Events.VoiceStateUpdated;
 			Client.ClientErrored += Events.ClientErrored;
-
+			Client.ComponentInteractionCreated += Events.ComponentTriggered;
+			
 			//Register timer events
 			SystemService.Instance.WarnTimer.Elapsed += Events.TimerTick;
 
@@ -90,14 +89,14 @@ namespace LathBotFront
 			Commands = Client.UseCommandsNext(commandsConfig);
 
 			//Register commands
-			//Commands.RegisterCommands<AuditCommands>();
-			//Commands.RegisterCommands<EmbedCommands>();
-			//Commands.RegisterCommands<InfoCommands>();
-			//Commands.RegisterCommands<LavalinkCommands>();
+			Commands.RegisterCommands<AuditCommands>();
+			Commands.RegisterCommands<EmbedCommands>();
+			Commands.RegisterCommands<InfoCommands>();
+			Commands.RegisterCommands<LavalinkCommands>();
 			Commands.RegisterCommands<ReactionCommands>();
-			//Commands.RegisterCommands<RuleCommands>();
-			//Commands.RegisterCommands<TechnicalCommands>();
-			//Commands.RegisterCommands<WarnCommands>();
+			Commands.RegisterCommands<RuleCommands>();
+			Commands.RegisterCommands<TechnicalCommands>();
+			Commands.RegisterCommands<WarnCommands>();
 
 			//Register command events
 			Commands.CommandErrored += Events.CommandErrored;
