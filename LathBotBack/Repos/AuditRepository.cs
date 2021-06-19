@@ -17,7 +17,7 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "INSERT INTO Audits (ModDbId, WarnAmount, PardonAmount, MuteAmount, UnmuteAmount, KickAmount, BanAmount) VALUES (@mod, @warns, @pardons, @mutes, @unmutes, @kicks, @bans);";
+				DbCommand.CommandText = "INSERT INTO Audits (ModDbId, WarnAmount, PardonAmount, MuteAmount, UnmuteAmount, KickAmount, BanAmount, TimeoutAmount) VALUES (@mod, @warns, @pardons, @mutes, @unmutes, @kicks, @bans, @timeouts);";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("mod", entity.Mod);
 				DbCommand.Parameters.AddWithValue("warns", entity.Warns);
@@ -26,6 +26,7 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.AddWithValue("unmutes", entity.Unmutes);
 				DbCommand.Parameters.AddWithValue("kicks", entity.Kicks);
 				DbCommand.Parameters.AddWithValue("bans", entity.Bans);
+				DbCommand.Parameters.AddWithValue("timeouts", entity.Timeouts);
 				DbConnection.Open();
 				DbCommand.ExecuteNonQuery();
 				DbConnection.Close();
@@ -54,7 +55,7 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "SELECT WarnAmount, PardonAmount, MuteAmount, UnmuteAmount, KickAmount, BanAmount FROM Audits WHERE ModDbId = @mod;";
+				DbCommand.CommandText = "SELECT WarnAmount, PardonAmount, MuteAmount, UnmuteAmount, KickAmount, BanAmount, TimeoutAmount FROM Audits WHERE ModDbId = @mod;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("mod", id);
 				DbConnection.Open();
@@ -68,7 +69,8 @@ namespace LathBotBack.Repos
 					Mutes = (int)reader["MuteAmount"],
 					Unmutes = (int)reader["UnmuteAmount"],
 					Kicks = (int)reader["KickAmount"],
-					Bans = (int)reader["BanAmount"]
+					Bans = (int)reader["BanAmount"],
+					Timeouts = (int)reader["TimeoutAmount"]
 				};
 				DbConnection.Close();
 
@@ -95,7 +97,7 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "UPDATE Audits SET WarnAmount = @warns, PardonAmount = @pardons, MuteAmount = @mutes, UnmuteAmount = @unmutes, KickAmount = @kicks, BanAmount = @bans WHERE ModDbId = @id;";
+				DbCommand.CommandText = "UPDATE Audits SET WarnAmount = @warns, PardonAmount = @pardons, MuteAmount = @mutes, UnmuteAmount = @unmutes, KickAmount = @kicks, BanAmount = @bans, TimeoutAmount = @timeouts WHERE ModDbId = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("warns", entity.Warns);
 				DbCommand.Parameters.AddWithValue("pardons", entity.Pardons);
@@ -103,6 +105,7 @@ namespace LathBotBack.Repos
 				DbCommand.Parameters.AddWithValue("unmutes", entity.Unmutes);
 				DbCommand.Parameters.AddWithValue("kicks", entity.Kicks);
 				DbCommand.Parameters.AddWithValue("bans", entity.Bans);
+				DbCommand.Parameters.AddWithValue("timeouts", entity.Timeouts);
 				DbCommand.Parameters.AddWithValue("id", entity.Mod);
 				DbConnection.Open();
 				DbCommand.ExecuteNonQuery();

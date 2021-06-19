@@ -9,6 +9,7 @@
 		public int Unmutes { get; set; }
 		public int Kicks { get; set; }
 		public int Bans { get; set; }
+		public int Timeouts { get; set; }
 
 		public Audit()
 		{
@@ -24,6 +25,7 @@
 			Unmutes = 0;
 			Kicks = 0;
 			Bans = 0;
+			Timeouts = 0;
 		}
 	}
 }

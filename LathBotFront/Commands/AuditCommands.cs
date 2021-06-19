@@ -1,18 +1,18 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity.Extensions;
 
 using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
-using DSharpPlus;
-using System.Runtime.CompilerServices;
-using System.Linq;
-using System.Collections.Generic;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Extensions;
 
 namespace LathBotFront.Commands
 {
@@ -71,7 +71,7 @@ namespace LathBotFront.Commands
 				}
 				pages.Add(new Page { Embed = builder.Embed });
 			}
-			await ctx.Channel.SendPaginatedMessageAsync(ctx.Member, pages);
+			await ctx.Channel.SendPaginatedMessageAsync(ctx.Member, pages, deletion: PaginationDeletion.DeleteMessage);
 		}
 
 		private DiscordMessageBuilder DoAudit(CommandContext ctx, DiscordMember mod)
@@ -105,6 +105,7 @@ namespace LathBotFront.Commands
 			builder.AddField("Warn Amount:", audit.Warns.ToString());
 			builder.AddField("Pardon Amount:", audit.Pardons.ToString());
 			builder.AddField("Mute Amount:", audit.Mutes.ToString());
+			builder.AddField("Timeout Amount:", audit.Timeouts.ToString());
 			builder.AddField("Unmute Amount:", audit.Unmutes.ToString());
 			builder.AddField("Kick Amount:", audit.Kicks.ToString());
 			builder.AddField("Ban Amount:", audit.Bans.ToString());

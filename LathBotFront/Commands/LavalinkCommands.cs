@@ -13,6 +13,7 @@ using DSharpPlus.Interactivity.Extensions;
 using LathBotBack;
 using LathBotBack.Enums;
 using LathBotBack.Services;
+using DSharpPlus.Interactivity.Enums;
 
 namespace LathBotFront.Commands
 {
@@ -341,7 +342,7 @@ namespace LathBotFront.Commands
 					pages.Add(new Page { Embed = builder.Build() });
 				}
 			}
-			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages);
+			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, deletion: PaginationDeletion.DeleteMessage);
 		}
 
 		[Command("np")]
