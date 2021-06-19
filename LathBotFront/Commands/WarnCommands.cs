@@ -17,6 +17,8 @@ using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
 using DSharpPlus;
+using DSharpPlus.Net.Models;
+using System.Threading;
 
 namespace LathBotFront.Commands
 {
@@ -302,6 +304,171 @@ namespace LathBotFront.Commands
 			await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", embed);
 			DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
 			await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+		}
+
+		[Command("timeout")]
+		[RequireUserPermissions(Permissions.KickMembers)]
+		[Description("Put a user in timeout for 15/30/45/60 min")]
+		public async Task Timeout(CommandContext ctx, [Description("The user that you want to time out")]DiscordMember member, [Description("Why you want to put them in timeout")][RemainingText] string reason)
+		{
+			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			if (member.Id == 192037157416730625)
+			{
+				await ctx.Channel.SendMessageAsync("You cant timeout Lathrix!");
+				return;
+			}
+			if (ctx.Member.Hierarchy <= member.Hierarchy)
+			{
+				await ctx.Channel.SendMessageAsync("You cant timeout someone higher or same rank as you!");
+				return;
+			}
+			if (member.Roles.Contains(ctx.Guild.GetRole(701446136208293969)))
+			{
+				await ctx.Channel.SendMessageAsync("User is already muted or timed out.");
+				return;
+			}
+			if (string.IsNullOrEmpty(reason))
+			{
+				await ctx.RespondAsync("Please specify a reason!");
+				return;
+			}
+
+			DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder
+			{
+				Content = "How long should the user be put in timeout?"
+			};
+			messageBuilder.WithComponents(new DiscordComponent[]
+			{
+				new DiscordButtonComponent(ButtonStyle.Success, "15", "15 min", emoji:new DiscordComponentEmoji("🕒")),
+				new DiscordButtonComponent(ButtonStyle.Primary, "30", "30 min", emoji:new DiscordComponentEmoji("🕧")),
+				new DiscordButtonComponent(ButtonStyle.Secondary, "45", "45 min", emoji:new DiscordComponentEmoji("🕘")),
+				new DiscordButtonComponent(ButtonStyle.Danger, "60", "60 min", emoji:new DiscordComponentEmoji("🕛"))
+			});
+
+			DiscordMessage message = await ctx.RespondAsync(messageBuilder);
+			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
+			var res = await interactivity.WaitForButtonAsync(message, ctx.User);
+
+			int duration = int.Parse(res.Result.Id);
+			await message.DeleteAsync();
+
+			if (await AreYouSure(ctx, member, "timeout"))
+				return;
+
+			if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
+			{
+				DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+				{
+					Color = ctx.Member.Color,
+					Title = $"Trial Plague {ctx.Member.Nickname} just used a moderation command",
+					Description = $"[Link to usage]({ctx.Message.JumpLink})",
+					Footer = new DiscordEmbedBuilder.EmbedFooter
+					{
+						IconUrl = ctx.Member.AvatarUrl,
+						Text = $"{ctx.Member.Username}#{ctx.Member.Discriminator} ({ctx.Member.Id})"
+					}
+				};
+				await ctx.Guild.GetChannel(722905404354592900).SendMessageAsync(discordEmbed.Build());
+			}
+			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
+			bool userResult = urepo.GetIdByDcId(member.Id, out int id);
+			DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
+			DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
+			if (!userResult)
+			{
+				await ctx.RespondAsync("There was a problem reading a User, user has not been muted.");
+				return;
+			}
+			else
+			{
+				await member.RevokeRoleAsync(verificationRole);
+				await member.GrantRoleAsync(mutedRole);
+				await ctx.Guild.GetChannel(838088490704568341).AddOverwriteAsync(member, deny: Permissions.AccessChannels | Permissions.SendMessages);
+
+				userResult = urepo.GetIdByDcId(ctx.Member.Id, out int modId);
+				if (!userResult)
+				{
+					await ctx.RespondAsync("There was a problem reading a Mod, user has been muted anyways.");
+					return;
+				}
+				bool auditResult = repo.Read(modId, out Audit audit);
+				if (!auditResult)
+				{
+					await ctx.RespondAsync("There was a problem reading an Audit");
+				}
+				else
+				{
+					audit.Timeouts++;
+					bool updateResult = repo.Update(audit);
+					if (!updateResult)
+					{
+						await ctx.RespondAsync("There was a problem writing to the Audit table");
+					}
+				}
+			}
+			DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+			{
+				Color = DiscordColor.Gray,
+				Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
+				Title = $"Timeout",
+				Description = $"You have been put in timeout - that means you will not be able to speak in any channel for {duration} minutes!",
+				Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
+			};
+			embedBuilder.AddField("Reason:", reason);
+			DiscordEmbed embed = embedBuilder.Build();
+			await ctx.Channel.SendMessageAsync($"Timed out user for {duration} minutes.");
+
+			try
+			{
+				await member.SendMessageAsync(embed);
+			}
+			catch
+			{
+				DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
+				await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
+			}
+
+			Thread.Sleep(TimeSpan.FromMinutes(duration));
+
+			await member.GrantRoleAsync(verificationRole);
+			await member.RevokeRoleAsync(mutedRole);
+			foreach (var item in ctx.Guild.GetChannel(838088490704568341).PermissionOverwrites)
+			{
+				try
+				{
+					var mem = await item.GetMemberAsync();
+					if (mem.Id == member.Id)
+					{
+						await item.DeleteAsync();
+						break;
+					}
+				}
+				catch
+				{
+				}
+			}
+
+			await ctx.Channel.SendMessageAsync($"Timeout for {member} over after {duration} minutes.");
+
+			embed = new DiscordEmbedBuilder
+			{
+				Color = DiscordColor.Gray,
+				Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
+				Title = $"Timeout",
+				Description = $"Your timeout is now over.",
+				Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
+			};
+
+			try
+			{
+				await member.SendMessageAsync(embed);
+			}
+			catch
+			{
+				DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
+				await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
+			}
 		}
 
 		[Command("kick")]
