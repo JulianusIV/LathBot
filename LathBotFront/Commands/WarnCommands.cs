@@ -2,13 +2,16 @@
 using System.IO;
 using System.Net;
 using System.Linq;
+using System.Threading;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity.Extensions;
 
@@ -16,9 +19,6 @@ using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using DSharpPlus;
-using DSharpPlus.Net.Models;
-using System.Threading;
 
 namespace LathBotFront.Commands
 {
@@ -309,7 +309,7 @@ namespace LathBotFront.Commands
 		[Command("timeout")]
 		[RequireUserPermissions(Permissions.KickMembers)]
 		[Description("Put a user in timeout for 15/30/45/60 min")]
-		public async Task Timeout(CommandContext ctx, [Description("The user that you want to time out")]DiscordMember member, [Description("Why you want to put them in timeout")][RemainingText] string reason)
+		public async Task Timeout(CommandContext ctx, [Description("The user that you want to time out")] DiscordMember member, [Description("Why you want to put them in timeout")][RemainingText] string reason)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
 			if (member.Id == 192037157416730625)
@@ -372,39 +372,30 @@ namespace LathBotFront.Commands
 			}
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
 			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
-			bool userResult = urepo.GetIdByDcId(member.Id, out int id);
 			DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
 			DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
-			if (!userResult)
+			await member.RevokeRoleAsync(verificationRole);
+			await member.GrantRoleAsync(mutedRole);
+			await ctx.Guild.GetChannel(838088490704568341).AddOverwriteAsync(member, deny: Permissions.AccessChannels | Permissions.SendMessages);
+
+			bool result = urepo.GetIdByDcId(ctx.Member.Id, out int modId);
+			if (!result)
 			{
-				await ctx.RespondAsync("There was a problem reading a User, user has not been muted.");
+				await ctx.RespondAsync("There was a problem reading a Mod, user has been muted anyways.");
 				return;
+			}
+			bool auditResult = repo.Read(modId, out Audit audit);
+			if (!auditResult)
+			{
+				await ctx.RespondAsync("There was a problem reading an Audit");
 			}
 			else
 			{
-				await member.RevokeRoleAsync(verificationRole);
-				await member.GrantRoleAsync(mutedRole);
-				await ctx.Guild.GetChannel(838088490704568341).AddOverwriteAsync(member, deny: Permissions.AccessChannels | Permissions.SendMessages);
-
-				userResult = urepo.GetIdByDcId(ctx.Member.Id, out int modId);
-				if (!userResult)
+				audit.Timeouts++;
+				bool updateResult = repo.Update(audit);
+				if (!updateResult)
 				{
-					await ctx.RespondAsync("There was a problem reading a Mod, user has been muted anyways.");
-					return;
-				}
-				bool auditResult = repo.Read(modId, out Audit audit);
-				if (!auditResult)
-				{
-					await ctx.RespondAsync("There was a problem reading an Audit");
-				}
-				else
-				{
-					audit.Timeouts++;
-					bool updateResult = repo.Update(audit);
-					if (!updateResult)
-					{
-						await ctx.RespondAsync("There was a problem writing to the Audit table");
-					}
+					await ctx.RespondAsync("There was a problem writing to the Audit table");
 				}
 			}
 			DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
