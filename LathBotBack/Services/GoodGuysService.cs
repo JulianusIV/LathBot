@@ -32,7 +32,7 @@ namespace LathBotBack.Services
 			get
 			{
 				VariableRepository repo = new VariableRepository(ReadConfig.configJson.ConnectionString);
-				bool result = repo.Read(2, out Variable entity);
+				bool result = repo.Read(1, out Variable entity);
 				if (result)
 				{
 					return int.Parse(entity.Value);

@@ -260,7 +260,7 @@ namespace LathBotFront.Commands
 
 			VariableRepository repo = new VariableRepository(ReadConfig.configJson.ConnectionString);
 
-			Variable entity = new Variable { ID = 2, Name = "Goodguys", Value = newCount.ToString() };
+			Variable entity = new Variable { ID = 1, Name = "Goodguys", Value = newCount.ToString() };
 
 			bool result = repo.Update(entity);
 			if (!result)
