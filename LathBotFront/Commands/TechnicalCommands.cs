@@ -44,7 +44,7 @@ namespace LathBotFront.Commands
 			List<DiscordComponent> components = new List<DiscordComponent>();
 			var comp = new DiscordButtonComponent(ButtonStyle.Success, "lb_server_verification", "Verify", emoji: new DiscordComponentEmoji(DiscordEmoji.FromUnicode("✔️")));
 			components.Add(comp);
-			builder.WithComponents(components);
+			builder.AddComponents(components);
 			await ctx.Channel.SendMessageAsync(builder);
 		}
 

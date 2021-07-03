@@ -14,6 +14,7 @@ using LathBotBack;
 using LathBotBack.Enums;
 using LathBotBack.Services;
 using DSharpPlus.Interactivity.Enums;
+using DSharpPlus;
 
 namespace LathBotFront.Commands
 {
@@ -433,7 +434,7 @@ namespace LathBotFront.Commands
 			{
 				Content = "­"
 			};
-			builder.WithComponents(new List<DiscordButtonComponent>
+			builder.AddComponents(new List<DiscordButtonComponent>
 			{
 				new DiscordButtonComponent(ButtonStyle.Success, "off", "off", current == Repeaters.off, new DiscordComponentEmoji("🚫")),
 				new DiscordButtonComponent(ButtonStyle.Success, "all", "all", current == Repeaters.all, new DiscordComponentEmoji("🔁")),
