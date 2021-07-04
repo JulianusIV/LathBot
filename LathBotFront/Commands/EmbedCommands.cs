@@ -195,7 +195,7 @@ namespace LathBotFront.Commands
             embedBuilderRules.AddField("Annotation", "Having a invisible nickname " +
                 "AND profile picture as well as copying someones nick and pfp (impersonation) " +
                 "will be seen as trying to avoid staff and is warnable!\n" +
-                "The same applies to using alt accounts during mutes.");
+                "Any communication outside of <#838088490704568341> while muted can and will be seen as punishment evasion and is as such also warnable!");
 
             DiscordMessage rulesMessage = await ctx.Channel.GetMessageAsync(769235312907649044);
             await rulesMessage.ModifyAsync("", embedBuilderRules.Build()).ConfigureAwait(false);

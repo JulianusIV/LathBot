@@ -181,7 +181,6 @@ namespace LathBotFront.Commands
 					mute.Mod = modId;
 					mute.Duration = duration;
 					mute.Timestamp = DateTime.Now;
-					mute.LastCheck = DateTime.Now;
 					result = mrepo.Update(mute);
 					if (!result)
 					{
@@ -197,7 +196,6 @@ namespace LathBotFront.Commands
 						Mod = modId,
 						Duration = duration,
 						Timestamp = DateTime.Now,
-						LastCheck = DateTime.Now
 					};
 					result = mrepo.Create(ref mute);
 					if (!result)

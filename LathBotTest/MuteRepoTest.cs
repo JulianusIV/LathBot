@@ -22,7 +22,6 @@ namespace LathBotTest
 			{
 				Timestamp = DateTime.Parse("2020-01-01T01:01:01.0000000Z"),
 				Duration = 1,
-				LastCheck = DateTime.Parse("2021-02-02T02:02:02.1111111Z")
 			};
 		}
 
@@ -85,7 +84,6 @@ namespace LathBotTest
 			Assert.AreEqual(_obj.Mod, entity.Mod);
 			Assert.AreEqual(_obj.Timestamp.ToString("yyyy-MM-ddThh:mm:ss"), entity.Timestamp.ToString("yyyy-MM-ddThh:mm:ss"));
 			Assert.AreEqual(_obj.Duration, entity.Duration);
-			Assert.AreEqual(_obj.LastCheck.ToString("yyyy-MM-ddThh:mm:ss"), entity.LastCheck.ToString("yyyy-MM-ddThh:mm:ss"));
 		}
 
 		private void TestUpdate()
@@ -104,7 +102,6 @@ namespace LathBotTest
 			Assert.AreEqual(_obj.Mod, entity.Mod);
 			Assert.AreEqual(_obj.Timestamp.ToString("yyyy-MM-ddThh:mm:ss"), entity.Timestamp.ToString("yyyy-MM-ddThh:mm:ss"));
 			Assert.AreEqual(_obj.Duration, entity.Duration);
-			Assert.AreEqual(_obj.LastCheck.ToString("yyyy-MM-ddThh:mm:ss"), entity.LastCheck.ToString("yyyy-MM-ddThh:mm:ss"));
 		}
 
 		private void TestDelete()

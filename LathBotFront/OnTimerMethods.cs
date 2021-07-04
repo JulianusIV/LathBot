@@ -139,22 +139,18 @@ namespace LathBotFront
 						continue;
 					}
 					DiscordMember user = await DiscordObjectService.Instance.Lathland.GetMemberAsync(dbUser.DcID);
-					if (user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)) && DateTime.Now - item.LastCheck > TimeSpan.FromHours(24))
+					if (user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
 					{
-						item.LastCheck = DateTime.Now;
-						result = repo.Update(item);
-						if (!result)
+						if (mod.CreateDmChannelAsync().Result.GetMessagesAsync(5).Result.Any(x => x.Content.Contains("You will be reminded again tomorrow.") && x.CreationTimestamp > DateTime.Now - TimeSpan.FromHours(24)))
 						{
-							_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error updating a Mutes last timestamp.");
-							continue;
-						}
-						await mod.SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}) you muted at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration} days, is now muted for {(DateTime.Now - item.Timestamp):dd} days.\n" +
-							$"You will be reminded again tomorrow.");
-						if ((item.Duration < 8 && (item.Timestamp + TimeSpan.FromDays(item.Duration + 2)) < DateTime.Now) ||
-							(item.Duration > 7 && (item.Timestamp + TimeSpan.FromDays(item.Duration + 1)) < DateTime.Now) ||
-							(item.Duration == 14 && (item.Timestamp + TimeSpan.FromDays(item.Duration)) < DateTime.Now))
-						{
-							await DiscordObjectService.Instance.Lathland.GetChannel(722905404354592900).SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}), muted by {mod.DisplayName}#{mod.Discriminator} ({mod.Id}) at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration} days, is now muted for {(DateTime.Now - item.Timestamp):dd} days.");
+							await mod.SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}) you muted at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration} days, is now muted for {(DateTime.Now - item.Timestamp):dd} days.\n" +
+								$"You will be reminded again tomorrow.");
+							if ((item.Duration < 8 && (item.Timestamp + TimeSpan.FromDays(item.Duration + 2)) < DateTime.Now) ||
+								(item.Duration > 7 && (item.Timestamp + TimeSpan.FromDays(item.Duration + 1)) < DateTime.Now) ||
+								(item.Duration == 14 && (item.Timestamp + TimeSpan.FromDays(item.Duration)) < DateTime.Now))
+							{
+								await DiscordObjectService.Instance.Lathland.GetChannel(722905404354592900).SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}), muted by {mod.DisplayName}#{mod.Discriminator} ({mod.Id}) at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration} days, is now muted for {(DateTime.Now - item.Timestamp):dd} days.");
+							}
 						}
 					}
 					else if (!user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
