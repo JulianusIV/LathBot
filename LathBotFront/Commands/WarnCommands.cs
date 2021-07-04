@@ -304,6 +304,97 @@ namespace LathBotFront.Commands
 			await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
 		}
 
+		[Command("muted")]
+		[RequireUserPermissions(Permissions.KickMembers)]
+		[Description("Check how long a user is currently muted for.")]
+		public async Task Muted(CommandContext ctx, [Description("The member you want to check.")]DiscordMember member)
+		{
+			if (!member.Roles.Contains(ctx.Guild.GetRole(701446136208293969)))
+			{
+				await ctx.RespondAsync("Member is not even muted smh.");
+				return;
+			}
+			if (ctx.Channel.ParentId != 700009634643050546 &&
+				ctx.Channel.Id != 838088490704568341 &&
+				ctx.Channel.Id != 724313826786410508)
+			{
+				await ctx.RespondAsync("This command is not available in public channels");
+				return;
+			}
+			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			MuteRepository repo = new MuteRepository(ReadConfig.configJson.ConnectionString);
+			if (!urepo.GetIdByDcId(member.Id, out int id))
+			{
+				await ctx.RespondAsync("There was a problem getting a userID from the database.");
+				return;
+			}
+			if (!repo.GetMuteByUser(id, out Mute entity))
+			{
+				await ctx.RespondAsync("There was a problem getting a mute from the database.");
+				return;
+			}
+			if (!urepo.Read(entity.Mod, out User mod))
+			{
+				await ctx.RespondAsync("There was a problem getting a mod from the database.");
+			}
+			DiscordMember moderator = await ctx.Guild.GetMemberAsync(mod.DcID);
+
+			await ctx.RespondAsync(new DiscordEmbedBuilder
+			{
+				Title = $"Muted user: {member.DisplayName}#{member.Discriminator} ({member.Id})",
+				Description = $"Responsible moderator: {moderator.DisplayName}#{moderator.Discriminator} ({moderator.Id})",
+				Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
+				{
+					Url = member.AvatarUrl
+				},
+				Color = DiscordColor.Gray,
+			}
+				.AddField("Muted at:", $"<t:{((DateTimeOffset)entity.Timestamp).ToUnixTimeSeconds()}:F>")
+				.AddField("Proposed unmute time:", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(entity.Duration)).ToUnixTimeSeconds()}:R> ({entity.Duration} days after mute)"));
+		}
+
+		[Command("muted")]
+		[Description("Check when you got muted.")]
+		public async Task Muted(CommandContext ctx)
+		{
+			if (!ctx.Member.Roles.Contains(ctx.Guild.GetRole(701446136208293969)))
+			{
+				await ctx.RespondAsync("Your are not muted smh.");
+			}
+			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			MuteRepository repo = new MuteRepository(ReadConfig.configJson.ConnectionString);
+			if (!urepo.GetIdByDcId(ctx.Member.Id, out int id))
+			{
+				await ctx.RespondAsync("There was a problem getting a userID from the database.");
+				return;
+			}
+			if (!repo.GetMuteByUser(id, out Mute entity))
+			{
+				await ctx.RespondAsync("There was a problem getting a mute from the database.");
+				return;
+			}
+			if (!urepo.Read(entity.Mod, out User mod))
+			{
+				await ctx.RespondAsync("There was a problem getting a mod from the database.");
+			}
+			DiscordMember moderator = await ctx.Guild.GetMemberAsync(mod.DcID);
+
+			await ctx.RespondAsync(new DiscordEmbedBuilder
+			{
+				Title = $"Muted user: {ctx.Member.DisplayName}#{ctx.Member.Discriminator} ({ctx.Member.Id})",
+				Description = $"Responsible moderator: {moderator.DisplayName}#{moderator.Discriminator} ({moderator.Id})",
+				Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
+				{
+					Url = ctx.Member.AvatarUrl
+				},
+				Color = DiscordColor.Gray,
+			}
+				.AddField("Muted at:", $"<t:{((DateTimeOffset)entity.Timestamp).ToUnixTimeSeconds()}:F>")
+				.AddField("Muted since: ", $"<t:{((DateTimeOffset)entity.Timestamp).ToUnixTimeSeconds()}:R>")
+				.AddField("Earliest unmute date:", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(2)).ToUnixTimeSeconds()}")
+				.AddField("Latest unmute date (without Senate decision for longer mute):", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(14)).ToUnixTimeSeconds()}"));
+		}
+
 		[Command("timeout")]
 		[RequireUserPermissions(Permissions.KickMembers)]
 		[Description("Put a user in timeout for 15/30/45/60 min")]
