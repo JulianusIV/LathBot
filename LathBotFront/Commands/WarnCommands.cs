@@ -305,10 +305,11 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("muted")]
-		[RequireUserPermissions(Permissions.KickMembers)]
 		[Description("Check how long a user is currently muted for.")]
 		public async Task Muted(CommandContext ctx, [Description("The member you want to check.")]DiscordMember member)
 		{
+			if (!ctx.Member.Permissions.HasFlag(Permissions.KickMembers))
+				return;
 			if (!member.Roles.Contains(ctx.Guild.GetRole(701446136208293969)))
 			{
 				await ctx.RespondAsync("Member is not even muted smh.");
@@ -360,6 +361,7 @@ namespace LathBotFront.Commands
 			if (!ctx.Member.Roles.Contains(ctx.Guild.GetRole(701446136208293969)))
 			{
 				await ctx.RespondAsync("Your are not muted smh.");
+				return;
 			}
 			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
 			MuteRepository repo = new MuteRepository(ReadConfig.configJson.ConnectionString);
@@ -391,8 +393,8 @@ namespace LathBotFront.Commands
 			}
 				.AddField("Muted at:", $"<t:{((DateTimeOffset)entity.Timestamp).ToUnixTimeSeconds()}:F>")
 				.AddField("Muted since: ", $"<t:{((DateTimeOffset)entity.Timestamp).ToUnixTimeSeconds()}:R>")
-				.AddField("Earliest unmute date:", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(2)).ToUnixTimeSeconds()}")
-				.AddField("Latest unmute date (without Senate decision for longer mute):", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(14)).ToUnixTimeSeconds()}"));
+				.AddField("Earliest unmute date:", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(2)).ToUnixTimeSeconds()}:R>")
+				.AddField("Latest unmute date (without Senate decision for longer mute):", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(14)).ToUnixTimeSeconds()}:R>"));
 		}
 
 		[Command("timeout")]
