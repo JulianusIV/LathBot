@@ -78,7 +78,14 @@ namespace LathBotFront
 				{
 					strAllInDb = allInDb.ToString();
 				}
-				await DiscordObjectService.Instance.TimerChannel.SendMessageAsync(added > 0 ? $"Added {added} Users, {strAllInDb} entries in database, {DiscordObjectService.Instance.Lathland.MemberCount} members in guild." : "Startup completed");
+				await DiscordObjectService.Instance.TimerChannel.SendMessageAsync(
+					added > 0 ?
+					$"Added {added} Users, {strAllInDb} entries in database, {DiscordObjectService.Instance.Lathland.MemberCount} members in guild." :
+#if DEBUG
+					"Test configuration startup completed");
+#else
+					"Startup completed");
+#endif
 			});
 			return Task.CompletedTask;
 		}
@@ -117,7 +124,7 @@ namespace LathBotFront
 					return;
 				if (e.Channel.IsPrivate)
 					return;
-				if (StartupService.Instance.IsInDesignMode || !StartupService.Instance.StartUpCompleted)
+				if (!StartupService.Instance.StartUpCompleted)
 					return;
 				if (e.Channel.Id == 838088490704568341 && e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)))
 				{

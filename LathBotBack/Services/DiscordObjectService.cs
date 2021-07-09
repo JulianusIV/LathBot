@@ -71,11 +71,8 @@ namespace LathBotBack.Services
 			TimerChannel = Lathland.GetChannel(771830187171250217);
 			WarnsChannel = Lathland.GetChannel(722186358906421369);
 			DailyFactsChannel = Lathland.GetChannel(848240982880550932);
-
-			if (StartupService.Instance.IsInDesignMode)
-				return;
-
 			StaffChannel = Lathland.GetChannel(724313826786410508);
+
 			DiscordMessage lastStaffMessage = await StaffChannel.GetMessageAsync((ulong)StaffChannel.LastMessageId);
 			if (lastStaffMessage.Author.Id == 708083256439996497)
 				StaffQuestions = lastStaffMessage;

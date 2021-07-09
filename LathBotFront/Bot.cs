@@ -10,7 +10,9 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 
+using LathBotBack.Repos;
 using LathBotBack.Config;
+using LathBotBack.Models;
 using LathBotBack.Services;
 using LathBotFront.Commands;
 
@@ -44,13 +46,22 @@ namespace LathBotFront
 		public async Task RunAsync()
 		{
 			ReadConfig.Read();
+			var varrepo = new VariableRepository(ReadConfig.configJson.ConnectionString);
+			bool result;
+#if DEBUG
+			result = varrepo.Read(3, out Variable prefix); //get testPrefix if in designmode
+#else
+			result = varrepo.Read(2, out Variable prefix); //otherwise get default prefix
+#endif
 
 			DiscordConfiguration config = new DiscordConfiguration
 			{
 				Token = ReadConfig.configJson.Token,
 				TokenType = TokenType.Bot,
 				AutoReconnect = true,
+#if DEBUG
 				MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Debug,
+#endif
 				Intents = DiscordIntents.All
 			};
 
@@ -83,7 +94,7 @@ namespace LathBotFront
 
 			CommandsNextConfiguration commandsConfig = new CommandsNextConfiguration
 			{
-				StringPrefixes = new string[] { ReadConfig.configJson.Prefix },
+				StringPrefixes = new string[] { prefix.Value },
 				EnableMentionPrefix = true
 			};
 			Commands = Client.UseCommandsNext(commandsConfig);
@@ -104,10 +115,7 @@ namespace LathBotFront
 			await Client.ConnectAsync();
 
 			LavalinkNodeConnection lavaNode = null;
-			if (!StartupService.Instance.IsInDesignMode)
-			{
-				lavaNode = await ConnectLavaNodeAsync();
-			}
+			lavaNode = await ConnectLavaNodeAsync();
 
 			if (lavaNode != null)
 			{

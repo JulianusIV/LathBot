@@ -46,6 +46,24 @@ namespace LathBotBack.Services
 		}
 		private int _goodGuysReactionCount = 4;
 
+		public bool GoodGuysStatus
+		{
+			get
+			{
+				VariableRepository repo = new VariableRepository(ReadConfig.configJson.ConnectionString);
+				bool result = repo.Read(4, out Variable entity);
+				if (result)
+				{
+					return bool.Parse(entity.Value);
+				}
+				return _goodGuysStatus;
+			}
+			set
+			{
+				_goodGuysStatus = value;
+			}
+		}
+		private bool _goodGuysStatus = true;
 		public override void Init(DiscordClient client) { }
 	}
 }
