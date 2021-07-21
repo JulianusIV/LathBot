@@ -46,7 +46,7 @@ namespace LathBotFront
 		public async Task RunAsync()
 		{
 			ReadConfig.Read();
-			var varrepo = new VariableRepository(ReadConfig.configJson.ConnectionString);
+			var varrepo = new VariableRepository(ReadConfig.Config.ConnectionString);
 			bool result;
 #if DEBUG
 			result = varrepo.Read(3, out Variable prefix); //get testPrefix if in designmode
@@ -56,7 +56,7 @@ namespace LathBotFront
 
 			DiscordConfiguration config = new DiscordConfiguration
 			{
-				Token = ReadConfig.configJson.Token,
+				Token = ReadConfig.Config.Token,
 				TokenType = TokenType.Bot,
 				AutoReconnect = true,
 #if DEBUG

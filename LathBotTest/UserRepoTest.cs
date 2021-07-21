@@ -23,7 +23,7 @@ namespace LathBotTest
 		public void Setup()
 		{
 			ReadConfig.Read();
-			_objRepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			_objRepo = new UserRepository(ReadConfig.Config.ConnectionString);
 		}
 
 		[Test]

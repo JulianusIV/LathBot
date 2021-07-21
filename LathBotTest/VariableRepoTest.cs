@@ -24,7 +24,7 @@ namespace LathBotTest
 		public void Setup()
 		{
 			ReadConfig.Read();
-			_objRepo = new VariableRepository(ReadConfig.configJson.ConnectionString);
+			_objRepo = new VariableRepository(ReadConfig.Config.ConnectionString);
 		}
 
 		[Test]

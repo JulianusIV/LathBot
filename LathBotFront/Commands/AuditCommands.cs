@@ -22,8 +22,8 @@ namespace LathBotFront.Commands
 		[RequireRoles(RoleCheckMode.Any, "Bot Management")]
 		public async Task Register(CommandContext ctx, DiscordMember mod)
 		{
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
-			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+			AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
 			bool result = urepo.GetIdByDcId(mod.Id, out int userId);
 			if (!result)
 			{
@@ -80,8 +80,8 @@ namespace LathBotFront.Commands
 			{
 				return new DiscordMessageBuilder { Content = "Member is not a mod (anymore)." };
 			}
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
-			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+			AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
 			bool result = urepo.GetIdByDcId(mod.Id, out int id);
 			if (!result)
 			{

@@ -39,7 +39,7 @@ namespace LathBotFront.Commands
 				{
 					DcID = member.Id
 				};
-				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
+				UserRepository repo = new UserRepository(ReadConfig.Config.ConnectionString);
 
 				bool success = repo.Create(ref user);
 				if (!success)
@@ -60,7 +60,7 @@ namespace LathBotFront.Commands
 				return;
 			IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
 			int count = 0;
-			UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository repo = new UserRepository(ReadConfig.Config.ConnectionString);
 			foreach (DiscordMember member in members)
 			{
 
@@ -147,9 +147,9 @@ namespace LathBotFront.Commands
 				};
 				await ctx.Guild.GetChannel(722905404354592900).SendMessageAsync(discordEmbed.Build());
 			}
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
-			MuteRepository mrepo = new MuteRepository(ReadConfig.configJson.ConnectionString);
-			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+			MuteRepository mrepo = new MuteRepository(ReadConfig.Config.ConnectionString);
+			AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
 			bool userResult = urepo.GetIdByDcId(member.Id, out int id);
 			if (!userResult)
 			{
@@ -267,8 +267,8 @@ namespace LathBotFront.Commands
 			DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
 			await member.RevokeRoleAsync(mutedRole);
 			await member.GrantRoleAsync(verificationRole);
-			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool userResult = urepo.GetIdByDcId(ctx.Member.Id, out int id);
 			if (!userResult)
 			{
@@ -322,8 +322,8 @@ namespace LathBotFront.Commands
 				await ctx.RespondAsync("This command is not available in public channels");
 				return;
 			}
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
-			MuteRepository repo = new MuteRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+			MuteRepository repo = new MuteRepository(ReadConfig.Config.ConnectionString);
 			if (!urepo.GetIdByDcId(member.Id, out int id))
 			{
 				await ctx.RespondAsync("There was a problem getting a userID from the database.");
@@ -363,8 +363,8 @@ namespace LathBotFront.Commands
 				await ctx.RespondAsync("Your are not muted smh.");
 				return;
 			}
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
-			MuteRepository repo = new MuteRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+			MuteRepository repo = new MuteRepository(ReadConfig.Config.ConnectionString);
 			if (!urepo.GetIdByDcId(ctx.Member.Id, out int id))
 			{
 				await ctx.RespondAsync("There was a problem getting a userID from the database.");
@@ -461,8 +461,8 @@ namespace LathBotFront.Commands
 				};
 				await ctx.Guild.GetChannel(722905404354592900).SendMessageAsync(discordEmbed.Build());
 			}
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
-			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+			AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
 			DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
 			DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
 			await member.RevokeRoleAsync(verificationRole);
@@ -572,8 +572,8 @@ namespace LathBotFront.Commands
 			if (await AreYouSure(ctx, member, "kick"))
 				return;
 			await member.RemoveAsync();
-			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool userResult = urepo.GetIdByDcId(ctx.Member.Id, out int id);
 			if (!userResult)
 			{
@@ -639,8 +639,8 @@ namespace LathBotFront.Commands
 				return;
 			}
 			await ctx.Guild.BanMemberAsync(user.Id, reason: reason);
-			AuditRepository repo = new AuditRepository(ReadConfig.configJson.ConnectionString);
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool userResult = urepo.GetIdByDcId(ctx.Member.Id, out int id);
 			if (!userResult)
 			{
@@ -699,8 +699,8 @@ namespace LathBotFront.Commands
 		[Description("Pardon a warn of a user (for more information go to #staff-information and look at the warn documentation)")]
 		public async Task Pardon(CommandContext ctx, [Description("The user that you want to pardon a warn of")] DiscordMember member, [Description("The number of the warn that you want to pardon")] int warnNumber)
 		{
-			WarnRepository repo = new WarnRepository(ReadConfig.configJson.ConnectionString);
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool result = urepo.GetIdByDcId(member.Id, out int id);
 			if (!result)
 			{
@@ -738,8 +738,8 @@ namespace LathBotFront.Commands
 				}
 			}
 			#region Audit
-			AuditRepository auditRepo = new AuditRepository(ReadConfig.configJson.ConnectionString);
-			UserRepository userrepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			AuditRepository auditRepo = new AuditRepository(ReadConfig.Config.ConnectionString);
+			UserRepository userrepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool userResult = userrepo.GetIdByDcId(ctx.Member.Id, out int userid);
 			if (!userResult)
 			{
@@ -781,8 +781,8 @@ namespace LathBotFront.Commands
 		public async Task Warns(CommandContext ctx)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
-			WarnRepository repo = new WarnRepository(ReadConfig.configJson.ConnectionString);
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool result = urepo.GetIdByDcId(ctx.Member.Id, out int id);
 			if (!result)
 			{
@@ -827,8 +827,8 @@ namespace LathBotFront.Commands
 		public async Task Warns(CommandContext ctx, [Description("The user that you want to check the warning of (optional)")] DiscordMember member)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
-			WarnRepository repo = new WarnRepository(ReadConfig.configJson.ConnectionString);
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool result = urepo.GetIdByDcId(member.Id, out int id);
 			if (!result)
 			{
@@ -917,8 +917,8 @@ namespace LathBotFront.Commands
 		public async Task Persist(CommandContext ctx, [Description("Member that got warned")] DiscordMember member, [Description("The number of the warn")] int warnNumber)
 		{
 			await ctx.Channel.TriggerTypingAsync();
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
-			WarnRepository repo = new WarnRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+			WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
 			bool result = urepo.GetIdByDcId(member.Id, out int userDbId);
 			if (!result)
 			{
@@ -998,7 +998,7 @@ namespace LathBotFront.Commands
 		public async Task AllWarns(CommandContext ctx)
 		{
 			await ctx.Channel.TriggerTypingAsync();
-			WarnRepository repo = new WarnRepository(ReadConfig.configJson.ConnectionString);
+			WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
 			bool result = repo.GetAll(out List<Warn> warns);
 			if (!result)
 			{
@@ -1008,7 +1008,7 @@ namespace LathBotFront.Commands
 
 			int index = 0;
 			int indicator = 0;
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			List<Page> pages = new List<Page>();
 			DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 			{
@@ -1107,7 +1107,7 @@ namespace LathBotFront.Commands
 		[RequireRoles(RoleCheckMode.Any, "Bot Management")]
 		public async Task SqlQuery(CommandContext ctx, [Description("Query")][RemainingText] string command)
 		{
-			SqlConnection connection = new SqlConnection(ReadConfig.configJson.ConnectionString);
+			SqlConnection connection = new SqlConnection(ReadConfig.Config.ConnectionString);
 			try
 			{
 				if (ctx.Member.Id != 387325006176059394)
@@ -1348,14 +1348,14 @@ namespace LathBotFront.Commands
 				}
 				#endregion
 				#region Write
-				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
+				UserRepository repo = new UserRepository(ReadConfig.Config.ConnectionString);
 				bool result = repo.GetIdByDcId(member.Id, out int UserDbId);
 				if (!result)
 				{
 					await ctx.RespondAsync("There was an error getting the user from the Database");
 					return;
 				}
-				WarnRepository warnRepo = new WarnRepository(ReadConfig.configJson.ConnectionString);
+				WarnRepository warnRepo = new WarnRepository(ReadConfig.Config.ConnectionString);
 				result = warnRepo.GetWarnAmount(UserDbId, out int WarnNumber);
 				if (!result)
 				{
@@ -1388,8 +1388,8 @@ namespace LathBotFront.Commands
 				}
 				#endregion
 				#region Audit
-				AuditRepository auditRepo = new AuditRepository(ReadConfig.configJson.ConnectionString);
-				UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+				AuditRepository auditRepo = new AuditRepository(ReadConfig.Config.ConnectionString);
+				UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 				bool userResult = urepo.GetIdByDcId(ctx.Member.Id, out int id);
 				if (!userResult)
 				{

@@ -44,7 +44,7 @@ namespace LathBotFront
 				BaseService.InitAll(sender);
 
 				int added = 0;
-				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
+				UserRepository repo = new UserRepository(ReadConfig.Config.ConnectionString);
 
 				bool result = repo.GetAll(out List<User> list);
 				if (!result)
@@ -231,7 +231,7 @@ namespace LathBotFront
 				{
 					return;
 				}
-				UserRepository repo = new UserRepository(ReadConfig.configJson.ConnectionString);
+				UserRepository repo = new UserRepository(ReadConfig.Config.ConnectionString);
 				bool result = repo.ExistsDcId(e.Member.Id, out bool exists);
 				if (!result)
 				{

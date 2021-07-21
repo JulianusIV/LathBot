@@ -31,7 +31,7 @@ namespace LathBotBack.Services
 		{
 			get
 			{
-				VariableRepository repo = new VariableRepository(ReadConfig.configJson.ConnectionString);
+				VariableRepository repo = new VariableRepository(ReadConfig.Config.ConnectionString);
 				bool result = repo.Read(1, out Variable entity);
 				if (result)
 				{
@@ -50,7 +50,7 @@ namespace LathBotBack.Services
 		{
 			get
 			{
-				VariableRepository repo = new VariableRepository(ReadConfig.configJson.ConnectionString);
+				VariableRepository repo = new VariableRepository(ReadConfig.Config.ConnectionString);
 				bool result = repo.Read(4, out Variable entity);
 				if (result)
 				{

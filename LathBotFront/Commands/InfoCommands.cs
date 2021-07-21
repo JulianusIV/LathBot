@@ -114,8 +114,8 @@ namespace LathBotFront.Commands
 			};
 			DateTime thisTime = DateTime.Now;
 
-			ModRepository repo = new ModRepository(ReadConfig.configJson.ConnectionString);
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			ModRepository repo = new ModRepository(ReadConfig.Config.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool result = repo.GetAll(out List<Mod> list);
 			if (!result)
 			{

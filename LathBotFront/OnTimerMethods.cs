@@ -1,6 +1,5 @@
 ﻿using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-using LathBotBack;
+using DSharpPlus.Exceptions;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
@@ -18,8 +17,8 @@ namespace LathBotFront
 	{
 		public async static Task PardonWarns()
 		{
-			WarnRepository repo = new WarnRepository(ReadConfig.configJson.ConnectionString);
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool result = repo.GetAll(out List<Warn> list);
 			if (!result)
 			{
@@ -44,7 +43,7 @@ namespace LathBotFront
 					{
 						_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error reading other warns from the database.");
 					}
-
+					
 					int counter = 0;
 					foreach (var warn in others)
 					{
@@ -113,8 +112,8 @@ namespace LathBotFront
 
 		public async static Task RemindMutes()
 		{
-			MuteRepository repo = new MuteRepository(ReadConfig.configJson.ConnectionString);
-			UserRepository urepo = new UserRepository(ReadConfig.configJson.ConnectionString);
+			MuteRepository repo = new MuteRepository(ReadConfig.Config.ConnectionString);
+			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool result = repo.GetAll(out List<Mute> list);
 			if (!result)
 			{
@@ -131,15 +130,28 @@ namespace LathBotFront
 						_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting a mod from the database.");
 						continue;
 					}
-					DiscordMember mod = await DiscordObjectService.Instance.Lathland.GetMemberAsync(dbMod.DcID);
+					DiscordMember mod = null;
+					try
+					{
+						mod = await DiscordObjectService.Instance.Lathland.GetMemberAsync(dbMod.DcID);
+					}
+					catch (NotFoundException)
+					{
+						continue;
+					}
 					result = urepo.Read(item.User, out User dbUser);
 					if (!result)
 					{
 						_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting a mod from the database.");
 						continue;
 					}
-					DiscordMember user = await DiscordObjectService.Instance.Lathland.GetMemberAsync(dbUser.DcID);
-					if (user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
+					DiscordMember user = null;
+					try
+					{
+						user = await DiscordObjectService.Instance.Lathland.GetMemberAsync(dbUser.DcID);
+					}
+					catch (NotFoundException) { }
+					if (!(user is null) || user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
 					{
 						if (mod.CreateDmChannelAsync().Result.GetMessagesAsync(5).Result.Any(x => x.Content.Contains("You will be reminded again tomorrow.") && x.CreationTimestamp > DateTime.Now - TimeSpan.FromHours(24)))
 						{
@@ -153,7 +165,7 @@ namespace LathBotFront
 							}
 						}
 					}
-					else if (!user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
+					else if (user is null || !user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
 					{
 						result = repo.Delete(item.Id);
 						if (!result)

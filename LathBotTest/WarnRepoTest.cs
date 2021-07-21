@@ -30,7 +30,7 @@ namespace LathBotTest
 		public void Setup()
 		{
 			ReadConfig.Read();
-			_objRepo = new WarnRepository(ReadConfig.configJson.ConnectionString);
+			_objRepo = new WarnRepository(ReadConfig.Config.ConnectionString);
 		}
 
 		[Test]

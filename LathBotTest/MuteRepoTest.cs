@@ -29,7 +29,7 @@ namespace LathBotTest
 		public void Setup()
 		{
 			ReadConfig.Read();
-			_objRepo = new MuteRepository(ReadConfig.configJson.ConnectionString);
+			_objRepo = new MuteRepository(ReadConfig.Config.ConnectionString);
 		}
 
 		[Test]

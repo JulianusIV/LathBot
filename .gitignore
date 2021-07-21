@@ -266,3 +266,4 @@ FakesAssemblies/
 config.json
 app.config
 error.txt
+settings.env

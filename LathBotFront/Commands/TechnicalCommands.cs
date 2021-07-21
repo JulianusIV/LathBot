@@ -249,7 +249,7 @@ namespace LathBotFront.Commands
 		{
 			GoodGuysService.Instance.GoodGuysReactionCount = newCount;
 
-			VariableRepository repo = new VariableRepository(ReadConfig.configJson.ConnectionString);
+			VariableRepository repo = new VariableRepository(ReadConfig.Config.ConnectionString);
 
 			Variable entity = new Variable { ID = 1, Name = "Goodguys", Value = newCount.ToString() };
 
