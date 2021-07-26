@@ -47,28 +47,32 @@ namespace LathBotFront.Commands
 			string part = "";
 			int index = 0;
 			string result;
-			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Resources.LathBotTOS.txt"))
+			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LathBotFront.Resources.LathBotTOS.txt"))
 			using (StreamReader reader = new StreamReader(stream))
 			{
 				result = reader.ReadToEnd();
 			}
+			List<string> content = new List<string>();
 			foreach (char character in result)
 			{
 				index++;
-				if (part.Length < 2000)
+				if (part.Length < 4096)
 				{
 					if (index < result.Length)
 						part += character;
 					else
-						await ctx.Channel.SendMessageAsync(part + character).ConfigureAwait(false);
+						content.Add(part);
 				}
 				else
 				{
-					await ctx.Channel.SendMessageAsync(part).ConfigureAwait(false);
+					content.Add(part);
 					part = character.ToString();
 				}
 			}
-
+			foreach (string cut in content)
+			{
+				await ctx.Channel.SendMessageAsync(new DiscordEmbedBuilder { Description = cut });
+			}
 		}
 
 		[Command("privacy")]
@@ -78,26 +82,31 @@ namespace LathBotFront.Commands
 			string part = "";
 			int index = 0;
 			string result;
-			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Resources.LathBotPP.txt"))
+			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LathBotFront.Resources.LathBotPP.txt"))
 			using (StreamReader reader = new StreamReader(stream))
 			{
 				result = reader.ReadToEnd();
 			}
+			List<string> content = new List<string>();
 			foreach (char character in result)
 			{
 				index++;
-				if (part.Length < 2000)
+				if (part.Length < 4096)
 				{
 					if (index < result.Length)
 						part += character;
 					else
-						await ctx.Channel.SendMessageAsync(part + character).ConfigureAwait(false);
+						content.Add(part);
 				}
 				else
 				{
-					await ctx.Channel.SendMessageAsync(part).ConfigureAwait(false);
+					content.Add(part);
 					part = character.ToString();
 				}
+			}
+			foreach (string cut in content)
+			{
+				await ctx.Channel.SendMessageAsync(new DiscordEmbedBuilder { Description = cut });
 			}
 		}
 

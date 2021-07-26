@@ -587,7 +587,7 @@ namespace LathBotFront
 
 		internal static void OnLog(object sender, LoggingEventArgs e)
 		{
-			DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Message);
+			DiscordObjectService.Instance.ErrorLogChannel?.SendMessageAsync(e.Message);
 		}
 	}
 }
