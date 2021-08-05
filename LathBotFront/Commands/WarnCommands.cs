@@ -263,12 +263,35 @@ namespace LathBotFront.Commands
 				_ = await ctx.Channel.SendMessageAsync("User is not muted.");
 				return;
 			}
+			if (await AreYouSure(ctx, member, "unmute"))
+				return;
 			DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
 			DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
 			await member.RevokeRoleAsync(mutedRole);
 			await member.GrantRoleAsync(verificationRole);
 			AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
+			MuteRepository mrepo = new MuteRepository(ReadConfig.Config.ConnectionString);
 			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+
+			if (!urepo.GetIdByDcId(member.Id, out int userId))
+			{
+				await ctx.RespondAsync("Failed reading a User - member has been unmuted anyways.");
+			}
+			else
+			{
+				if (!mrepo.GetMuteByUser(userId, out Mute entity))
+				{
+					await ctx.RespondAsync("Failed reading a mute from the database - member has been unmuted anyways.");
+				}
+				else
+				{
+					if (!mrepo.Delete(entity.Id))
+					{
+						await ctx.RespondAsync("Failed to delete a mute from the database - member has been unmuted anyways.");
+					}
+				}
+			}
+
 			bool userResult = urepo.GetIdByDcId(ctx.Member.Id, out int id);
 			if (!userResult)
 			{

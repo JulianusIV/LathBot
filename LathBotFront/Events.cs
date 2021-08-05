@@ -90,7 +90,7 @@ namespace LathBotFront
 			return Task.CompletedTask;
 		}
 
-		internal static Task ComponentTriggered(DiscordClient sender, ComponentInteractionCreateEventArgs e)
+		internal static Task ComponentTriggered(DiscordClient _1, ComponentInteractionCreateEventArgs e)
 		{
 			_ = Task.Run(async () =>
 			{

@@ -137,12 +137,13 @@ namespace LathBotFront
 					}
 					catch (NotFoundException)
 					{
+						_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting a mod from discord.");
 						continue;
 					}
 					result = urepo.Read(item.User, out User dbUser);
 					if (!result)
 					{
-						_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting a mod from the database.");
+						_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting a user from the database.");
 						continue;
 					}
 					DiscordMember user = null;
@@ -150,10 +151,13 @@ namespace LathBotFront
 					{
 						user = await DiscordObjectService.Instance.Lathland.GetMemberAsync(dbUser.DcID);
 					}
-					catch (NotFoundException) { }
-					if (!(user is null) || user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
+					catch (NotFoundException)
 					{
-						if (mod.CreateDmChannelAsync().Result.GetMessagesAsync(5).Result.Any(x => x.Content.Contains("You will be reminded again tomorrow.") && x.CreationTimestamp > DateTime.Now - TimeSpan.FromHours(24)))
+						_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting a user from discord.");
+					}
+					if (!(user is null) && user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
+					{
+						if (!(await (await mod.CreateDmChannelAsync()).GetMessagesAsync(5)).Any(x => x.Content.Contains("You will be reminded again tomorrow.") && x.CreationTimestamp > DateTime.Now - TimeSpan.FromHours(24)))
 						{
 							await mod.SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}) you muted at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration} days, is now muted for {(DateTime.Now - item.Timestamp):dd} days.\n" +
 								$"You will be reminded again tomorrow.");
@@ -206,7 +210,7 @@ namespace LathBotFront
 		}
 	}
 
-	class FactJsonObject
+	struct FactJsonObject
 	{
 		[JsonProperty("data")]
 		public string Data { get; set; }
