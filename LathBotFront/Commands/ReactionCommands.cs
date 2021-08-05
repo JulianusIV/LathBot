@@ -123,19 +123,27 @@ namespace LathBotFront.Commands
         public async Task Snipe(CommandContext ctx)
 		{
             if (!DiscordObjectService.Instance.LastDeletes.ContainsKey(ctx.Channel.Id))
-            {
                 return;
-            }
+            if (!DiscordObjectService.Instance.LastDeletes.TryGetValue(ctx.Channel.Id, out var lastDelete))
+			{
+                SystemService.Instance.Logger.Log($"Error while trying to get last deleted message in {ctx.Channel.Id}");
+                return;
+			}
+            if (lastDelete.Author.Id == 387325006176059394)
+			{
+                await ctx.RespondAsync("No");
+                return;
+			}
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder
             {
                 Title = "Boom headshot!",
-                Description = DiscordObjectService.Instance.LastDeletes[ctx.Channel.Id].Content,
+                Description = lastDelete.Content,
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
-                    IconUrl = DiscordObjectService.Instance.LastDeletes[ctx.Channel.Id].Author.AvatarUrl,
-                    Name = DiscordObjectService.Instance.LastDeletes[ctx.Channel.Id].Author.Username
+                    IconUrl = lastDelete.Author.AvatarUrl,
+                    Name = lastDelete.Author.Username
                 },
-                Timestamp = DiscordObjectService.Instance.LastDeletes[ctx.Channel.Id].Timestamp,
+                Timestamp = lastDelete.Timestamp,
                 Color = DiscordColor.Blurple,
             };
             await ctx.Channel.SendMessageAsync(builder);
@@ -150,16 +158,26 @@ namespace LathBotFront.Commands
 			{
                 return;
 			}
+            if (!DiscordObjectService.Instance.LastEdits.TryGetValue(ctx.Channel.Id, out var lastEdit))
+            {
+                SystemService.Instance.Logger.Log($"Error while trying to get last edited message in {ctx.Channel.Id}");
+                return;
+            }
+            if (lastEdit.Author.Id == 387325006176059394)
+            {
+                await ctx.RespondAsync("No");
+                return;
+            }
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder
             {
                 Title = "Boom headshot!",
-                Description = DiscordObjectService.Instance.LastEdits[ctx.Channel.Id].Content,
+                Description = lastEdit.Content,
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
-                    IconUrl = DiscordObjectService.Instance.LastEdits[ctx.Channel.Id].Author.AvatarUrl,
-                    Name = DiscordObjectService.Instance.LastEdits[ctx.Channel.Id].Author.Username
+                    IconUrl = lastEdit.Author.AvatarUrl,
+                    Name = lastEdit.Author.Username
                 },
-                Timestamp = DiscordObjectService.Instance.LastEdits[ctx.Channel.Id].Timestamp,
+                Timestamp = lastEdit.Timestamp,
                 Color = DiscordColor.Blurple,
             };
             await ctx.Channel.SendMessageAsync(builder);
