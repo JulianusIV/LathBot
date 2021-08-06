@@ -343,7 +343,7 @@ namespace LathBotFront.Commands
 					pages.Add(new Page { Embed = builder.Build() });
 				}
 			}
-			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, deletion: PaginationDeletion.DeleteMessage);
+			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.DeleteMessage);
 		}
 
 		[Command("np")]
@@ -445,7 +445,7 @@ namespace LathBotFront.Commands
 
 			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
 
-			var result = await interactivity.WaitForButtonAsync(message, ctx.User);
+			var result = await interactivity.WaitForButtonAsync(message, ctx.User, TimeSpan.FromMinutes(1));
 
 			var repeatMode = result.Result.Id switch
 			{

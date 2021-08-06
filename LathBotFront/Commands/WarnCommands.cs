@@ -461,7 +461,7 @@ namespace LathBotFront.Commands
 
 			DiscordMessage message = await ctx.RespondAsync(messageBuilder);
 			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
-			var res = await interactivity.WaitForButtonAsync(message, ctx.User);
+			var res = await interactivity.WaitForButtonAsync(message, ctx.User, TimeSpan.FromMinutes(1));
 
 			int duration = int.Parse(res.Result.Id);
 			await message.DeleteAsync();
@@ -1122,7 +1122,7 @@ namespace LathBotFront.Commands
 					}
 				}
 			}
-			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, deletion: PaginationDeletion.DeleteMessage);
+			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.DeleteMessage);
 		}
 
 		[Command("sql")]
@@ -1217,7 +1217,7 @@ namespace LathBotFront.Commands
 			builder.AddComponents(components);
 			DiscordMessage message = await builder.SendAsync(ctx.Channel);
 			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
-			var interactivityResult = await interactivity.WaitForButtonAsync(message, ctx.User);
+			var interactivityResult = await interactivity.WaitForButtonAsync(message, ctx.User, TimeSpan.FromMinutes(1));
 
 			await message.DeleteAsync();
 			if (interactivityResult.Result.Id == "abort")
@@ -1291,7 +1291,7 @@ namespace LathBotFront.Commands
 				}
 				DiscordMessage message = await ctx.Channel.SendMessageAsync(messageBuilder);
 
-				var reaction = await interactivity.WaitForButtonAsync(message, ctx.Member).ConfigureAwait(false);
+				var reaction = await interactivity.WaitForButtonAsync(message, ctx.Member, TimeSpan.FromMinutes(2));
 				Rule rule = RuleService.rules.Single(x => x.RuleNum.ToString() == reaction.Result.Id);
 				await message.DeleteAsync();
 				#endregion
@@ -1317,7 +1317,7 @@ namespace LathBotFront.Commands
 					discordMessage.AddComponents(buttons);
 				}
 				DiscordMessage pointsMessage = await ctx.Channel.SendMessageAsync(discordMessage);
-				var interactpointsMessage = await interactivity.WaitForButtonAsync(pointsMessage, ctx.User);
+				var interactpointsMessage = await interactivity.WaitForButtonAsync(pointsMessage, ctx.User, TimeSpan.FromMinutes(2));
 				pointsDeducted = int.Parse(interactpointsMessage.Result.Id);
 				await pointsMessage.DeleteAsync();
 				#endregion
