@@ -46,7 +46,7 @@ namespace LathBotFront.Commands
                 if (ctx.Member.Id == 387325006176059394)
                     await ctx.Channel.SendMessageAsync($"You might think you are immune to slaps {target.Mention}, *slap* but {ctx.Member.Mention} is immune to counter slapping! *slap*").ConfigureAwait(false);
                 else
-                    await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* do you want to be nuzzled by a catboy?! *slap* ÒwÓ").ConfigureAwait(false);
+                    await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* do you want to be nuzzled by a catboy?! *slap* ÒwÓ");
             }
             else if (target.Id == 700373370491109489) //Ava
             {
