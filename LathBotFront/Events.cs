@@ -168,6 +168,9 @@ namespace LathBotFront
 							end = e.Message.Content.Length - 1;
 						await e.Message.RespondAsync("https://github.com/JulianusIV/LathBot/issues/" + e.Message.Content[begin..(end + 1)]);
 					}
+				}
+				if (e.Channel.Id == 873215194988437574)
+				{
 
 				}
 			});
@@ -283,29 +286,17 @@ namespace LathBotFront
 						case "⛏️":
 							await member.GrantRoleAsync(e.Guild.GetRole(713367380574732319)); //MC
 							break;
-						case "🌍":
-							await member.GrantRoleAsync(e.Guild.GetRole(701454812721446912)); //TT
-							break;
 						case "🔨":
 							await member.GrantRoleAsync(e.Guild.GetRole(766322672321560628)); //WH40K
 							break;
 						case "📜":
 							await member.GrantRoleAsync(e.Guild.GetRole(718162129609556121)); //Debate
 							break;
-						case "🎭":
-							await member.GrantRoleAsync(e.Guild.GetRole(725046250843668490)); //RP
-							break;
-						case "💮":
-							await member.GrantRoleAsync(e.Guild.GetRole(734215957446131733)); //Anime
-							break;
 						case "❓":
 							await member.GrantRoleAsync(e.Guild.GetRole(741342066021367938)); //DQuestion
 							break;
 						case "💬":
 							await member.GrantRoleAsync(e.Guild.GetRole(765622563338453023)); //DQuote
-							break;
-						case "💰":
-							await member.GrantRoleAsync(e.Guild.GetRole(767035347367362590)); //Cas
 							break;
 						case "🎨":
 							await member.GrantRoleAsync(e.Guild.GetRole(767039219403063307)); //Art
@@ -315,9 +306,6 @@ namespace LathBotFront
 							break;
 						case "💢":
 							await member.GrantRoleAsync(e.Guild.GetRole(812755886413971499)); //Vent
-							break;
-						case "🕒":
-							await member.GrantRoleAsync(e.Guild.GetRole(821483418491289622)); //History
 							break;
 						case "❗":
 							await member.GrantRoleAsync(e.Guild.GetRole(848307821703200828)); //Facts
@@ -391,29 +379,17 @@ namespace LathBotFront
 						case "⛏️":
 							await member.RevokeRoleAsync(e.Guild.GetRole(713367380574732319)); //MC
 							break;
-						case "🌍":
-							await member.RevokeRoleAsync(e.Guild.GetRole(701454812721446912)); //TT
-							break;
 						case "🔨":
 							await member.RevokeRoleAsync(e.Guild.GetRole(766322672321560628)); //WH40K
 							break;
 						case "📜":
 							await member.RevokeRoleAsync(e.Guild.GetRole(718162129609556121)); //Debate
 							break;
-						case "🎭":
-							await member.RevokeRoleAsync(e.Guild.GetRole(725046250843668490)); //RP
-							break;
-						case "💮":
-							await member.RevokeRoleAsync(e.Guild.GetRole(734215957446131733)); //Anime
-							break;
 						case "❓":
 							await member.RevokeRoleAsync(e.Guild.GetRole(741342066021367938));//DQuestion
 							break;
 						case "💬":
 							await member.RevokeRoleAsync(e.Guild.GetRole(765622563338453023)); //DQuote
-							break;
-						case "💰":
-							await member.RevokeRoleAsync(e.Guild.GetRole(767035347367362590)); //Cas
 							break;
 						case "🎨":
 							await member.RevokeRoleAsync(e.Guild.GetRole(767039219403063307)); //Art
@@ -423,9 +399,6 @@ namespace LathBotFront
 							break;
 						case "💢":
 							await member.RevokeRoleAsync(e.Guild.GetRole(812755886413971499)); //Vent
-							break;
-						case "🕒":
-							await member.RevokeRoleAsync(e.Guild.GetRole(821483418491289622)); //History
 							break;
 						case "❗":
 							await member.RevokeRoleAsync(e.Guild.GetRole(848307821703200828)); //Facts

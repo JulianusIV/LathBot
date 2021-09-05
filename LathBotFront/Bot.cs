@@ -89,7 +89,8 @@ namespace LathBotFront
 			Client.UseInteractivity(new InteractivityConfiguration
 			{
 				Timeout = TimeSpan.FromMinutes(5),
-				PollBehaviour = PollBehaviour.KeepEmojis
+				PollBehaviour = PollBehaviour.KeepEmojis,
+				AckPaginationButtons = true
 			});
 
 			CommandsNextConfiguration commandsConfig = new CommandsNextConfiguration
