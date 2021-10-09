@@ -129,7 +129,7 @@ namespace LathBotFront.Commands
                 SystemService.Instance.Logger.Log($"Error while trying to get last deleted message in {ctx.Channel.Id}");
                 return;
 			}
-            if (lastDelete.Author.Id == 387325006176059394)
+            if (lastDelete.Author.Id == 387325006176059394 || lastDelete.Author.IsBot)
 			{
                 await ctx.RespondAsync("No");
                 return;
@@ -163,7 +163,7 @@ namespace LathBotFront.Commands
                 SystemService.Instance.Logger.Log($"Error while trying to get last edited message in {ctx.Channel.Id}");
                 return;
             }
-            if (lastEdit.Author.Id == 387325006176059394)
+            if (lastEdit.Author.Id == 387325006176059394 || lastEdit.Author.IsBot)
             {
                 await ctx.RespondAsync("No");
                 return;

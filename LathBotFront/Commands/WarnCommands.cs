@@ -847,12 +847,12 @@ namespace LathBotFront.Commands
 
 		[Command("warns")]
 		[Description("Check your or someone elses warnings")]
-		public async Task Warns(CommandContext ctx, [Description("The user that you want to check the warning of (optional)")] DiscordMember member)
+		public async Task Warns(CommandContext ctx, [Description("The user that you want to check the warning of (optional)")] DiscordUser user)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
 			WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
 			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
-			bool result = urepo.GetIdByDcId(member.Id, out int id);
+			bool result = urepo.GetIdByDcId(user.Id, out int id);
 			if (!result)
 			{
 				await ctx.RespondAsync("There has been a problem getting the databaseId of the user");
@@ -866,7 +866,7 @@ namespace LathBotFront.Commands
 
 			DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 			{
-				Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
+				Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl },
 				Title = $"You have {warns.Count} Warnings:",
 			};
 			int pointsLeft = 15;
