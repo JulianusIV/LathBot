@@ -21,14 +21,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01022" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01022" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01022" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0-nightly-01022" />
+    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01030" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01030" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01030" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0-nightly-01030" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0-rc.1.21451.13" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0-rc.2.21480.5" />
   </ItemGroup>
 
   <ItemGroup>

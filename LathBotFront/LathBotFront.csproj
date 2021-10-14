@@ -19,15 +19,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.0-4.final" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0-rc.1.21451.13" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.0-5.final" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0-rc.2.21480.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01022" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01022" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01022" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0-nightly-01022" />
+    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01030" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01030" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01030" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0-nightly-01030" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
   </ItemGroup>

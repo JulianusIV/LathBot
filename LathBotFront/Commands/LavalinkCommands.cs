@@ -343,7 +343,7 @@ namespace LathBotFront.Commands
 					pages.Add(new Page { Embed = builder.Build() });
 				}
 			}
-			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.DeleteMessage);
+			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.Disable);
 		}
 
 		[Command("np")]

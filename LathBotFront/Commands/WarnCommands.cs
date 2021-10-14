@@ -106,7 +106,7 @@ namespace LathBotFront.Commands
 		[Aliases("shuddup")]
 		[RequireUserPermissions(Permissions.KickMembers)]
 		[Description("Mute a user")]
-		public async Task Mute(CommandContext ctx, [Description("The user that you want to mute")] DiscordMember member, [Description("When you will be reminded (2 - 14 days, default 7)")] int duration = 7)
+		public async Task Mute(CommandContext ctx, [Description("The user that you want to mute")] DiscordMember member, [Description("When you will be reminded (2 - 14 days, default 7)")] int duration)
 		{
 			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
 			if (duration > 14 || duration < 2)
@@ -821,7 +821,7 @@ namespace LathBotFront.Commands
 			DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 			{
 				Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = ctx.Member.AvatarUrl },
-				Title = $"You have {warns.Count} Warnings:",
+				Title = $"You have {warns.Count} warnings:",
 			};
 			int pointsLeft = 15;
 			foreach (Warn warn in warns)
@@ -832,7 +832,7 @@ namespace LathBotFront.Commands
 					$"Points: -{warn.Level}; Date: {warn.Time}; Warned by {moderator.DisplayName}#{moderator.Discriminator}");
 				pointsLeft -= warn.Level;
 			}
-			embedBuilder.AddField($"{pointsLeft} points left", GetFinalMessage(pointsLeft));
+			embedBuilder.AddField($"{pointsLeft} points left", "­");
 			if (pointsLeft == 15)
 				embedBuilder.Color = DiscordColor.Green;
 			else if (pointsLeft > 10)
@@ -867,7 +867,7 @@ namespace LathBotFront.Commands
 			DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 			{
 				Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl },
-				Title = $"You have {warns.Count} Warnings:",
+				Title = $"The user has {warns.Count} warnings:",
 			};
 			int pointsLeft = 15;
 			foreach (Warn warn in warns)
@@ -878,7 +878,8 @@ namespace LathBotFront.Commands
 					$"Points: -{warn.Level}; Date: {warn.Time}; Warned by {moderator.DisplayName}#{moderator.Discriminator}");
 				pointsLeft -= warn.Level;
 			}
-			embedBuilder.AddField($"{pointsLeft} points left", GetFinalMessage(pointsLeft));
+			embedBuilder.AddField($"{pointsLeft} points left", "­");
+		
 			if (pointsLeft == 15)
 				embedBuilder.Color = DiscordColor.Green;
 			else if (pointsLeft > 10)
@@ -1173,18 +1174,6 @@ namespace LathBotFront.Commands
 					connection.Close();
 				}
 			}
-		}
-
-		private string GetFinalMessage(int pointsLeft)
-		{
-			if (pointsLeft == 15)
-				return "Nice job!";
-			else if (pointsLeft > 10)
-				return "You are in the clear!";
-			else if (pointsLeft > 5)
-				return "Be careful!";
-			else
-				return "You really gotta listen to the mods better!"; ;
 		}
 
 		private async Task<bool> AreYouSure(CommandContext ctx, DiscordUser user, string operation)
