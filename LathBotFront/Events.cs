@@ -214,11 +214,11 @@ namespace LathBotFront
 					return;
 				if (e.Guild.Id != 699555747591094344)
 					return;
-				if (DiscordObjectService.Instance.LastDeletes.ContainsKey(e.Channel.Id))
+				if (DiscordObjectService.Instance.LastDeletes.ContainsKey(e.Channel.Id) && !e.Message.Author.IsBot)
 				{
 					DiscordObjectService.Instance.LastDeletes[e.Channel.Id] = e.Message;
 				}
-				else
+				else if (!e.Message.Author.IsBot)
 				{
 					DiscordObjectService.Instance.LastDeletes.Add(e.Channel.Id, e.Message);
 				}
@@ -313,6 +313,9 @@ namespace LathBotFront
 						case "👾":
 							await member.GrantRoleAsync(e.Guild.GetRole(850029252812210207)); //Reassembly
 							break;
+						case "🏅":
+							await member.GrantRoleAsync(e.Guild.GetRole(898720583154548777)); //Events
+							break;
 						default:
 							break;
 					}
@@ -405,6 +408,9 @@ namespace LathBotFront
 							break;
 						case "👾":
 							await member.RevokeRoleAsync(e.Guild.GetRole(850029252812210207)); //Reassembly
+							break;
+						case "🏅":
+							await member.RevokeRoleAsync(e.Guild.GetRole(898720583154548777)); //Events
 							break;
 						default:
 							break;
