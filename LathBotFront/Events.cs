@@ -561,7 +561,7 @@ namespace LathBotFront
 
 			await OnTimerMethods.RemindMutes();
 
-			await OnTimerMethods.DailyFacts();
+			await OnTimerMethods.APOD();
 		}
 
 		internal static void OnLog(object sender, LoggingEventArgs e)

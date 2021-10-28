@@ -15,7 +15,8 @@ namespace LathBotBack.Config
 			Config = new Configuration
 			{
 				Token = Environment.GetEnvironmentVariable("Token"),
-				ConnectionString = Environment.GetEnvironmentVariable("ConnectionString")
+				ConnectionString = Environment.GetEnvironmentVariable("ConnectionString"),
+				NasaApiKey = Environment.GetEnvironmentVariable("NASAApiKey")
 			};
 		}
 	}

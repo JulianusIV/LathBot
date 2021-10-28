@@ -7,6 +7,7 @@ using LathBotBack.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace LathBotFront
 					{
 						_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error reading other warns from the database.");
 					}
-					
+
 					int counter = 0;
 					foreach (var warn in others)
 					{
@@ -182,37 +183,64 @@ namespace LathBotFront
 			}
 		}
 
-		public async static Task DailyFacts()
+		public async static Task APOD()
 		{
 			IReadOnlyList<DiscordMessage> lastmessageList = await DiscordObjectService.Instance.DailyFactsChannel.GetMessagesAsync(1);
 			DiscordMessage lastmessage = lastmessageList.First();
-			if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(23))
+			if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(24))
 			{
 				WebClient client = new WebClient();
-				string content = client.DownloadString("https://useless-facts.sameerkumar.website/api");
+				string content = client.DownloadString("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&thumbs=True");
 
-				FactJsonObject configJson = JsonConvert.DeserializeObject<FactJsonObject>(content);
+				APODJsonObject json = JsonConvert.DeserializeObject<APODJsonObject>(content);
+
+				DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+				{
+					Title = "Astronomy Picture of the day: ",
+					Description = json.HdUrl is null ? $"[{json.Title}]({json.URL})" : $"[{json.Title}]({json.HdUrl})\n[Low resolution source]({json.URL})",
+					ImageUrl = json.HdUrl is null ? json.ThumbnailUrl : json.HdUrl,
+					Color = new DiscordColor("e49a5e"),
+					Footer = new DiscordEmbedBuilder.EmbedFooter
+					{
+						Text = "Copyright: " + (json.Copyright is null ? "Public Domain" : json.Copyright) + "\nSource: NASA APOD API Endpoint"
+					}
+				}.AddField("Explanation:", json.Explanation);
 
 				DiscordMessageBuilder builder = new DiscordMessageBuilder
 				{
-					Embed = new DiscordEmbedBuilder
-					{
-						Title = "Todays totally not useless fact:",
-						Description = configJson.Data,
-						Color = DiscordColor.Blurple
-					},
+					Embed = embedBuilder,
 					Content = DiscordObjectService.Instance.Lathland.GetRole(848307821703200828).Mention
 				};
+				DiscordMessageBuilder builder2 = null;
+				if (json.MediaType != "image")
+					builder2 = new DiscordMessageBuilder().WithContent(json.URL.Replace("embed/", "watch?v=").Replace("?rel=0", ""));
 				builder.WithAllowedMentions(Mentions.All);
-
 				await DiscordObjectService.Instance.DailyFactsChannel.SendMessageAsync(builder);
+				if (!(builder2 is null))
+					await DiscordObjectService.Instance.DailyFactsChannel.SendMessageAsync(builder2);
 			}
 		}
 	}
 
-	struct FactJsonObject
+	struct APODJsonObject
 	{
-		[JsonProperty("data")]
-		public string Data { get; set; }
+		[JsonProperty("copyright")]
+		public string Copyright { get; set; }
+		[JsonProperty("date")]
+		public string Date { get; set; }
+		[JsonProperty("explanation")]
+		public string Explanation { get; set; }
+		[JsonProperty("hdurl")]
+		public string HdUrl { get; set; }
+		[JsonProperty("media_type")]
+		public string MediaType { get; set; }
+		[JsonProperty("service_version")]
+		public string ServiceVersion { get; set; }
+		[JsonProperty("thumbnail_url")]
+		public string ThumbnailUrl { get; set; }
+		[JsonProperty("title")]
+		public string Title { get; set; }
+		[JsonProperty("url")]
+		public string URL { get; set; }
 	}
 }
