@@ -1,13 +1,12 @@
-﻿using LathBotBack;
+﻿using System;
+using System.Data.SqlClient;
+
+using NUnit.Framework;
+
+using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
-using LathBotBack.Repos;
 using LathBotBack.Services;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Text;
 
 namespace LathBotTest
 {

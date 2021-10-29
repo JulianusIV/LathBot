@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 using DSharpPlus.Entities;
 
+using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
-using LathBotBack.Repos;
 using LathBotBack.Services;
 
 namespace LathBotFront.Commands.Events

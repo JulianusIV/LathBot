@@ -4,7 +4,6 @@ using LathBotBack.Base;
 using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
-using System.Runtime.CompilerServices;
 
 namespace LathBotBack.Services
 {

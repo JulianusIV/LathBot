@@ -1,16 +1,18 @@
-﻿using DSharpPlus.Entities;
+﻿using System;
+using System.Net;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+
+using Newtonsoft.Json;
+
+using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
-using LathBotBack.Repos;
 using LathBotBack.Services;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace LathBotFront
 {
@@ -189,8 +191,8 @@ namespace LathBotFront
 			DiscordMessage lastmessage = lastmessageList.First();
 			if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(24))
 			{
-				WebClient client = new WebClient();
-				string content = client.DownloadString("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&thumbs=True");
+				using WebClient client = new WebClient();
+				string content = client.DownloadString("https://api.nasa.gov/planetary/apod?api_key=" + ReadConfig.Config.NasaApiKey + "&thumbs=True");
 
 				APODJsonObject json = JsonConvert.DeserializeObject<APODJsonObject>(content);
 

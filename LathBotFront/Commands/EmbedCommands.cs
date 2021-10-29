@@ -4,7 +4,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-using LathBotBack;
 using LathBotBack.Services;
 
 namespace LathBotFront.Commands

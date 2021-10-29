@@ -1,8 +1,8 @@
-﻿using LathBotBack.Repos;
+﻿using NUnit.Framework;
+
+using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
-
-using NUnit.Framework;
 
 namespace LathBotTest
 {

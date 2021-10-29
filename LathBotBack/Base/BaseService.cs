@@ -1,11 +1,11 @@
-﻿using DSharpPlus;
-
-using LathBotBack.Services;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+
+using DSharpPlus;
+
+using LathBotBack.Services;
 
 namespace LathBotBack.Base
 {

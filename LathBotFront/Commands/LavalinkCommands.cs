@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
 using DSharpPlus.CommandsNext;
@@ -10,11 +11,9 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity.Extensions;
 
-using LathBotBack;
 using LathBotBack.Enums;
 using LathBotBack.Services;
 using DSharpPlus.Interactivity.Enums;
-using DSharpPlus;
 
 namespace LathBotFront.Commands
 {

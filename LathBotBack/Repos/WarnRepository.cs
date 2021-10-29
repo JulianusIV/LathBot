@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using System.Runtime.Intrinsics.X86;
 
 namespace LathBotBack.Repos
 {
