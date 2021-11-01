@@ -198,15 +198,15 @@ namespace LathBotFront
 
 				DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
 				{
-					Title = "Astronomy Picture of the day: ",
-					Description = json.HdUrl is null ? $"[{json.Title}]({json.URL})" : $"[{json.Title}]({json.HdUrl})\n[Low resolution source]({json.URL})",
+					Title = "Astronomy Picture of the day:\n" + json.Title,
+					Description = "**Explanation:\n**" + json.Explanation,
 					ImageUrl = json.HdUrl is null ? json.ThumbnailUrl : json.HdUrl,
 					Color = new DiscordColor("e49a5e"),
 					Footer = new DiscordEmbedBuilder.EmbedFooter
 					{
 						Text = "Copyright: " + (json.Copyright is null ? "Public Domain" : json.Copyright) + "\nSource: NASA APOD API Endpoint"
 					}
-				}.AddField("Explanation:", json.Explanation);
+				}.AddField("Links:", json.HdUrl is null ? $"[Source Link]({json.URL})" : $"[Source Link]({json.HdUrl})\n[Low resolution source]({json.URL})");
 
 				DiscordMessageBuilder builder = new DiscordMessageBuilder
 				{
