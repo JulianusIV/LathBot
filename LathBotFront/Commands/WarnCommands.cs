@@ -1245,43 +1245,31 @@ namespace LathBotFront.Commands
 			else
 			{
 				#region GetRule
-				DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder
+				List<DiscordSelectComponentOption> options = new List<DiscordSelectComponentOption>();
+				foreach (var item in RuleService.rules)
 				{
-					Content = "```" +
-					$"Rule 1 {RuleService.rules[0].RuleText} - {RuleService.rules[0].MinPoints}-{RuleService.rules[0].MaxPoints} Points\n" +
-					$"Rule 2 {RuleService.rules[1].RuleText} - {RuleService.rules[1].MinPoints}-{RuleService.rules[1].MaxPoints} Points\n" +
-					$"Rule 3 {RuleService.rules[2].RuleText} - {RuleService.rules[2].MinPoints}-{RuleService.rules[2].MaxPoints} Points\n" +
-					$"Rule 4 {RuleService.rules[3].RuleText} - {RuleService.rules[3].MinPoints}-{RuleService.rules[3].MaxPoints} Points\n" +
-					$"Rule 5 {RuleService.rules[4].RuleText} - {RuleService.rules[4].MinPoints}-{RuleService.rules[4].MaxPoints} Points\n" +
-					$"Rule 6 {RuleService.rules[5].RuleText} - {RuleService.rules[5].MinPoints}-{RuleService.rules[5].MaxPoints} Points\n" +
-					$"Rule 7 {RuleService.rules[6].RuleText} - {RuleService.rules[6].MinPoints}-{RuleService.rules[6].MaxPoints} Points\n" +
-					$"Rule 8 {RuleService.rules[7].RuleText} - {RuleService.rules[7].MinPoints}-{RuleService.rules[7].MaxPoints} Points\n" +
-					$"Rule 9 {RuleService.rules[8].RuleText} - {RuleService.rules[8].MinPoints}-{RuleService.rules[8].MaxPoints} Points\n" +
-					$"Rule 10 {RuleService.rules[9].RuleText} - {RuleService.rules[9].MinPoints}-{RuleService.rules[9].MaxPoints} Points\n" +
-					$"Rule 11 {RuleService.rules[10].RuleText} - {RuleService.rules[10].MinPoints}-{RuleService.rules[10].MaxPoints} Points\n" +
-					$"Rule 12 {RuleService.rules[11].RuleText} - {RuleService.rules[11].MinPoints}-{RuleService.rules[11].MaxPoints} Points\n" +
-					$"Rule 13 {RuleService.rules[12].RuleText} - {RuleService.rules[12].MinPoints}-{RuleService.rules[12].MaxPoints} Points\n" +
-					$"Other - {RuleService.rules[13].MinPoints}-{RuleService.rules[13].MaxPoints} Points" +
-					"```"
-				};
-				for (int i = 0; i < Math.Round(value: (RuleService.rules.Length - 1) / (double)5, MidpointRounding.ToPositiveInfinity); i++)
-				{
-					List<DiscordComponent> row = new List<DiscordComponent>();
-					for (int index = i * 5; index < ((((i * 5) + 5) > RuleService.rules.Length - 1) ? RuleService.rules.Length : (i * 5) + 5); index++)
+					if (item.RuleNum == 0)
 					{
-						row.Add(new DiscordButtonComponent
-						(
-							ButtonStyle.Primary,
-							RuleService.rules[index].RuleNum.ToString(),
-							$"Rule {RuleService.rules[index].RuleNum}: {RuleService.rules[index].ShortDesc}"
-						));
+						options.Add(new DiscordSelectComponentOption(
+							$"OTHER",
+							item.RuleNum.ToString()));
+						continue;
 					}
-					messageBuilder.AddComponents(row);
+					var option = new DiscordSelectComponentOption(
+						$"Rule {item.RuleNum}: {item.ShortDesc}", 
+						item.RuleNum.ToString(), 
+						item.RuleText.Length > 99 ? item.RuleText.Substring(0, 95) + "..." : item.RuleText);
+					options.Add(option);
 				}
+				DiscordSelectComponent selectMenu = new DiscordSelectComponent("warnSelect", "Select a Rule!", options);
+
+				DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
+					.AddComponents(selectMenu)
+					.WithContent("­");
 				DiscordMessage message = await ctx.Channel.SendMessageAsync(messageBuilder);
 
-				var reaction = await interactivity.WaitForButtonAsync(message, ctx.Member, TimeSpan.FromMinutes(2));
-				Rule rule = RuleService.rules.Single(x => x.RuleNum.ToString() == reaction.Result.Id);
+				var reaction = await interactivity.WaitForSelectAsync(message, ctx.Member, "warnSelect", TimeSpan.FromMinutes(2));
+				Rule rule = RuleService.rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
 				await message.DeleteAsync();
 				#endregion
 				#region GetPoints
