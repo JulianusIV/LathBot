@@ -15,6 +15,8 @@ using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
 using LathBotFront.Commands;
+using DSharpPlus.SlashCommands;
+using LathBotFront.Interactions;
 
 namespace LathBotFront
 {
@@ -43,7 +45,9 @@ namespace LathBotFront
 
 		public CommandsNextExtension Commands { get; private set; }
 
-		public async Task RunAsync()
+        public SlashCommandsExtension SlashCommands { get; set; }
+
+        public async Task RunAsync()
 		{
 			ReadConfig.Read();
 			var varrepo = new VariableRepository(ReadConfig.Config.ConnectionString);
@@ -53,7 +57,6 @@ namespace LathBotFront
 #else
 			result = varrepo.Read(2, out Variable prefix); //otherwise get default prefix
 #endif
-
 			DiscordConfiguration config = new DiscordConfiguration
 			{
 				Token = ReadConfig.Config.Token,
@@ -113,6 +116,11 @@ namespace LathBotFront
 
 			//Register command events
 			Commands.CommandErrored += Events.CommandErrored;
+
+			SlashCommands = Client.UseSlashCommands();
+
+			//Register slashCommands
+			SlashCommands.RegisterCommands<WarnInteractions>(512370308532142091);
 
 			await Client.ConnectAsync();
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Data.SqlClient;
+using LathBotBack.Services;
 
 namespace LathBotBack.Base
 {
@@ -30,7 +31,7 @@ namespace LathBotBack.Base
 			}
 			catch (Exception ex)
 			{
-				//add logging
+				SystemService.Instance.Logger.Log(ex.Message);
 				Debug.WriteLine(ex);
 			}
 
