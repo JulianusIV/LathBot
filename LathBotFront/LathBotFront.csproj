@@ -1,46 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>2014252a-ebf2-40b9-bce8-624c153c6a25</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileRunEnvironmentFiles>settings.env</DockerfileRunEnvironmentFiles>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<UserSecretsId>2014252a-ebf2-40b9-bce8-624c153c6a25</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileRunEnvironmentFiles>settings.env</DockerfileRunEnvironmentFiles>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="error.txt" />
-    <None Remove="Resources\LathBotPP.txt" />
-    <None Remove="Resources\LathBotTOS.txt" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="error.txt" />
+		<None Remove="Resources\LathBotPP.txt" />
+		<None Remove="Resources\LathBotTOS.txt" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\LathBotPP.txt" />
-    <EmbeddedResource Include="Resources\LathBotTOS.txt" />
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\LathBotPP.txt" />
+		<EmbeddedResource Include="Resources\LathBotTOS.txt" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.2.0-nightly-01044" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.11.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="5.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="DSharpPlus.SlashCommands" Version="4.2.0-nightly-01044" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.11.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="5.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01044" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01044" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01044" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0-nightly-01044" />
-    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01044" />
+		<PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01044" />
+		<PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01044" />
+		<PackageReference Include="DSharpPlus.Lavalink" Version="4.2.0-nightly-01044" />
+		<PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LathBotBack\LathBotBack.csproj" />
-    <ProjectReference Include="..\WarnModule\WarnModule.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LathBotBack\LathBotBack.csproj" />
+		<ProjectReference Include="..\WarnModule\WarnModule.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="Resources\LathBotPP.txt" />
-    <Resource Include="Resources\LathBotTOS.txt" />
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\LathBotPP.txt" />
+		<Resource Include="Resources\LathBotTOS.txt" />
+	</ItemGroup>
 
 </Project>

@@ -14,6 +14,7 @@ using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
+using DSharpPlus.SlashCommands;
 
 namespace WarnModule
 {
@@ -72,7 +73,7 @@ namespace WarnModule
             return true;
         }
 
-        public async Task RequestRule()
+        public async Task RequestRule(ContextMenuContext ctx = null)
         {
             List<DiscordSelectComponentOption> options = new List<DiscordSelectComponentOption>();
             foreach (var item in RuleService.rules)
@@ -96,6 +97,14 @@ namespace WarnModule
                 .AddComponents(selectMenu)
                 .WithContent("­");
             DiscordMessage message = await WarnChannel.SendMessageAsync(messageBuilder);
+
+            if (!(ctx is null))
+            {
+                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder
+                {
+                    Content = message.JumpLink.ToString()
+                });
+            }
 
             var reaction = await Interactivity.WaitForSelectAsync(message, Mod, "warnSelect", TimeSpan.FromMinutes(2));
             Rule = RuleService.rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
