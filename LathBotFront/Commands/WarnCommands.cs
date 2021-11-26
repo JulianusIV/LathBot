@@ -1258,7 +1258,7 @@ namespace LathBotFront.Commands
 					var option = new DiscordSelectComponentOption(
 						$"Rule {item.RuleNum}: {item.ShortDesc}", 
 						item.RuleNum.ToString(), 
-						item.RuleText.Length > 99 ? item.RuleText.Substring(0, 95) + "..." : item.RuleText);
+						item.RuleText.Length > 99 ? item.RuleText[..95] + "..." : item.RuleText);
 					options.Add(option);
 				}
 				DiscordSelectComponent selectMenu = new DiscordSelectComponent("warnSelect", "Select a Rule!", options);

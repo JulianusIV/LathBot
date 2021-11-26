@@ -422,7 +422,7 @@ namespace WarnModule
         {
             if (PointsLeft < 11)
             {
-                DiscordMessage punishMessage = await WarnChannel.SendMessageAsync($"User has {PointsLeft} points left.\n" +
+                await WarnChannel.SendMessageAsync($"User has {PointsLeft} points left.\n" +
                     $"By common practice the user should be muted{(PointsLeft < 6 ? ", kicked" : "")}{(PointsLeft < 1 ? ", or banned" : "")}.");
             }
         }

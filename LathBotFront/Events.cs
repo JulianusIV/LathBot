@@ -125,6 +125,11 @@ namespace LathBotFront
 					return;
 				if (!StartupService.Instance.StartUpCompleted)
 					return;
+				if (e.Channel.Id == 512370308976607250 && e.MentionedRoles.Contains(e.Guild.GetRole(760522213676941332)))
+                {
+                    var thread = await e.Message.CreateThreadAsync("text-answers", AutoArchiveDuration.Day);
+
+                }
 				if (e.Channel.Id == 838088490704568341 && e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)))
 				{
 					string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
@@ -325,7 +330,7 @@ namespace LathBotFront
 					e.Channel.Id == 713284112638672917 || //YT
 					e.Channel.Id == 720543453376937996) //Twitter
 						return;
-					if (e.Message.Timestamp < DateTime.Now - TimeSpan.FromHours(2))
+					if (e.Message.Timestamp < DateTime.Now - TimeSpan.FromHours(4))
 						return;
 					var reacts = await e.Message.GetReactionsAsync(DiscordEmoji.FromGuildEmote(sender, 723564837338349578));
 					if (reacts.Count >= GoodGuysService.Instance.GoodGuysReactionCount)
