@@ -82,6 +82,19 @@ namespace LathBotFront
 			Client.VoiceStateUpdated += Events.VoiceStateUpdated;
 			Client.ClientErrored += Events.ClientErrored;
 			Client.ComponentInteractionCreated += Events.ComponentTriggered;
+
+			//Register client events for logging
+			Client.GuildBanAdded += Logger.BanAdded;
+			Client.GuildBanRemoved += Logger.BanRemoved;
+			Client.GuildMemberUpdated += Logger.MemberUpdated;
+			Client.ChannelUpdated += Logger.ChannelUpdated;
+			//Client.GuildRoleUpdated += Logger.RoleUpdated;
+			//Client.MessageUpdated += Logger.MessageEdited;
+			//Client.MessageDeleted += Logger.MessageDeleted;
+			//Client.MessagesBulkDeleted += Logger.BulkMessagesDeleted;
+			//Client.GuildEmojisUpdated += Logger.EmojiUpdated;
+			//Client.VoiceStateUpdated += Logger.VoiceUpdate;
+
 			
 			//Register timer events
 			SystemService.Instance.WarnTimer.Elapsed += Events.TimerTick;
