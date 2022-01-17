@@ -125,10 +125,10 @@ namespace LathBotFront
 					return;
 				if (!StartupService.Instance.StartUpCompleted)
 					return;
-				if (e.Channel.Id == 512370308976607250 && e.MentionedRoles.Contains(e.Guild.GetRole(760522213676941332)))
+				if (e.Channel.Id == 741340775530496013 && e.MentionedRoles.Contains(e.Guild.GetRole(741342066021367938)))
                 {
                     var thread = await e.Message.CreateThreadAsync("text-answers", AutoArchiveDuration.Day);
-
+                    await thread.ModifyAsync(x => x.Locked = true);
                 }
 				if (e.Channel.Id == 838088490704568341 && e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)))
 				{
