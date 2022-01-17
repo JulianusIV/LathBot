@@ -10,14 +10,14 @@ namespace LathBotFront.Interactions
     public class WarnInteractions : ApplicationCommandModule
     {
         [ContextMenu(ApplicationCommandType.MessageContextMenu, "Warn Message")]
-        [SlashRequireOwner]
+        [SlashRequireUserPermissions(Permissions.KickMembers)]
         public async Task WarnMessage(ContextMenuContext ctx)
         {
             await ctx.DeferAsync(true);
 
             WarnBuilder warnBuilder = new WarnBuilder(
                 ctx.Client,
-                ctx.Guild.GetChannel(512370308976607250),
+                ctx.Guild.GetChannel(764251867135475713),
                 ctx.Guild,
                 ctx.Member,
                 await ctx.Guild.GetMemberAsync(ctx.TargetMessage.Author.Id),
@@ -40,14 +40,14 @@ namespace LathBotFront.Interactions
         }
 
         [ContextMenu(ApplicationCommandType.UserContextMenu, "Warn User")]
-        [SlashRequireOwner]
+        [SlashRequireUserPermissions(Permissions.KickMembers)]
         public async Task WarnUser(ContextMenuContext ctx)
         {
             await ctx.DeferAsync(true);
 
             WarnBuilder warnBuilder = new WarnBuilder(
                 ctx.Client,
-                ctx.Guild.GetChannel(512370308976607250),
+                ctx.Guild.GetChannel(764251867135475713),
                 ctx.Guild,
                 ctx.Member,
                 ctx.TargetMember);
