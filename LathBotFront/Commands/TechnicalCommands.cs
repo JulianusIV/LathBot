@@ -236,7 +236,7 @@ namespace LathBotFront.Commands
 				File.WriteAllText("CellLog.txt", channelContent);
 				await ctx.Channel.DeleteMessagesAsync(await ctx.Channel.GetMessagesAsync(300)).ConfigureAwait(false);
 				DiscordMessageBuilder builder = new DiscordMessageBuilder();
-				FileStream stream = new FileStream("CellLog.txt", FileMode.Open);
+				using FileStream stream = new FileStream("CellLog.txt", FileMode.Open);
 				builder.WithFile(stream);
 				await ctx.Guild.GetChannel(722905404354592900).SendMessageAsync(builder);
 			}
@@ -288,9 +288,9 @@ namespace LathBotFront.Commands
 						(messages[index].IsEdited ? $" (edited at {messages[index].EditedTimestamp})\n" : "\n");
 				}
 				File.WriteAllText("MuteLog.txt", channelContent);
-				await ctx.Channel.DeleteMessagesAsync(await ctx.Channel.GetMessagesAsync(500)).ConfigureAwait(false);
+				await ctx.Channel.DeleteMessagesAsync(await ctx.Channel.GetMessagesAsync(500));
 				DiscordMessageBuilder builder = new DiscordMessageBuilder();
-				FileStream stream = new FileStream("MuteLog.txt", FileMode.Open);
+				using FileStream stream = new FileStream("MuteLog.txt", FileMode.Open);
 				builder.WithFile(stream);
 				await ctx.Guild.GetChannel(838092779741642802).SendMessageAsync(builder);
 				DiscordMessage pin = await ctx.Channel.SendMessageAsync("-Rules-\n" +
