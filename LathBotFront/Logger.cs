@@ -3,6 +3,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using LathBotBack.Services;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -145,7 +146,7 @@ namespace LathBotFront
                     .AddField("Hoist", e.RoleBefore.IsHoisted == e.RoleAfter.IsHoisted ? "No change" : $"{e.RoleBefore.IsHoisted} -> {e.RoleAfter.IsHoisted}", true)
                     .AddField("Color", e.RoleBefore.Color.Value == e.RoleAfter.Color.Value ? "No change" : $"{e.RoleBefore.Color} -> {e.RoleAfter.Color}", true)
                     .AddField("Permissions", e.RoleBefore.Permissions == e.RoleAfter.Permissions ? "No change" : $"{(int)e.RoleBefore.Permissions} -> {(int)e.RoleAfter.Permissions}", true)
-                    .AddField("Mentionable", e.RoleBefore.IsMentionable == e.RoleAfter.IsMentionable? "No change" : $"{e.RoleBefore.IsMentionable} -> {e.RoleAfter.IsMentionable}", true)
+                    .AddField("Mentionable", e.RoleBefore.IsMentionable == e.RoleAfter.IsMentionable ? "No change" : $"{e.RoleBefore.IsMentionable} -> {e.RoleAfter.IsMentionable}", true)
                     .WithColor(DiscordColor.Blurple);
 
                 await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
@@ -199,7 +200,38 @@ namespace LathBotFront
 
         internal static Task BulkMessagesDeleted(DiscordClient _1, MessageBulkDeleteEventArgs e)
         {
-            throw new NotImplementedException();
+            _ = Task.Run(async () =>
+            {
+                if (e.Channel.Id == 722905404354592900 //senate
+                    || e.Channel.Id == 838088490704568341 //muted
+                    || e.Channel.Id == 792486366138073180) //parstapo
+                    return;
+
+                if (e.Messages.Count == 0)
+                    await DiscordObjectService.Instance.LogsChannel.SendMessageAsync("Messages bulk deleted, but none in cache!");
+                else
+                {
+                    string toSave = "";
+                    for (int index = e.Messages.Count - 1; index >= 0; index--)
+                    {
+                        if (e.Messages[index].Content is null)
+                            continue;
+                        toSave += e.Messages[index].Timestamp +
+                            " - " + $"{e.Messages[index].Author.Username}#{e.Messages[index].Author.Discriminator} ({e.Messages[index].Author.Id})" + ":\n" +
+                            e.Messages[index].Content +
+                            (e.Messages[index].IsEdited ? $" (edited at {e.Messages[index].EditedTimestamp})\n" : "\n");
+                    }
+                    File.WriteAllText("Bulklog.txt", toSave);
+                    using FileStream stream = new FileStream("Bulklog.txt", FileMode.Open);
+                    DiscordMessageBuilder builder = new DiscordMessageBuilder()
+                        .WithFile(stream)
+                        .WithContent("Bulk delete logs dumped to text file.\n" +
+                            "Creation Time: " + Formatter.Timestamp(DateTime.Now, TimestampFormat.LongTime));
+
+                    await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(builder);
+                }
+            });
+            return Task.CompletedTask;
         }
 
         internal static Task EmojiUpdated(DiscordClient _1, GuildEmojisUpdateEventArgs e)

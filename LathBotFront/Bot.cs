@@ -91,7 +91,7 @@ namespace LathBotFront
 			Client.GuildRoleUpdated += Logger.RoleUpdated;
 			Client.MessageUpdated += Logger.MessageEdited;
 			Client.MessageDeleted += Logger.MessageDeleted;
-			//Client.MessagesBulkDeleted += Logger.BulkMessagesDeleted;
+			Client.MessagesBulkDeleted += Logger.BulkMessagesDeleted;
 			//Client.GuildEmojisUpdated += Logger.EmojiUpdated;
 			//Client.VoiceStateUpdated += Logger.VoiceUpdate;
 
