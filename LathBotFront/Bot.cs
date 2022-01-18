@@ -88,8 +88,8 @@ namespace LathBotFront
 			Client.GuildBanRemoved += Logger.BanRemoved;
 			Client.GuildMemberUpdated += Logger.MemberUpdated;
 			Client.ChannelUpdated += Logger.ChannelUpdated;
-			//Client.GuildRoleUpdated += Logger.RoleUpdated;
-			//Client.MessageUpdated += Logger.MessageEdited;
+			Client.GuildRoleUpdated += Logger.RoleUpdated;
+			Client.MessageUpdated += Logger.MessageEdited;
 			//Client.MessageDeleted += Logger.MessageDeleted;
 			//Client.MessagesBulkDeleted += Logger.BulkMessagesDeleted;
 			//Client.GuildEmojisUpdated += Logger.EmojiUpdated;

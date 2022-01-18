@@ -35,6 +35,7 @@ namespace LathBotBack.Services
 		public DiscordChannel TimerChannel { get; private set; }
 		public DiscordChannel WarnsChannel { get; private set; }
 		public DiscordChannel DailyFactsChannel { get; private set; }
+		public DiscordChannel LogsChannel { get; private set; }
 
 		public DiscordMessage LathQuestions { get; set; }
 		public DiscordMessage StaffQuestions { get; set; }
@@ -73,6 +74,8 @@ namespace LathBotBack.Services
 			WarnsChannel = Lathland.GetChannel(722186358906421369);
 			DailyFactsChannel = Lathland.GetChannel(848240982880550932);
 			StaffChannel = Lathland.GetChannel(724313826786410508);
+			//LogsChannel = Lathland.GetChannel(700009728151126036); uncomment when ready
+			LogsChannel = await client.GetChannelAsync(512370308976607250); //delete when ready
 
 			DiscordMessage lastStaffMessage = await StaffChannel.GetMessageAsync((ulong)StaffChannel.LastMessageId);
 			if (lastStaffMessage.Author.Id == 708083256439996497)

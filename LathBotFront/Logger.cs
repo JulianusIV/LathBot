@@ -1,6 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using LathBotBack.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace LathBotFront
                     $"\n{Formatter.Bold("Reason:")} {auditLog.Reason}")
                     .WithColor(DiscordColor.DarkRed);
 
-                await e.Guild.GetChannel(512370308976607250).SendMessageAsync(embed);
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(embed);
             });
             return Task.CompletedTask;
         }
@@ -43,7 +44,7 @@ namespace LathBotFront
                     $"\n{Formatter.Bold("Reason:")} {auditLog.Reason}")
                     .WithColor(DiscordColor.Green);
 
-                await e.Guild.GetChannel(512370308976607250).SendMessageAsync(embed);
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(embed);
             });
             return Task.CompletedTask;
         }
@@ -92,7 +93,7 @@ namespace LathBotFront
                         .WithColor(DiscordColor.Red);
                 }
                 if (!(embed.Description is null))
-                    await e.Guild.GetChannel(512370308976607250).SendMessageAsync(embed);
+                    await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(embed);
 
             });
             return Task.CompletedTask;
@@ -122,19 +123,56 @@ namespace LathBotFront
                     .AddField("Slowmode (seconds)", e.ChannelBefore.PerUserRateLimit == e.ChannelAfter.PerUserRateLimit ? "No change" : $"{e.ChannelBefore.PerUserRateLimit} -> {e.ChannelAfter.PerUserRateLimit}", true)
                     .WithColor(DiscordColor.Blurple);
 
-                await e.Guild.GetChannel(512370308976607250).SendMessageAsync(embed);
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(embed);
             });
             return Task.CompletedTask;
         }
 
         internal static Task RoleUpdated(DiscordClient _1, GuildRoleUpdateEventArgs e)
         {
-            throw new NotImplementedException();
+            _ = Task.Run(async () =>
+            {
+                if (e.RoleBefore.Name == e.RoleAfter.Name
+                    && e.RoleBefore.IsHoisted == e.RoleAfter.IsHoisted
+                    && e.RoleBefore.Color.Value == e.RoleAfter.Color.Value
+                    && e.RoleBefore.Permissions == e.RoleAfter.Permissions
+                    && e.RoleBefore.IsMentionable == e.RoleAfter.IsMentionable)
+                    return;
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                    .WithTimestamp(DateTime.Now)
+                    .WithDescription($":information_source: The role {e.RoleAfter.Mention} ({e.RoleAfter.Id}) was just updated")
+                    .AddField("Name", e.RoleBefore.Name == e.RoleAfter.Name ? "No change" : $"{e.RoleBefore.Name} -> {e.RoleAfter.Name}", true)
+                    .AddField("Hoist", e.RoleBefore.IsHoisted == e.RoleAfter.IsHoisted ? "No change" : $"{e.RoleBefore.IsHoisted} -> {e.RoleAfter.IsHoisted}", true)
+                    .AddField("Color", e.RoleBefore.Color.Value == e.RoleAfter.Color.Value ? "No change" : $"{e.RoleBefore.Color} -> {e.RoleAfter.Color}", true)
+                    .AddField("Permissions", e.RoleBefore.Permissions == e.RoleAfter.Permissions ? "No change" : $"{(int)e.RoleBefore.Permissions} -> {(int)e.RoleAfter.Permissions}", true)
+                    .AddField("Mentionable", e.RoleBefore.IsMentionable == e.RoleAfter.IsMentionable? "No change" : $"{e.RoleBefore.IsMentionable} -> {e.RoleAfter.IsMentionable}", true)
+                    .WithColor(DiscordColor.Blurple);
+
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+            });
+            return Task.CompletedTask;
         }
 
         internal static Task MessageEdited(DiscordClient _1, MessageUpdateEventArgs e)
         {
-            throw new NotImplementedException();
+            _ = Task.Run(async () =>
+            {
+                if (e.Channel.Id == 722905404354592900)
+                    return;
+
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                    .WithTimestamp(e.Message.EditedTimestamp)
+                    .WithDescription($"{e.Author.Mention} ({e.Author.Id}) edited a message in {e.Channel.Mention}\n" +
+                        $"Message ID: {e.Message.Id}")
+                    .AddField("Before", e.MessageBefore is null ? Formatter.Italic("Unknown") : e.MessageBefore.Content)
+                    .AddField("After", e.Message.Content)
+                    .AddField("Doing!", $"[Jump to message]({e.Message.JumpLink})")
+                    .WithThumbnail(e.Author.AvatarUrl)
+                    .WithColor(DiscordColor.Yellow);
+
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+            });
+            return Task.CompletedTask;
         }
 
         internal static Task MessageDeleted(DiscordClient _1, MessageDeleteEventArgs e)
