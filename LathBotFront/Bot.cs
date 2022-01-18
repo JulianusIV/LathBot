@@ -93,7 +93,7 @@ namespace LathBotFront
 			Client.MessageDeleted += Logger.MessageDeleted;
 			Client.MessagesBulkDeleted += Logger.BulkMessagesDeleted;
 			//Client.GuildEmojisUpdated += Logger.EmojiUpdated;
-			//Client.VoiceStateUpdated += Logger.VoiceUpdate;
+			Client.VoiceStateUpdated += Logger.VoiceUpdate;
 
 			
 			//Register timer events

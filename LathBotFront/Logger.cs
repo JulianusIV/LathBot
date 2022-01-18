@@ -67,7 +67,7 @@ namespace LathBotFront
                 }
                 else if (e.RolesAfter.Count > e.RolesBefore.Count)
                 {
-                    string description = $":add: {e.Member.Mention} ({e.Member.Id}) was granted additional roles:";
+                    string description = $"<:add:930501217187156018> {e.Member.Mention} ({e.Member.Id}) was granted additional roles:";
 
                     foreach (var item in e.RolesAfter)
                     {
@@ -81,7 +81,7 @@ namespace LathBotFront
                 }
                 else if (e.RolesAfter.Count < e.RolesBefore.Count)
                 {
-                    string description = $":remove: {e.Member.Mention} ({e.Member.Id}) was revoked some roles:";
+                    string description = $"<:remove:930501216889360425> {e.Member.Mention} ({e.Member.Id}) was revoked some roles:";
 
                     foreach (var item in e.RolesBefore)
                     {
@@ -223,12 +223,12 @@ namespace LathBotFront
                     }
                     File.WriteAllText("Bulklog.txt", toSave);
                     using FileStream stream = new FileStream("Bulklog.txt", FileMode.Open);
-                    DiscordMessageBuilder builder = new DiscordMessageBuilder()
+                    DiscordMessageBuilder embed = new DiscordMessageBuilder()
                         .WithFile(stream)
                         .WithContent("Bulk delete logs dumped to text file.\n" +
                             "Creation Time: " + Formatter.Timestamp(DateTime.Now, TimestampFormat.LongTime));
 
-                    await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(builder);
+                    await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(embed);
                 }
             });
             return Task.CompletedTask;
@@ -241,7 +241,33 @@ namespace LathBotFront
 
         internal static Task VoiceUpdate(DiscordClient _1, VoiceStateUpdateEventArgs e)
         {
-            throw new NotImplementedException();
+            _ = Task.Run(async () =>
+            {
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                    .WithTimestamp(DateTime.Now)
+                    .WithThumbnail(e.User.AvatarUrl);
+                if (e.Before is null)
+                {
+                    embed.WithDescription($"<:add:930501217187156018> {e.User.Mention} ({e.User.Id}) joined voice channel\n" +
+                            $"{e.Channel.Mention}")
+                        .WithColor(DiscordColor.Green);
+                }
+                else if (e.After.Channel is null)
+                {
+                    embed.WithDescription($"<:remove:930501216889360425> {e.User.Mention} ({e.User.Id}) left voice channel\n" +
+                            $"{e.Before.Channel.Mention}")
+                        .WithColor(DiscordColor.Red);
+                }
+                else
+                {
+                    embed.WithDescription($":information_source: {e.User.Mention} ({e.User.Id}) changed voice channel\n" +
+                            $"from {e.Before.Channel.Mention} to {e.After.Channel.Mention}")
+                        .WithColor(DiscordColor.Blurple);
+                }
+
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+            });
+            return Task.CompletedTask;
         }
     }
 }
