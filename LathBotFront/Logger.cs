@@ -177,7 +177,24 @@ namespace LathBotFront
 
         internal static Task MessageDeleted(DiscordClient _1, MessageDeleteEventArgs e)
         {
-            throw new NotImplementedException();
+            _ = Task.Run(async () =>
+            {
+                if (e.Channel.Id == 722905404354592900)
+                    return;
+                if (e.Message.Content is null)
+                    return;
+
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                    .WithTimestamp(DateTime.Now)
+                    .WithDescription($"Message created by {e.Message.Author.Mention} ({e.Message.Author.Id}) was deleted in {e.Channel.Mention}\n" +
+                        $"Message ID: {e.Message.Id}\n\n" +
+                        e.Message.Content)
+                    .WithThumbnail(e.Message.Author.AvatarUrl)
+                    .WithColor(DiscordColor.Red);
+
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+            });
+            return Task.CompletedTask;
         }
 
         internal static Task BulkMessagesDeleted(DiscordClient _1, MessageBulkDeleteEventArgs e)
