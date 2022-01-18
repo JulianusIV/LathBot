@@ -132,6 +132,8 @@ namespace LathBotFront
 
                     var thread = await e.Message.CreateThreadAsync("text-answers", AutoArchiveDuration.Day);
                     await thread.ModifyAsync(x => x.Locked = true);
+					await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👍"));
+					await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👎"));
                 }
 				if (e.Channel.Id == 838088490704568341 && e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)))
 				{
