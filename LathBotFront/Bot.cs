@@ -159,7 +159,7 @@ namespace LathBotFront
 
 			LavalinkConfiguration lavalinkConfig = new LavalinkConfiguration
 			{
-				Password = "youshallnotpass",
+				Password = ReadConfig.Config.LavaLinkPass,
 				RestEndpoint = endpoint,
 				SocketEndpoint = endpoint,
 				SocketAutoReconnect = false
