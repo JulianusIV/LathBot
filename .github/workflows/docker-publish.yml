@@ -25,5 +25,5 @@ jobs:
       run: docker build . --file Dockerfile --tag julianusiv/lathbot:$(date +%s)
       
     - name: Push
-      run: docker push julianusiv/lathbot
+      run: docker push julianusiv/lathbot:$(date +%s)
       
