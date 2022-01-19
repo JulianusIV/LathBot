@@ -74,7 +74,7 @@ namespace LathBotFront
                     foreach (var item in e.RolesAfter)
                     {
                         if (!e.RolesBefore.Contains(item))
-                            description += Environment.NewLine + item.Name;
+                            description += Environment.NewLine + item.Mention;
                     }
 
                     embed.WithDescription(description)
@@ -96,7 +96,7 @@ namespace LathBotFront
                         .WithColor(DiscordColor.Red);
                 }
                 if (!(embed.Description is null))
-                    await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(embed);
+                    await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
 
             });
             return Task.CompletedTask;

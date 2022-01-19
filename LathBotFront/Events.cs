@@ -132,7 +132,7 @@ namespace LathBotFront
 					await oldThread.ModifyAsync(x => x.AutoArchiveDuration = AutoArchiveDuration.Hour);
 
                     var thread = await e.Message.CreateThreadAsync("text-answers", AutoArchiveDuration.Day);
-                    await thread.ModifyAsync(x => x.Locked = true);
+					await thread.ModifyAsync(x => x.Locked = true);
 					await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👍"));
 					await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👎"));
                 }
