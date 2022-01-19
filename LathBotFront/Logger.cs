@@ -182,7 +182,7 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Channel.Id == 722905404354592900)
+                if (e.Channel.Id == 722905404354592900 || e.Channel.Id == 700009728151126036)
                     return;
                 if (e.Message.Content is null)
                     return;

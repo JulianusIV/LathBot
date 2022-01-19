@@ -5,6 +5,10 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
 using LathBotBack.Services;
+using System.Collections.Generic;
+using System.Net;
+using System.Linq;
+using System.IO;
 
 namespace LathBotFront.Commands
 {
@@ -129,7 +133,7 @@ namespace LathBotFront.Commands
                 SystemService.Instance.Logger.Log($"Error while trying to get last deleted message in {ctx.Channel.Id}");
                 return;
 			}
-            if (lastDelete.Author.Id == 387325006176059394 || lastDelete.Author.IsBot || lastDelete.Content.Contains("submit"))
+            if ((lastDelete.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastDelete.Author.IsBot || lastDelete.Content.Contains("submit"))
 			{
                 await ctx.RespondAsync("No");
                 return;
@@ -144,9 +148,26 @@ namespace LathBotFront.Commands
                     Name = lastDelete.Author.Username
                 },
                 Timestamp = lastDelete.Timestamp,
-                Color = DiscordColor.Blurple,
+                Color = DiscordColor.Blurple
             };
-            await ctx.Channel.SendMessageAsync(builder);
+
+            var message = new DiscordMessageBuilder();
+
+            Dictionary<string, Stream> attachments = new Dictionary<string, Stream>();
+            if (!(lastDelete.Attachments is null) && lastDelete.Attachments.Any())
+            {
+                foreach (var attachment in lastDelete.Attachments)
+                {
+                    attachments.Add(attachment.FileName, WebRequest.Create(attachment.Url).GetResponse().GetResponseStream());
+                    if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(builder.ImageUrl))
+                        builder.WithImageUrl("attachment://" + attachment.FileName);
+                }
+                message.WithFiles(attachments);
+            }
+
+            await ctx.RespondAsync(message.WithEmbed(builder).WithAllowedMentions(Mentions.None));
+            foreach (var attachment in attachments)
+                attachment.Value.Close();
 		}
 
         [Command("snipeedit")]
@@ -163,7 +184,7 @@ namespace LathBotFront.Commands
                 SystemService.Instance.Logger.Log($"Error while trying to get last edited message in {ctx.Channel.Id}");
                 return;
             }
-            if (lastEdit.Author.Id == 387325006176059394 || lastEdit.Author.IsBot)
+            if ((lastEdit.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastEdit.Author.IsBot)
             {
                 await ctx.RespondAsync("No");
                 return;
