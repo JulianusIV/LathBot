@@ -23,5 +23,5 @@ jobs:
       run: docker build . --file Dockerfile --tag julianusiv/lathbot:latest
       
     - name: Push
-      run: docker push julianusiv/lathbot
+      run: docker push ${{secrets.DOCKER_USER}}/lathbot
       
