@@ -1,16 +1,19 @@
 using System;
 using System.IO;
+#if !DEBUG
+using System.Threading; 
+#endif
 
 namespace LathBotFront
 {
     public class Program
-	{
-		public static void Main(string[] _)
-		{
+    {
+        public static void Main(string[] _)
+        {
 #if DEBUG
             foreach (var line in File.ReadAllLines("settings.env"))
             {
-                Environment.SetEnvironmentVariable(line[..line.IndexOf('=')], line[(line.IndexOf('=') + 1)..]); 
+                Environment.SetEnvironmentVariable(line[..line.IndexOf('=')], line[(line.IndexOf('=') + 1)..]);
             }
 #endif
 
@@ -21,6 +24,6 @@ namespace LathBotFront
 
             //Startup
             Bot.Instance.RunAsync().GetAwaiter().GetResult();
-		}
-	}
+        }
+    }
 }
