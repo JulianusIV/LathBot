@@ -62,9 +62,9 @@ namespace LathBotBack.Services
 			Color = new DiscordColor(27, 116, 226)
 		};
 
-		public async override void Init(DiscordClient client)
+		public override void Init(DiscordClient client)
 		{
-			Lathland = await client.GetGuildAsync(699555747591094344);
+			Lathland = client.GetGuildAsync(699555747591094344).GetAwaiter().GetResult();
 
 			QuestionsChannel = Lathland.GetChannel(721082217119612969);
 			StaffChannel = Lathland.GetChannel(724313826786410508);
@@ -76,18 +76,18 @@ namespace LathBotBack.Services
 			StaffChannel = Lathland.GetChannel(724313826786410508);
             LogsChannel = Lathland.GetChannel(700009728151126036);
 
-            DiscordMessage lastStaffMessage = await StaffChannel.GetMessageAsync((ulong)StaffChannel.LastMessageId);
+            DiscordMessage lastStaffMessage = StaffChannel.GetMessageAsync((ulong)StaffChannel.LastMessageId).GetAwaiter().GetResult();
 			if (lastStaffMessage.Author.Id == 708083256439996497)
 				StaffQuestions = lastStaffMessage;
 			else
-				StaffQuestions = await StaffChannel.SendMessageAsync(StaffQuestionsEmbed.Build()).ConfigureAwait(false);
+				StaffQuestions = StaffChannel.SendMessageAsync(StaffQuestionsEmbed.Build()).GetAwaiter().GetResult();
 
 			QuestionsChannel = Lathland.GetChannel(721082217119612969);
-			DiscordMessage lastLathQuestion = await QuestionsChannel.GetMessageAsync((ulong)QuestionsChannel.LastMessageId);
+			DiscordMessage lastLathQuestion = QuestionsChannel.GetMessageAsync((ulong)QuestionsChannel.LastMessageId).GetAwaiter().GetResult();
 			if (lastLathQuestion.Author.Id == 708083256439996497)
 				LathQuestions = lastLathQuestion;
 			else
-				LathQuestions = await QuestionsChannel.SendMessageAsync(LathQuestionsEmbed).ConfigureAwait(false);
+				LathQuestions = QuestionsChannel.SendMessageAsync(LathQuestionsEmbed).GetAwaiter().GetResult();
 
 			LastEdits = new Dictionary<ulong, DiscordMessage>();
 			LastDeletes = new Dictionary<ulong, DiscordMessage>();

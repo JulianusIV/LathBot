@@ -167,8 +167,8 @@ namespace WarnModule
             Reason = "/";
             while (tryagain)
             {
-                DiscordMessage reasonMessage = await WarnChannel.SendMessageAsync("If needed please state a reason, write ``NONE`` if you dont want to specify.").ConfigureAwait(false);
-                InteractivityResult<DiscordMessage> reasonResult = await Interactivity.WaitForMessageAsync(x => x.Channel == WarnChannel && x.Author == Mod).ConfigureAwait(false);
+                DiscordMessage reasonMessage = await WarnChannel.SendMessageAsync("If needed please state a reason, write ``NONE`` if you dont want to specify.");
+                InteractivityResult<DiscordMessage> reasonResult = await Interactivity.WaitForMessageAsync(x => x.Channel == WarnChannel && x.Author == Mod);
                 if (reasonResult.Result.Content.Trim().ToUpper() == "NONE")
                 {
                     await reasonMessage.DeleteAsync();
@@ -177,15 +177,15 @@ namespace WarnModule
                 }
                 else if (reasonResult.Result.Content.Length >= 250)
                 {
-                    DiscordMessage buffoon = await WarnChannel.SendMessageAsync("Max reason length is 250 characters!").ConfigureAwait(false);
-                    await reasonMessage.DeleteAsync().ConfigureAwait(false);
+                    DiscordMessage buffoon = await WarnChannel.SendMessageAsync("Max reason length is 250 characters!");
+                    await reasonMessage.DeleteAsync();
                     await Task.Delay(3000);
-                    await buffoon.DeleteAsync().ConfigureAwait(false);
+                    await buffoon.DeleteAsync();
                 }
                 else
                 {
                     Reason = reasonResult.Result.Content;
-                    await reasonMessage.DeleteAsync().ConfigureAwait(false);
+                    await reasonMessage.DeleteAsync();
                     tryagain = false;
                 }
             }
@@ -296,7 +296,7 @@ namespace WarnModule
                     DiscordEmbed embed = embedBuilder.Build();
 
                     DiscordChannel directChannel = await Member.CreateDmChannelAsync();
-                    await directChannel.SendMessageAsync(embed).ConfigureAwait(false);
+                    await directChannel.SendMessageAsync(embed);
                 }
                 catch (Exception e)
                 {
@@ -314,7 +314,7 @@ namespace WarnModule
                     DiscordEmbed embed = embedBuilder.Build();
 
                     DiscordChannel warnsChannel = Guild.GetChannel(722186358906421369);
-                    await warnsChannel.SendMessageAsync($"{Member.Mention}", embed).ConfigureAwait(false);
+                    await warnsChannel.SendMessageAsync($"{Member.Mention}", embed);
 
                     SystemService.Instance.Logger.Log("Had to send low level warn to #warnings because of following error:\n" + e.Message);
                 }
@@ -351,7 +351,7 @@ namespace WarnModule
                 DiscordEmbed embed = embedBuilder.Build();
 
                 DiscordChannel warnsChannel = Guild.GetChannel(722186358906421369);
-                await warnsChannel.SendMessageAsync($"{Member.Mention}", embed).ConfigureAwait(false);
+                await warnsChannel.SendMessageAsync($"{Member.Mention}", embed);
             }
             else if (CalculateSeverity(PointsDeducted) == 3)
             {
@@ -369,7 +369,7 @@ namespace WarnModule
                 DiscordEmbed embed = embedBuilder.Build();
 
                 DiscordChannel warnsChannel = Guild.GetChannel(722186358906421369);
-                await warnsChannel.SendMessageAsync($"{Member.Mention}", embed).ConfigureAwait(false);
+                await warnsChannel.SendMessageAsync($"{Member.Mention}", embed);
             }
             else
             {
@@ -391,31 +391,29 @@ namespace WarnModule
             };
             if (MessageLink.Attachments.Count != 0)
             {
-                try
+                var msgBuilder = new DiscordMessageBuilder();
+
+                Dictionary<string, Stream> attachments = new Dictionary<string, Stream>();
+                if (!(MessageLink.Attachments is null) && MessageLink.Attachments.Any())
                 {
-                    discordEmbed.ImageUrl = MessageLink.Attachments[0].Url;
-                    await WarnChannel.SendMessageAsync(discordEmbed).ConfigureAwait(false);
-                }
-                catch
-                {
-                    DiscordMessageBuilder builder = new DiscordMessageBuilder
+                    foreach (var attachment in MessageLink.Attachments)
                     {
-                        Embed = discordEmbed
-                    };
-                    WebClient client = new WebClient();
-                    client.DownloadFile(MessageLink.Attachments[0].Url, MessageLink.Attachments[0].FileName);
-                    FileStream stream = new FileStream(MessageLink.Attachments[0].FileName, FileMode.Open);
-                    builder.WithFile(stream);
-                    stream.Close();
-                    await WarnChannel.SendMessageAsync(builder).ConfigureAwait(false);
-                    File.Delete(MessageLink.Attachments[0].FileName);
+                        attachments.Add(attachment.FileName, WebRequest.Create(attachment.Url).GetResponse().GetResponseStream());
+                        if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(discordEmbed.ImageUrl))
+                            discordEmbed.WithImageUrl("attachment://" + attachment.FileName);
+                    }
+                    msgBuilder.WithFiles(attachments);
                 }
+
+                await DiscordObjectService.Instance.WarnsChannel.SendMessageAsync(msgBuilder.WithEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
+                foreach (var attachment in attachments)
+                    attachment.Value.Close();
             }
             else
             {
-                await WarnChannel.SendMessageAsync(discordEmbed).ConfigureAwait(false);
+                await DiscordObjectService.Instance.WarnsChannel.SendMessageAsync(discordEmbed);
             }
-            await MessageLink.DeleteAsync().ConfigureAwait(false);
+            await MessageLink.DeleteAsync();
         }
 
         public async Task SendPunishMessage()

@@ -55,7 +55,7 @@ namespace LathBotFront.Commands
 		[RequireRoles(RoleCheckMode.Any, "Bot Management")]
 		public async Task UpdateDB(CommandContext ctx)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			if (ctx.User.Id != 387325006176059394)
 				return;
 			IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
@@ -108,7 +108,7 @@ namespace LathBotFront.Commands
 		[Description("Mute a user")]
 		public async Task Mute(CommandContext ctx, [Description("The user that you want to mute")] DiscordMember member, [Description("When you will be reminded (2 - 14 days, default 7)")] int duration)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			if (duration > 14 || duration < 2)
 			{
 				await ctx.Channel.SendMessageAsync($"You cant mute someone for {(duration < 2 ? "shorter than 2 days." : "longer than 14 days.")}");
@@ -233,7 +233,7 @@ namespace LathBotFront.Commands
 			DiscordEmbed embed = embedBuilder.Build();
 			await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", embed);
 			DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-			await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+			await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
 		}
 
 		[Command("unmute")]
@@ -241,7 +241,7 @@ namespace LathBotFront.Commands
 		[Description("Unmute a muted user")]
 		public async Task UnMute(CommandContext ctx, [Description("The user that you want to unmute")] DiscordMember member)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
 			{
 				DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
@@ -324,7 +324,7 @@ namespace LathBotFront.Commands
 			DiscordEmbed embed = embedBuilder.Build();
 			await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", embed);
 			DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-			await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+			await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
 		}
 
 		[Command("muted")]
@@ -425,7 +425,7 @@ namespace LathBotFront.Commands
 		[Description("Put a user in timeout for 15/30/45/60 min")]
 		public async Task Timeout(CommandContext ctx, [Description("The user that you want to time out")] DiscordMember member, [Description("Why you want to put them in timeout")][RemainingText] string reason)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			if (member.Id == 192037157416730625)
 			{
 				await ctx.Channel.SendMessageAsync("You cant timeout Lathrix!");
@@ -581,7 +581,7 @@ namespace LathBotFront.Commands
 		[Description("Kick a user")]
 		public async Task Kick(CommandContext ctx, [Description("The user that you want to kick")] DiscordMember member)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			if (member.Id == 192037157416730625)
 			{
 				await ctx.Channel.SendMessageAsync("You cant kick Lathrix!");
@@ -629,7 +629,7 @@ namespace LathBotFront.Commands
 			DiscordEmbed embed = embedBuilder.Build();
 			await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", embed);
 			DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-			await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+			await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
 		}
 
 		[Command("ban")]
@@ -638,7 +638,7 @@ namespace LathBotFront.Commands
 		[Description("Ban a user")]
 		public async Task Ban(CommandContext ctx, [Description("The user that you want to ban")] DiscordUser user, [RemainingText][Description("Why the user is being banned")] string reason)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			DiscordMember member = null;
 			if (ctx.Guild.Members.ContainsKey(user.Id))
 			{
@@ -646,12 +646,12 @@ namespace LathBotFront.Commands
 			}
 			if (user.Id == 192037157416730625)
 			{
-				await ctx.RespondAsync("You cant ban Lathrix!").ConfigureAwait(false);
+				await ctx.RespondAsync("You cant ban Lathrix!");
 				return;
 			}
 			else if (ctx.Member.Hierarchy <= member?.Hierarchy)
 			{
-				await ctx.RespondAsync("You cant ban someone higher or same rank as you!").ConfigureAwait(false);
+				await ctx.RespondAsync("You cant ban someone higher or same rank as you!");
 				return;
 			}
 			if (await AreYouSure(ctx, user, "ban"))
@@ -695,9 +695,9 @@ namespace LathBotFront.Commands
 				Description = reason
 			};
 			DiscordEmbed embed = embedBuilder.Build();
-			await ctx.RespondAsync($"{ctx.Member.Mention}", embed).ConfigureAwait(false);
+			await ctx.RespondAsync($"{ctx.Member.Mention}", embed);
 			DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-			await warnsChannel.SendMessageAsync($"{user.Mention}", embed).ConfigureAwait(false);
+			await warnsChannel.SendMessageAsync($"{user.Mention}", embed);
 		}
 
 		[Command("warn")]
@@ -803,7 +803,7 @@ namespace LathBotFront.Commands
 		[Description("Check your or someone elses warnings")]
 		public async Task Warns(CommandContext ctx)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
 			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool result = urepo.GetIdByDcId(ctx.Member.Id, out int id);
@@ -849,7 +849,7 @@ namespace LathBotFront.Commands
 		[Description("Check your or someone elses warnings")]
 		public async Task Warns(CommandContext ctx, [Description("The user that you want to check the warning of (optional)")] DiscordUser user)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
 			UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
 			bool result = urepo.GetIdByDcId(user.Id, out int id);
@@ -896,7 +896,7 @@ namespace LathBotFront.Commands
 		[Description("Report a staff member to the senate. (Please don't abuse this system)")]
 		public async Task Report(CommandContext ctx, [Description("The Id of the staff member you want to report.")] ulong ID)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			DiscordGuild Lathland = await ctx.Client.GetGuildAsync(699555747591094344);
 			DiscordMember member = await Lathland.GetMemberAsync(ID);
 			if (!member.Roles.Contains(Lathland.GetRole(796234634316873759)) && !member.Roles.Contains(Lathland.GetRole(748646909354311751)))
@@ -907,8 +907,8 @@ namespace LathBotFront.Commands
 			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
 			DiscordMessage message = await ctx.Channel.SendMessageAsync("```Please state a reason for your report!\n" +
 				"If you don't say anything for 5 minutes i will have to ignore you.\n" +
-				"Please don't abuse this system.```").ConfigureAwait(false);
-			InteractivityResult<DiscordMessage> result = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User).ConfigureAwait(false);
+				"Please don't abuse this system.```");
+			InteractivityResult<DiscordMessage> result = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User);
 			await message.DeleteAsync();
 			string reportReason = result.Result.Content;
 			DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
@@ -931,7 +931,7 @@ namespace LathBotFront.Commands
             };
 			foreach (DiscordMember senator in senate)
 			{
-				await senator.SendMessageAsync(embed).ConfigureAwait(false);
+				await senator.SendMessageAsync(embed);
 			}
 			await ctx.Channel.SendMessageAsync("Report successfully sent, The senate will get back to you, until then please be patient.");
 		}
@@ -1136,7 +1136,7 @@ namespace LathBotFront.Commands
 			{
 				if (ctx.Member.Id != 387325006176059394)
 					return;
-				await ctx.TriggerTypingAsync().ConfigureAwait(false);
+				await ctx.TriggerTypingAsync();
 				command.Trim();
 				SqlCommand cmd = new SqlCommand(command, connection);
 				string resultString = "";
@@ -1150,7 +1150,7 @@ namespace LathBotFront.Commands
 					if (resultString.Length >= 900)
 					{
 						await ctx.Channel.SendMessageAsync("```d\n" + resultString + "\n```");
-						await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+						await ctx.Channel.TriggerTypingAsync();
 						resultString = "";
 					}
 					else
@@ -1324,8 +1324,8 @@ namespace LathBotFront.Commands
 				string reason = "/";
 				while (tryagainReason)
 				{
-					DiscordMessage reasonMessage = await ctx.Channel.SendMessageAsync("If needed please state a reason, write ``NONE`` if you dont want to specify.").ConfigureAwait(false);
-					InteractivityResult<DiscordMessage> reasonResult = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User).ConfigureAwait(false);
+					DiscordMessage reasonMessage = await ctx.Channel.SendMessageAsync("If needed please state a reason, write ``NONE`` if you dont want to specify.");
+					InteractivityResult<DiscordMessage> reasonResult = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User);
 					if (reasonResult.Result.Content.Trim().ToUpper() == "NONE")
 					{
 						await reasonMessage.DeleteAsync();
@@ -1334,15 +1334,15 @@ namespace LathBotFront.Commands
 					}
 					else if (reasonResult.Result.Content.Length >= 250)
 					{
-						DiscordMessage buffoon = await ctx.Channel.SendMessageAsync("Max reason length is 250 characters!").ConfigureAwait(false);
-						await reasonMessage.DeleteAsync().ConfigureAwait(false);
+						DiscordMessage buffoon = await ctx.Channel.SendMessageAsync("Max reason length is 250 characters!");
+						await reasonMessage.DeleteAsync();
 						await Task.Delay(3000);
-						await buffoon.DeleteAsync().ConfigureAwait(false);
+						await buffoon.DeleteAsync();
 					}
 					else
 					{
 						reason = reasonResult.Result.Content;
-						await reasonMessage.DeleteAsync().ConfigureAwait(false);
+						await reasonMessage.DeleteAsync();
 						tryagainReason = false;
 					}
 				}
@@ -1439,7 +1439,7 @@ namespace LathBotFront.Commands
 						DiscordEmbed embed = embedBuilder.Build();
 
 						DiscordChannel directChannel = await member.CreateDmChannelAsync();
-						await directChannel.SendMessageAsync(embed).ConfigureAwait(false);
+						await directChannel.SendMessageAsync(embed);
 					}
 					catch (Exception e)
 					{
@@ -1457,7 +1457,7 @@ namespace LathBotFront.Commands
 						DiscordEmbed embed = embedBuilder.Build();
 
 						DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-						await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+						await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
 
 						SystemService.Instance.Logger.Log("Had to send low level warn to #warnings because of following error:\n" + e.Message);
 					}
@@ -1494,7 +1494,7 @@ namespace LathBotFront.Commands
 					DiscordEmbed embed = embedBuilder.Build();
 
 					DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-					await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+					await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
 				}
 				else if (severity == 3)
 				{
@@ -1512,7 +1512,7 @@ namespace LathBotFront.Commands
 					DiscordEmbed embed = embedBuilder.Build();
 
 					DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-					await warnsChannel.SendMessageAsync($"{member.Mention}", embed).ConfigureAwait(false);
+					await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
 				}
 				else
 				{
@@ -1534,32 +1534,30 @@ namespace LathBotFront.Commands
 					};
 					if (messageLink.Attachments.Count != 0)
 					{
-						try
+						var msgBuilder = new DiscordMessageBuilder();
+
+						Dictionary<string, Stream> attachments = new Dictionary<string, Stream>();
+						if (!(messageLink.Attachments is null) && messageLink.Attachments.Any())
 						{
-							discordEmbed.ImageUrl = messageLink.Attachments[0].Url;
-							await ctx.Channel.SendMessageAsync(discordEmbed).ConfigureAwait(false);
-						}
-						catch
-						{
-							DiscordMessageBuilder builder = new DiscordMessageBuilder
+							foreach (var attachment in messageLink.Attachments)
 							{
-								Embed = discordEmbed
-							};
-							WebClient client = new WebClient();
-							client.DownloadFile(messageLink.Attachments[0].Url, messageLink.Attachments[0].FileName);
-							FileStream stream = new FileStream(messageLink.Attachments[0].FileName, FileMode.Open);
-							builder.WithFile(stream);
-							stream.Close();
-							await ctx.Channel.SendMessageAsync(builder).ConfigureAwait(false);
-							File.Delete(messageLink.Attachments[0].FileName);
+								attachments.Add(attachment.FileName, WebRequest.Create(attachment.Url).GetResponse().GetResponseStream());
+								if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(discordEmbed.ImageUrl))
+									discordEmbed.WithImageUrl("attachment://" + attachment.FileName);
+							}
+							msgBuilder.WithFiles(attachments);
 						}
+
+						await ctx.Channel.SendMessageAsync(msgBuilder.WithEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
+						foreach (var attachment in attachments)
+							attachment.Value.Close();
 					}
 					else
 					{
-						await ctx.Channel.SendMessageAsync(discordEmbed).ConfigureAwait(false);
+						await ctx.Channel.SendMessageAsync(discordEmbed);
 					}
 					#endregion
-					await messageLink.DeleteAsync().ConfigureAwait(false);
+					await messageLink.DeleteAsync();
 				}
 				if (pointsLeft < 11)
 				{

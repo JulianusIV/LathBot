@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
 
@@ -10,10 +11,15 @@ namespace LathBotFront.Interactions
     public class WarnInteractions : ApplicationCommandModule
     {
         [ContextMenu(ApplicationCommandType.MessageContextMenu, "Warn Message")]
-        [SlashRequireUserPermissions(Permissions.KickMembers)]
         public async Task WarnMessage(ContextMenuContext ctx)
         {
             await ctx.DeferAsync(true);
+
+            if (!ctx.Member.Permissions.HasFlag(Permissions.KickMembers))
+            {
+                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("No you dumbass!"));
+                return;
+            }
 
             WarnBuilder warnBuilder = new WarnBuilder(
                 ctx.Client,
@@ -40,10 +46,15 @@ namespace LathBotFront.Interactions
         }
 
         [ContextMenu(ApplicationCommandType.UserContextMenu, "Warn User")]
-        [SlashRequireUserPermissions(Permissions.KickMembers)]
         public async Task WarnUser(ContextMenuContext ctx)
         {
             await ctx.DeferAsync(true);
+
+            if (!ctx.Member.Permissions.HasFlag(Permissions.KickMembers))
+            {
+                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("No you dumbass!"));
+                return;
+            }
 
             WarnBuilder warnBuilder = new WarnBuilder(
                 ctx.Client,

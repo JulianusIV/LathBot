@@ -33,7 +33,7 @@ namespace LathBotFront.Commands
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 10, Width = 10, Url = lathrix.AvatarUrl }
             };
             DiscordEmbed embedLinks = embedBuilderLinks.Build();
-            await ctx.Channel.SendMessageAsync(embedLinks).ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync(embedLinks);
 
             DiscordEmbedBuilder embedBuilderInfo = new DiscordEmbedBuilder
             {
@@ -47,7 +47,7 @@ namespace LathBotFront.Commands
             };
 
             DiscordEmbed embedInfo = embedBuilderInfo.Build();
-            await ctx.Channel.SendMessageAsync(embedInfo).ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync(embedInfo);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace LathBotFront.Commands
             };
 
             DiscordMessage linksMessage = await ctx.Channel.GetMessageAsync(769235082878648340);
-            await linksMessage.ModifyAsync("", embedBuilderLinks.Build()).ConfigureAwait(false);
+            await linksMessage.ModifyAsync("", embedBuilderLinks.Build());
 
             DiscordEmbedBuilder embedBuilderInfo = new DiscordEmbedBuilder
             {
@@ -89,7 +89,7 @@ namespace LathBotFront.Commands
 
             DiscordEmbed embedInfo = embedBuilderInfo.Build();
             DiscordMessage infoMessage = await ctx.Channel.GetMessageAsync(769235106828386366);
-            await infoMessage.ModifyAsync("", embedInfo).ConfigureAwait(false);
+            await infoMessage.ModifyAsync("", embedInfo);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace LathBotFront.Commands
                 "Any communication outside of <#838088490704568341> while muted can and will be seen as punishment evasion and is as such also warnable!");
 
             DiscordEmbed embedRules = embedBuilderRules.Build();
-            await ctx.Channel.SendMessageAsync(embedRules).ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync(embedRules);
 
             DiscordEmbedBuilder embedBuilderNsfw = new DiscordEmbedBuilder
             {
@@ -151,7 +151,7 @@ namespace LathBotFront.Commands
             };
 
             DiscordEmbed embedNsfw = embedBuilderNsfw.Build();
-            await ctx.Channel.SendMessageAsync(embedNsfw).ConfigureAwait(false);
+            await ctx.Channel.SendMessageAsync(embedNsfw);
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace LathBotFront.Commands
                 "Any communication outside of <#838088490704568341> while muted can and will be seen as punishment evasion and is as such also warnable!");
 
             DiscordMessage rulesMessage = await ctx.Channel.GetMessageAsync(769235312907649044);
-            await rulesMessage.ModifyAsync("", embedBuilderRules.Build()).ConfigureAwait(false);
+            await rulesMessage.ModifyAsync("", embedBuilderRules.Build());
 
             DiscordEmbedBuilder embedBuilderNsfw = new DiscordEmbedBuilder
             {
@@ -213,7 +213,7 @@ namespace LathBotFront.Commands
             };
 
             DiscordMessage nsfwMessage = await ctx.Channel.GetMessageAsync(769235313968676864);
-            await nsfwMessage.ModifyAsync("", embedBuilderNsfw.Build()).ConfigureAwait(false);
+            await nsfwMessage.ModifyAsync("", embedBuilderNsfw.Build());
         }
     }
 }

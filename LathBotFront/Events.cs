@@ -20,6 +20,7 @@ using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Logging;
 using LathBotBack.Services;
+using System.Net;
 
 namespace LathBotFront
 {
@@ -116,7 +117,7 @@ namespace LathBotFront
 			{
 				if (e.Channel.Id == 713284112638672917 || e.Channel.Id == 720543453376937996)
 				{
-					await e.Channel.CrosspostMessageAsync(e.Message).ConfigureAwait(false);
+					await e.Channel.CrosspostMessageAsync(e.Message);
 					return;
 				}
 				if (e.Author.Id == 708083256439996497)
@@ -358,11 +359,24 @@ namespace LathBotFront
 						};
 						discordEmbed.AddField("Message jump link", $"[Doing!]({e.Message.JumpLink})");
 
-						if (e.Message.Attachments.Count != 0)
+
+						var messageBuilder = new DiscordMessageBuilder();
+
+						Dictionary<string, Stream> attachments = new Dictionary<string, Stream>();
+						if (!(e.Message.Attachments is null) && e.Message.Attachments.Any())
 						{
-							discordEmbed.ImageUrl = e.Message.Attachments[0].Url;
+							foreach (var attachment in e.Message.Attachments)
+							{
+								attachments.Add(attachment.FileName, WebRequest.Create(attachment.Url).GetResponse().GetResponseStream());
+								if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(discordEmbed.ImageUrl))
+									discordEmbed.WithImageUrl("attachment://" + attachment.FileName);
+							}
+							messageBuilder.WithFiles(attachments);
 						}
-						await DiscordObjectService.Instance.GoodGuysChannel.SendMessageAsync(e.Message.Id.ToString(), discordEmbed.Build()).ConfigureAwait(false);
+
+						await DiscordObjectService.Instance.GoodGuysChannel.SendMessageAsync(messageBuilder.WithContent(e.Message.Id.ToString()).WithEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
+						foreach (var attachment in attachments)
+							attachment.Value.Close();
 					}
 				}
 			});
@@ -464,8 +478,8 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine).ConfigureAwait(false);
-				await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace).ConfigureAwait(false);
+				await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
+				await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
 			});
 			return Task.CompletedTask;
 		}
@@ -474,8 +488,8 @@ namespace LathBotFront
 		{
 			_ = Task.Run(async () =>
 			{
-				await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine).ConfigureAwait(false);
-				await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace).ConfigureAwait(false);
+				await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
+				await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
 			});
 			return Task.CompletedTask;
 		}

@@ -86,7 +86,7 @@ namespace LathBotFront
 						};
 						DiscordEmbed embed = embedBuilder.Build();
 
-						_ = DiscordObjectService.Instance.WarnsChannel.SendMessageAsync(embed).ConfigureAwait(false);
+						_ = DiscordObjectService.Instance.WarnsChannel.SendMessageAsync(embed);
 					}
 					catch
 					{
@@ -99,7 +99,7 @@ namespace LathBotFront
 						};
 						DiscordEmbed embed = embedBuilder.Build();
 
-						_ = DiscordObjectService.Instance.WarnsChannel.SendMessageAsync(embed).ConfigureAwait(false);
+						_ = DiscordObjectService.Instance.WarnsChannel.SendMessageAsync(embed);
 					}
 				}
 			}

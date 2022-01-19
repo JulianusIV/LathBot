@@ -54,7 +54,7 @@ namespace LathBotFront.Commands
 				}
 			}
 			await ctx.Channel.SendMessageAsync("```This channel is now frozen for moderation purposes.\n" +
-				"You will be able to send messages again once the situation has been resolved```").ConfigureAwait(false);
+				"You will be able to send messages again once the situation has been resolved```");
 		}
 
 		[Command("unfreeze")]
@@ -72,7 +72,7 @@ namespace LathBotFront.Commands
 				}
 			}
 			await ctx.Channel.SendMessageAsync("```This channel is no longer frozen.\n" +
-				"You can now send messages as normal```").ConfigureAwait(false);
+				"You can now send messages as normal```");
 		}
 
 		[Command("convert")]
@@ -80,57 +80,57 @@ namespace LathBotFront.Commands
 		[Description("Convert from one timezone to the others")]
 		public async Task TimeConvert(CommandContext ctx, [Description("The time that you want to get converted(24 hours model). Format: hh:mm")] string time, [Description("The timezone that you want to convert from")] string timeZone)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			if (timeZone.ToUpper() == "UTC" || timeZone.ToUpper() == "GMT" || timeZone.ToUpper() == "WEZ" || timeZone.ToUpper() == "GMT" || timeZone.ToUpper() == "AZODT" || timeZone.ToUpper() == "IST" || timeZone.ToUpper() == "EGST" || timeZone.ToUpper() == "SLT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTC(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTC(time));
 			else if (timeZone.ToUpper() == "UTC+1" || timeZone.ToUpper() == "GMT+1" || timeZone.ToUpper() == "MEZ" || timeZone.ToUpper() == "CET" || timeZone.ToUpper() == "WAT" || timeZone.ToUpper() == "WEST" || timeZone.ToUpper() == "WESZ" || timeZone.ToUpper() == "BST" || timeZone.ToUpper() == "IST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusOne(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusOne(time));
 			else if (timeZone.ToUpper() == "UTC+2" || timeZone.ToUpper() == "GMT+2" || timeZone.ToUpper() == "EET" || timeZone.ToUpper() == "OEZ" || timeZone.ToUpper() == "CEST" || timeZone.ToUpper() == "CEDT" || timeZone.ToUpper() == "MESZ" || timeZone.ToUpper() == "CAT" || timeZone.ToUpper() == "SAST" || timeZone.ToUpper() == "USZ1" || timeZone.ToUpper() == "WAST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusTwo(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusTwo(time));
 			else if (timeZone.ToUpper() == "UTC+3" || timeZone.ToUpper() == "GMT+3" || timeZone.ToUpper() == "AST" || timeZone.ToUpper() == "EAT" || timeZone.ToUpper() == "EEST" || timeZone.ToUpper() == "IDT" || timeZone.ToUpper() == "MSK" || timeZone.ToUpper() == "SYST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusThree(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusThree(time));
 			else if (timeZone.ToUpper() == "UTC+4" || timeZone.ToUpper() == "GMT+4" || timeZone.ToUpper() == "AMST" || timeZone.ToUpper() == "AZT" || timeZone.ToUpper() == "GET" || timeZone.ToUpper() == "GST" || timeZone.ToUpper() == "ICT" || timeZone.ToUpper() == "MUT" || timeZone.ToUpper() == "RET" || timeZone.ToUpper() == "SCT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusFour(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusFour(time));
 			else if (timeZone.ToUpper() == "UTC+5" || timeZone.ToUpper() == "GMT+5" || timeZone.ToUpper() == "CAST" || timeZone.ToUpper() == "TFT" || timeZone.ToUpper() == "HMT" || timeZone.ToUpper() == "MVT" || timeZone.ToUpper() == "PKT" || timeZone.ToUpper() == "TJT" || timeZone.ToUpper() == "TMT" || timeZone.ToUpper() == "UZT" || timeZone.ToUpper() == "WKST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusFive(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusFive(time));
 			else if (timeZone.ToUpper() == "UTC+6" || timeZone.ToUpper() == "GMT+6" || timeZone.ToUpper() == "BDT" || timeZone.ToUpper() == "BTT" || timeZone.ToUpper() == "EKST" || timeZone.ToUpper() == "BIOT" || timeZone.ToUpper() == "MAWT" || timeZone.ToUpper() == "OMST" || timeZone.ToUpper() == "VOST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusSix(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusSix(time));
 			else if (timeZone.ToUpper() == "UTC+7" || timeZone.ToUpper() == "GMT+7" || timeZone.ToUpper() == "KRAT" || timeZone.ToUpper() == "NOVT" || timeZone.ToUpper() == "ICT" || timeZone.ToUpper() == "WIB" || timeZone.ToUpper() == "DAVT" || timeZone.ToUpper() == "KOVT" || timeZone.ToUpper() == "CXT" || timeZone.ToUpper() == "BST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusSeven(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusSeven(time));
 			else if (timeZone.ToUpper() == "UTC+8" || timeZone.ToUpper() == "GMT+8" || timeZone.ToUpper() == "ACIT" || timeZone.ToUpper() == "AWST" || timeZone.ToUpper() == "BDT" || timeZone.ToUpper() == "CST" || timeZone.ToUpper() == "HKST" || timeZone.ToUpper() == "IRKT" || timeZone.ToUpper() == "MBT" || timeZone.ToUpper() == "MYT" || timeZone.ToUpper() == "MNT" || timeZone.ToUpper() == "PIT" || timeZone.ToUpper() == "PHT" || timeZone.ToUpper() == "SST" || timeZone.ToUpper() == "SGT" || timeZone.ToUpper() == "SIT" || timeZone.ToUpper() == "TWT" || timeZone.ToUpper() == "WITA" || timeZone.ToUpper() == "KOVST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusEight(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusEight(time));
 			else if (timeZone.ToUpper() == "UTC+9" || timeZone.ToUpper() == "GMT+9" || timeZone.ToUpper() == "WIT" || timeZone.ToUpper() == "JST" || timeZone.ToUpper() == "KST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusNine(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusNine(time));
 			else if (timeZone.ToUpper() == "UTC+10" || timeZone.ToUpper() == "GMT+10" || timeZone.ToUpper() == "DTAT" || timeZone.ToUpper() == "AEST" || timeZone.ToUpper() == "TRUT" || timeZone.ToUpper() == "PGT" || timeZone.ToUpper() == "VLAT" || timeZone.ToUpper() == "CHST" || timeZone.ToUpper() == "YAPT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusTen(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusTen(time));
 			else if (timeZone.ToUpper() == "UTC+11" || timeZone.ToUpper() == "GMT+11" || timeZone.ToUpper() == "KOST" || timeZone.ToUpper() == "SRET" || timeZone.ToUpper() == "NCT" || timeZone.ToUpper() == "PONT" || timeZone.ToUpper() == "SBT" || timeZone.ToUpper() == "VUT" || timeZone.ToUpper() == "NFT" || timeZone.ToUpper() == "AEDT" || timeZone.ToUpper() == "LHDT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusEleven(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusEleven(time));
 			else if (timeZone.ToUpper() == "UTC+12" || timeZone.ToUpper() == "GMT+12" || timeZone.ToUpper() == "WFT" || timeZone.ToUpper() == "TVT" || timeZone.ToUpper() == "FJT" || timeZone.ToUpper() == "GILT" || timeZone.ToUpper() == "NRT" || timeZone.ToUpper() == "MHT" || timeZone.ToUpper() == "PETT" || timeZone.ToUpper() == "NZST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusTwelve(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCPlusTwelve(time));
 			else if (timeZone.ToUpper() == "UTC-12" || timeZone.ToUpper() == "GMT-12" || timeZone.ToUpper() == "IDLW" || timeZone.ToUpper() == "BIT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusTwelve(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusTwelve(time));
 			else if (timeZone.ToUpper() == "UTC-11" || timeZone.ToUpper() == "GMT-11" || timeZone.ToUpper() == "WST" || timeZone.ToUpper() == "WSST" || timeZone.ToUpper() == "NUT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusEleven(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusEleven(time));
 			else if (timeZone.ToUpper() == "UTC-10" || timeZone.ToUpper() == "GMT-10" || timeZone.ToUpper() == "HAST" || timeZone.ToUpper() == "TAHT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusTen(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusTen(time));
 			else if (timeZone.ToUpper() == "UTC-9" || timeZone.ToUpper() == "GMT-9" || timeZone.ToUpper() == "HADT" || timeZone.ToUpper() == "GAMT" || timeZone.ToUpper() == "AKST" || timeZone.ToUpper() == "YST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusNine(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusNine(time));
 			else if (timeZone.ToUpper() == "UTC-8" || timeZone.ToUpper() == "GMT-8" || timeZone.ToUpper() == "PST" || timeZone.ToUpper() == "CIST" || timeZone.ToUpper() == "AKDT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusEight(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusEight(time));
 			else if (timeZone.ToUpper() == "UTC-7" || timeZone.ToUpper() == "GMT-7" || timeZone.ToUpper() == "MST" || timeZone.ToUpper() == "PDT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusSeven(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusSeven(time));
 			else if (timeZone.ToUpper() == "UTC-6" || timeZone.ToUpper() == "GMT-6" || timeZone.ToUpper() == "CST" || timeZone.ToUpper() == "GALT" || timeZone.ToUpper() == "PIT" || timeZone.ToUpper() == "MDT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusSix(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusSix(time));
 			else if (timeZone.ToUpper() == "UTC-5" || timeZone.ToUpper() == "GMT-5" || timeZone.ToUpper() == "EAST" || timeZone.ToUpper() == "EST" || timeZone.ToUpper() == "ECT" || timeZone.ToUpper() == "ACT" || timeZone.ToUpper() == "COT" || timeZone.ToUpper() == "PET" || timeZone.ToUpper() == "CDT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusFive(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusFive(time));
 			else if (timeZone.ToUpper() == "UTC-4" || timeZone.ToUpper() == "GMT-4" || timeZone.ToUpper() == "BOT" || timeZone.ToUpper() == "FKST" || timeZone.ToUpper() == "AST" || timeZone.ToUpper() == "PYT" || timeZone.ToUpper() == "BWST" || timeZone.ToUpper() == "SLT" || timeZone.ToUpper() == "GYT" || timeZone.ToUpper() == "JFST" || timeZone.ToUpper() == "EDT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusFour(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusFour(time));
 			else if (timeZone.ToUpper() == "UTC-3" || timeZone.ToUpper() == "GMT-3" || timeZone.ToUpper() == "ART" || timeZone.ToUpper() == "BRT" || timeZone.ToUpper() == "CLST" || timeZone.ToUpper() == "WGT" || timeZone.ToUpper() == "GFT" || timeZone.ToUpper() == "PMST" || timeZone.ToUpper() == "ROTT" || timeZone.ToUpper() == "SRT" || timeZone.ToUpper() == "UYT" || timeZone.ToUpper() == "ADT" || timeZone.ToUpper() == "BWDT" || timeZone.ToUpper() == "FKDT" || timeZone.ToUpper() == "JFDT" || timeZone.ToUpper() == "PYDT" || timeZone.ToUpper() == "SLST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusThree(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusThree(time));
 			else if (timeZone.ToUpper() == "UTC-2" || timeZone.ToUpper() == "GMT-2" || timeZone.ToUpper() == "GST" || timeZone.ToUpper() == "BEST" || timeZone.ToUpper() == "PMDT" || timeZone.ToUpper() == "CGST" || timeZone.ToUpper() == "UYST" || timeZone.ToUpper() == "ARDT" || timeZone.ToUpper() == "BRST")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusTwo(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusTwo(time));
 			else if (timeZone.ToUpper() == "UTC-1" || timeZone.ToUpper() == "GMT-1" || timeZone.ToUpper() == "AZOST" || timeZone.ToUpper() == "CVT")
-				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusOne(time)).ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync(TimeZones.UTCMinusOne(time));
 		}
 
 		[Command("prune")]
@@ -138,7 +138,7 @@ namespace LathBotFront.Commands
 		[RequireUserPermissions(Permissions.Administrator)]
 		public async Task Prune(CommandContext ctx)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
 			foreach (DiscordMember member in members)
 			{
@@ -152,9 +152,9 @@ namespace LathBotFront.Commands
 					}
 				}
 				if (kick)
-					await member.RemoveAsync().ConfigureAwait(false);
+					await member.RemoveAsync();
 			}
-			await ctx.Channel.SendMessageAsync("Done :(").ConfigureAwait(false);
+			await ctx.Channel.SendMessageAsync("Done :(");
 		}
 
 		[Command("advert")]
@@ -182,10 +182,10 @@ namespace LathBotFront.Commands
 				Embed = adEmbed.Build()
 			};
 			builder.WithAllowedMention(RoleMention.All);
-			DiscordMessage allowDenyMessage = await plagueChannel.SendMessageAsync(builder).ConfigureAwait(false);
+			DiscordMessage allowDenyMessage = await plagueChannel.SendMessageAsync(builder);
 
-			await allowDenyMessage.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":white_check_mark:")).ConfigureAwait(false);
-			await allowDenyMessage.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":x:")).ConfigureAwait(false);
+			await allowDenyMessage.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":white_check_mark:"));
+			await allowDenyMessage.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":x:"));
 
 			InteractivityExtension interactivity = ctx.Client.GetInteractivity();
 
@@ -198,21 +198,21 @@ namespace LathBotFront.Commands
 					if (role.Id == 796234634316873759 || role.Id == 784852719449276467 || role.Id == 726212852267876435)
 						return true;
 				return false;
-			}).ConfigureAwait(false);
+			});
 
 			if (reaction.Result.Emoji.ToString() == "❌")
 			{
-				await ctx.Channel.SendMessageAsync("Request has been denied!").ConfigureAwait(false);
-				await ctx.Message.DeleteAsync().ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync("Request has been denied!");
+				await ctx.Message.DeleteAsync();
 			}
 			else if (reaction.Result.Emoji.ToString() == "✅")
 			{
-				await ctx.Guild.GetChannel(787066481204527154).SendMessageAsync(ctx.Guild.GetRole(794975835235942470).Mention, adEmbed.Build()).ConfigureAwait(false);
-				await ctx.Channel.SendMessageAsync("Request has been approved!").ConfigureAwait(false);
+				await ctx.Guild.GetChannel(787066481204527154).SendMessageAsync(ctx.Guild.GetRole(794975835235942470).Mention, adEmbed.Build());
+				await ctx.Channel.SendMessageAsync("Request has been approved!");
 			}
 			else if (reaction.TimedOut)
 			{
-				await ctx.Channel.SendMessageAsync("It seems like there is no moderator online right now.\nTry again later.").ConfigureAwait(false);
+				await ctx.Channel.SendMessageAsync("It seems like there is no moderator online right now.\nTry again later.");
 			}
 		}
 
@@ -221,7 +221,7 @@ namespace LathBotFront.Commands
 		[RequireUserPermissions(Permissions.Administrator)]
 		public async Task PurgeCell(CommandContext ctx)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			if (ctx.Channel.Id == 792486366138073180)
 			{
 				string channelContent = "";
@@ -234,7 +234,7 @@ namespace LathBotFront.Commands
 						(messages[index].IsEdited ? $" (edited at {messages[index].EditedTimestamp})\n" : "\n");
 				}
 				File.WriteAllText("CellLog.txt", channelContent);
-				await ctx.Channel.DeleteMessagesAsync(await ctx.Channel.GetMessagesAsync(300)).ConfigureAwait(false);
+				await ctx.Channel.DeleteMessagesAsync(await ctx.Channel.GetMessagesAsync(300));
 				DiscordMessageBuilder builder = new DiscordMessageBuilder();
 				using FileStream stream = new FileStream("CellLog.txt", FileMode.Open);
 				builder.WithFile(stream);
@@ -260,7 +260,7 @@ namespace LathBotFront.Commands
 				return;
 			}
 
-			await ctx.Channel.SendMessageAsync("Set to " + newCount).ConfigureAwait(false);
+			await ctx.Channel.SendMessageAsync("Set to " + newCount);
 		}
 
 		[Command("getcount")]
@@ -275,7 +275,7 @@ namespace LathBotFront.Commands
 		[RequireUserPermissions(Permissions.BanMembers)]
 		public async Task Clean(CommandContext ctx)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			if (ctx.Channel.Id == 838088490704568341)
 			{
 				string channelContent = "";
@@ -326,7 +326,7 @@ namespace LathBotFront.Commands
 			msg = await ctx.RespondAsync(embed: new DiscordEmbedBuilder()
 				.WithColor(new DiscordColor("#FF007F"))
 				.WithDescription("Evaluating...")
-				.Build()).ConfigureAwait(false);
+				.Build());
 
 			try
 			{
@@ -338,16 +338,16 @@ namespace LathBotFront.Commands
 
 				var script = CSharpScript.Create(cs, sopts, typeof(TestVariables));
 				script.Compile();
-				var result = await script.RunAsync(globals).ConfigureAwait(false);
+				var result = await script.RunAsync(globals);
 
 				if (result != null && result.ReturnValue != null && !string.IsNullOrWhiteSpace(result.ReturnValue.ToString()))
-					await msg.ModifyAsync(embed: new DiscordEmbedBuilder { Title = "Evaluation Result", Description = result.ReturnValue.ToString(), Color = new DiscordColor("#007FFF") }.Build()).ConfigureAwait(false);
+					await msg.ModifyAsync(embed: new DiscordEmbedBuilder { Title = "Evaluation Result", Description = result.ReturnValue.ToString(), Color = new DiscordColor("#007FFF") }.Build());
 				else
-					await msg.ModifyAsync(embed: new DiscordEmbedBuilder { Title = "Evaluation Successful", Description = "No result was returned.", Color = new DiscordColor("#007FFF") }.Build()).ConfigureAwait(false);
+					await msg.ModifyAsync(embed: new DiscordEmbedBuilder { Title = "Evaluation Successful", Description = "No result was returned.", Color = new DiscordColor("#007FFF") }.Build());
 			}
 			catch (Exception ex)
 			{
-				await msg.ModifyAsync(embed: new DiscordEmbedBuilder { Title = "Evaluation Failure", Description = string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message), Color = new DiscordColor("#FF0000") }.Build()).ConfigureAwait(false);
+				await msg.ModifyAsync(embed: new DiscordEmbedBuilder { Title = "Evaluation Failure", Description = string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message), Color = new DiscordColor("#FF0000") }.Build());
 			}
 		}
 	}
@@ -369,7 +369,7 @@ namespace LathBotFront.Commands
 			this.Guild = this.Channel.Guild;
 			this.User = this.Message.Author;
 			if (this.Guild != null)
-				this.Member = this.Guild.GetMemberAsync(this.User.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+				this.Member = this.Guild.GetMemberAsync(this.User.Id).GetAwaiter().GetResult();
 			this.Context = ctx;
 		}
 

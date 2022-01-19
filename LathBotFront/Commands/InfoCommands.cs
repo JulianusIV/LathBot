@@ -37,7 +37,7 @@ namespace LathBotFront.Commands
 			discordEmbed.AddField("Repository", "[GitHub](https://github.com/JulianusIV/LathBot)");
 			TimeSpan uptime = DateTime.Now - StartupService.Instance.StartTime;
 			discordEmbed.AddField("Uptime", $"Bot has been running since {uptime}");
-			await ctx.Channel.SendMessageAsync(discordEmbed.Build()).ConfigureAwait(false);
+			await ctx.Channel.SendMessageAsync(discordEmbed.Build());
 		}
 
 		[Command("tos")]
@@ -114,7 +114,7 @@ namespace LathBotFront.Commands
 		[Description("Display timezones and current time of staff members")]
 		public async Task StaffTimes(CommandContext ctx)
 		{
-			await ctx.Channel.TriggerTypingAsync().ConfigureAwait(false);
+			await ctx.Channel.TriggerTypingAsync();
 			DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
 			{
 				Color = new DiscordColor(64, 255, 0),
@@ -147,7 +147,7 @@ namespace LathBotFront.Commands
 					DateTime modTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, modTimeZone);
 					discordEmbed.AddField($"{mod.Username}#{mod.Discriminator}",
 						modTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (modTimeZone.IsDaylightSavingTime(modTime) ?
-						modTimeZone.DaylightName.Substring(0, 6) : modTimeZone.StandardName.Substring(0, 6)) + ")");
+						modTimeZone.DaylightName[..6] : modTimeZone.StandardName[..6]) + ")");
 				}
 				catch
 				{
@@ -155,7 +155,7 @@ namespace LathBotFront.Commands
 					continue;
 				}
 			}
-			await ctx.Channel.SendMessageAsync(discordEmbed).ConfigureAwait(false);
+			await ctx.Channel.SendMessageAsync(discordEmbed);
 		}
 	}
 }
