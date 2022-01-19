@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["nuget.config", "LathBotFront/"]
 COPY ["LathBotFront.csproj", "LathBotFront/"]
-RUN dotnet restore "LathBotFront.csproj"
+RUN dotnet restore "LathBotFront/LathBotFront.csproj"
 COPY . .
 WORKDIR "/src/LathBotFront"
 RUN dotnet build "LathBotFront.csproj" -c Release -o /app/build
