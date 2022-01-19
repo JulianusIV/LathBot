@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LathBotFront", "LathBotFron
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LathBotBack", "LathBotBack\LathBotBack.csproj", "{E880B343-A587-423F-91CA-F33354727D83}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LathBotTest", "LathBotTest\LathBotTest.csproj", "{828C2858-1414-4BCD-B175-9FC276D9C3EB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WarnModule", "WarnModule\WarnModule.csproj", "{327AD00A-6EA6-43BF-A129-B8E06A6E13A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarnModule", "WarnModule\WarnModule.csproj", "{327AD00A-6EA6-43BF-A129-B8E06A6E13A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{E880B343-A587-423F-91CA-F33354727D83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E880B343-A587-423F-91CA-F33354727D83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E880B343-A587-423F-91CA-F33354727D83}.Release|Any CPU.Build.0 = Release|Any CPU
-		{828C2858-1414-4BCD-B175-9FC276D9C3EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{828C2858-1414-4BCD-B175-9FC276D9C3EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{828C2858-1414-4BCD-B175-9FC276D9C3EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{828C2858-1414-4BCD-B175-9FC276D9C3EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{327AD00A-6EA6-43BF-A129-B8E06A6E13A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{327AD00A-6EA6-43BF-A129-B8E06A6E13A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{327AD00A-6EA6-43BF-A129-B8E06A6E13A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
