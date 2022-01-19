@@ -1,10 +1,12 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
-COPY ["nuget.config", "LathBotFront/"]
-COPY ["LathBotFront.csproj", "LathBotFront/"]
+COPY ["../LathBotFront/nuget.config", "LathBotFront/"]
+COPY ["../LathBotFront/LathBotFront.csproj", "LathBotFront/"]
+COPY ["../LathBotBack/LathBotBack.csproj", "LathBotBack/"]
+COPY ["../WarnModule/WarnModule.csproj", "WarnModule/"]
 RUN dotnet restore "LathBotFront/LathBotFront.csproj"
 COPY . .
 WORKDIR "/src/LathBotFront"
