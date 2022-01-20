@@ -1,0 +1,21 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: test1
+      run: ls -la
+    - name: test2
+      run: ls -la LathBotFront/
+    - name: test3
+      run: ls -la LathBotFront/Commands/
+    - name: test4
+      run: cat LathBotFront/Commands/InfoCommands.cs
