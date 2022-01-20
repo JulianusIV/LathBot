@@ -71,7 +71,7 @@ namespace LathBotFront.Commands
 				}
 				pages.Add(new Page { Embed = builder.Embed });
 			}
-			await ctx.Channel.SendPaginatedMessageAsync(ctx.Member, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.DeleteMessage);
+			_ = ctx.Channel.SendPaginatedMessageAsync(ctx.Member, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.DeleteMessage);
 		}
 
 		private DiscordMessageBuilder DoAudit(CommandContext ctx, DiscordMember mod)

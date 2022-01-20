@@ -14,11 +14,16 @@ using DSharpPlus.Interactivity.Extensions;
 using LathBotBack.Enums;
 using LathBotBack.Services;
 using DSharpPlus.Interactivity.Enums;
+using System.Threading;
 
 namespace LathBotFront.Commands
 {
+
+	[ModuleLifespan(ModuleLifespan.Singleton)]
 	public class LavalinkCommands : BaseCommandModule
 	{
+		Dictionary<ulong, CancellationTokenSource> queueTokens = new Dictionary<ulong, CancellationTokenSource>();
+
 		[Command("play")]
 		[Description("Search YouTube for music")]
 		public async Task Play(CommandContext ctx, [Description("The search request")][RemainingText] string search)
@@ -292,6 +297,12 @@ namespace LathBotFront.Commands
 		[Description("Display queue")]
 		public async Task Queue(CommandContext ctx)
 		{
+			//if (queueTokens.ContainsKey(ctx.Member.Id))
+   //         {
+			//	queueTokens[ctx.Member.Id].Cancel();
+			//	queueTokens.Remove(ctx.Member.Id);
+   //         }
+
 			if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
 			{
 				await ctx.RespondAsync("You are not in a vc.");
@@ -342,7 +353,7 @@ namespace LathBotFront.Commands
 					pages.Add(new Page { Embed = builder.Build() });
 				}
 			}
-			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.Disable);
+			_ = ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.DeleteMessage);
 		}
 
 		[Command("np")]

@@ -1123,7 +1123,7 @@ namespace LathBotFront.Commands
 					}
 				}
 			}
-			await ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.DeleteMessage);
+			_ = ctx.Channel.SendPaginatedMessageAsync(ctx.User, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.DeleteMessage);
 		}
 
 		[Command("sql")]
