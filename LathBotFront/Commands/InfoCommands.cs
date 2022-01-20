@@ -14,7 +14,7 @@ using LathBotBack.Repos;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using DSharpPlus;
+
 
 namespace LathBotFront.Commands
 {
@@ -46,41 +46,42 @@ namespace LathBotFront.Commands
         public async Task Tos(CommandContext ctx)
         {
             using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LathBotFront.Resources.LathBotTOS.txt");
-            using StreamReader reader = new StreamReader(stream);
-            string result = reader.ReadToEnd();
+            //using StreamReader reader = new StreamReader(stream);
+            await ctx.RespondAsync(new DiscordMessageBuilder().WithFile("TOS.txt", stream));
+            //string result = reader.ReadToEnd();
 
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
-                .WithTitle("Terms of Service");
+            //DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+            //    .WithTitle("Terms of Service");
 
-            while (!result.StartsWith("> ") && result.Contains('#'))
-            {
-                var title = $"{result.Substring(result.IndexOf("# ") + 2, result.IndexOf('\n') - 2)}";
-                result = result[(result.IndexOf('\n') + 1)..];
+            //while (!result.StartsWith("> ") && result.Contains('#'))
+            //{
+            //    var title = $"{result.Substring(result.IndexOf("# ") + 2, result.IndexOf('\n') - 2)}";
+            //    result = result[(result.IndexOf('\n') + 1)..];
 
-                string desc;
-                if (result.Contains("# "))
-                {
-                    desc = result[..result.IndexOf("# ")];
-                    result = result[result.IndexOf("# ")..];
-                }
-                else
-                {
-                    desc = result[..result.IndexOf("> ")];
-                    result = result[result.IndexOf("> ")..];
-                }
-                var descs = desc.Split("\r\n\r\n");
+            //    string desc;
+            //    if (result.Contains("# "))
+            //    {
+            //        desc = result[..result.IndexOf("# ")];
+            //        result = result[result.IndexOf("# ")..];
+            //    }
+            //    else
+            //    {
+            //        desc = result[..result.IndexOf("> ")];
+            //        result = result[result.IndexOf("> ")..];
+            //    }
+            //    var descs = desc.Split("\r\n\r\n");
 
-                embed.AddField(title, descs[0]);
+            //    embed.AddField(title, descs[0]);
 
-                for (int i = 1; i < descs.Length; i++)
-                {
-                    embed.AddField("ㅤ", descs[i]);
-                }
-            }
+            //    for (int i = 1; i < descs.Length; i++)
+            //    {
+            //        embed.AddField("ㅤ", descs[i]);
+            //    }
+            //}
 
-            embed.WithFooter(result[(result.IndexOf("> ") + 2)..]);
+            //embed.WithFooter(result[(result.IndexOf("> ") + 2)..]);
 
-            await ctx.RespondAsync(embed);
+            //await ctx.RespondAsync(embed);
         }
 
         [Command("privacy")]
