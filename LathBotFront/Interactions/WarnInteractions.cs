@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
+
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
 
 using WarnModule;
 
@@ -40,8 +40,7 @@ namespace LathBotFront.Interactions
                 return;
             await warnBuilder.ReadRemainingPoints();
             await warnBuilder.SendWarnMessage();
-            if (!(warnBuilder.MessageLink is null))
-                await warnBuilder.LogMessage();
+            await warnBuilder.LogMessage();
             await warnBuilder.SendPunishMessage();
         }
 
@@ -74,8 +73,6 @@ namespace LathBotFront.Interactions
                 return;
             await warnBuilder.ReadRemainingPoints();
             await warnBuilder.SendWarnMessage();
-            if (!(warnBuilder.MessageLink is null))
-                await warnBuilder.LogMessage();
             await warnBuilder.SendPunishMessage();
         }
     }

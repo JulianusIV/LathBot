@@ -387,7 +387,7 @@ namespace WarnModule
                     Name = MessageLink.Author.Username
                 },
                 Description = MessageLink.Content,
-                Color = ((DiscordMember)MessageLink.Author).Color
+                Color = (await Guild.GetMemberAsync(MessageLink.Author.Id)).Color
             };
             if (MessageLink.Attachments.Count != 0)
             {
@@ -405,13 +405,13 @@ namespace WarnModule
                     msgBuilder.WithFiles(attachments);
                 }
 
-                await DiscordObjectService.Instance.WarnsChannel.SendMessageAsync(msgBuilder.WithEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
+                await WarnChannel.SendMessageAsync(msgBuilder.WithEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
                 foreach (var attachment in attachments)
                     attachment.Value.Close();
             }
             else
             {
-                await DiscordObjectService.Instance.WarnsChannel.SendMessageAsync(discordEmbed);
+                await WarnChannel.SendMessageAsync(discordEmbed);
             }
             await MessageLink.DeleteAsync();
         }
