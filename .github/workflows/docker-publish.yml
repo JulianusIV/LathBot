@@ -20,7 +20,7 @@ jobs:
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: Build
-      run: docker build . --file Dockerfile --tag julianusiv/lathbot:latest
+      run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/lathbot:latest
       
     - name: Push
       run: docker push ${{secrets.DOCKER_USER}}/lathbot
