@@ -129,7 +129,7 @@ namespace LathBotFront
 				if (e.Channel.Id == 741340775530496013 && e.MentionedRoles.Contains(e.Guild.GetRole(741342066021367938)))
                 {
 					var oldThread = e.Channel.Threads.Where(x => !x.ThreadMetadata.IsArchived).First();
-					await oldThread.ModifyAsync(x => x.AutoArchiveDuration = AutoArchiveDuration.Hour);
+					await oldThread?.ModifyAsync(x => x.AutoArchiveDuration = AutoArchiveDuration.Hour);
 
                     var thread = await e.Message.CreateThreadAsync("text-answers", AutoArchiveDuration.Day);
 					await thread.ModifyAsync(x => x.Locked = true);
