@@ -141,7 +141,6 @@ namespace LathBotFront
 					catch (NotFoundException)
 					{
 						_ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting a mod from discord.");
-						continue;
 					}
 					result = urepo.Read(item.User, out User dbUser);
 					if (!result)

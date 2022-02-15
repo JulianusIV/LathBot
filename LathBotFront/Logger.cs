@@ -17,6 +17,9 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+
                 DiscordAuditLogBanEntry auditLog = (await e.Guild.GetAuditLogsAsync(limit: 5, action_type: AuditLogActionType.Ban))
                     .First(x => ((DiscordAuditLogBanEntry)x).Target == e.Member)
                     as DiscordAuditLogBanEntry;
@@ -36,6 +39,9 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+
                 DiscordAuditLogBanEntry auditLog = (await e.Guild.GetAuditLogsAsync(limit: 5, action_type: AuditLogActionType.Unban))
                     .First(x => ((DiscordAuditLogBanEntry)x).Target == e.Member)
                     as DiscordAuditLogBanEntry;
@@ -56,6 +62,9 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
                     .WithTimestamp(DateTime.Now);
                 if (e.NicknameAfter != e.NicknameBefore)
@@ -108,6 +117,9 @@ namespace LathBotFront
 
             _ = Task.Run(async () =>
             {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+
                 if (e.ChannelBefore.Id == 722905404354592900)
                     return;
                 if (e.ChannelBefore.Name == e.ChannelAfter.Name
@@ -135,6 +147,9 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+
                 if (e.RoleBefore.Name == e.RoleAfter.Name
                     && e.RoleBefore.IsHoisted == e.RoleAfter.IsHoisted
                     && e.RoleBefore.Color.Value == e.RoleAfter.Color.Value
@@ -160,6 +175,9 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+
                 if (e.Channel.Id == 722905404354592900)
                     return;
 
@@ -182,6 +200,9 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+
                 if (e.Channel.Id == 722905404354592900 || e.Channel.Id == 700009728151126036)
                     return;
                 if (e.Message.Content is null)
@@ -220,6 +241,9 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+
                 if (e.Channel.Id == 722905404354592900 //senate
                     || e.Channel.Id == 838088490704568341 //muted
                     || e.Channel.Id == 792486366138073180) //parstapo
@@ -261,6 +285,9 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
                     .WithTimestamp(DateTime.Now)
                     .WithThumbnail(e.User.AvatarUrl);
