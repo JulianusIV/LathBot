@@ -133,7 +133,7 @@ namespace LathBotFront
 			SlashCommands = Client.UseSlashCommands();
 
 			//Register interactions
-			SlashCommands.RegisterCommands<WarnInteractions>(512370308532142091);
+			SlashCommands.RegisterCommands<WarnInteractions>(699555747591094344);
 
 			//Register interaction events
 			SlashCommands.ContextMenuErrored += Events.ContextMenuErrored;
