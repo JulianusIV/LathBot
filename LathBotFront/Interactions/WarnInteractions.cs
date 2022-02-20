@@ -31,9 +31,9 @@ namespace LathBotFront.Interactions
 
             if (!await warnBuilder.PreExecutionChecks())
                 return;
-            await warnBuilder.RequestRule(ctx);
-            await warnBuilder.RequestPoints();
-            await warnBuilder.RequestReason();
+            var id = await warnBuilder.RequestRuleEphemeral(ctx);
+            var interaction = await warnBuilder.RequestPointsEphemeral(ctx, id);
+            await warnBuilder.RequestReasonEphemeral(ctx, interaction);
             if (!await warnBuilder.WriteToDatabase())
                 return;
             if (!await warnBuilder.WriteAuditToDb())
@@ -41,7 +41,7 @@ namespace LathBotFront.Interactions
             await warnBuilder.ReadRemainingPoints();
             await warnBuilder.SendWarnMessage();
             await warnBuilder.LogMessage();
-            await warnBuilder.SendPunishMessage();
+            await warnBuilder.SendPunishMessageEphemeral(ctx, id);
         }
 
         [ContextMenu(ApplicationCommandType.UserContextMenu, "Warn User")]
@@ -64,16 +64,16 @@ namespace LathBotFront.Interactions
 
             if (!await warnBuilder.PreExecutionChecks())
                 return;
-            await warnBuilder.RequestRule(ctx);
-            await warnBuilder.RequestPoints();
-            await warnBuilder.RequestReason();
+            var id = await warnBuilder.RequestRuleEphemeral(ctx);
+            var interaction = await warnBuilder.RequestPointsEphemeral(ctx, id);
+            await warnBuilder.RequestReasonEphemeral(ctx, interaction);
             if (!await warnBuilder.WriteToDatabase())
                 return;
             if (!await warnBuilder.WriteAuditToDb())
                 return;
             await warnBuilder.ReadRemainingPoints();
             await warnBuilder.SendWarnMessage();
-            await warnBuilder.SendPunishMessage();
+            await warnBuilder.SendPunishMessageEphemeral(ctx, id);
         }
     }
 }

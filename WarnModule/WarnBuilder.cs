@@ -33,7 +33,6 @@ namespace WarnModule
         private int MemberDbId;
         private int PointsLeft;
 
-
         public WarnBuilder(DiscordClient client, DiscordChannel warnChannel, DiscordGuild guild, DiscordMember mod, DiscordMember member, DiscordMessage messageLink = null)
         {
             this.WarnChannel = warnChannel;
@@ -111,6 +110,37 @@ namespace WarnModule
             await message.DeleteAsync();
         }
 
+        public async Task<ulong> RequestRuleEphemeral(ContextMenuContext ctx)
+        {
+            List<DiscordSelectComponentOption> options = new List<DiscordSelectComponentOption>();
+            foreach (var item in RuleService.rules)
+            {
+                if (item.RuleNum == 0)
+                {
+                    options.Add(new DiscordSelectComponentOption(
+                        $"OTHER",
+                        item.RuleNum.ToString()));
+                    continue;
+                }
+                var option = new DiscordSelectComponentOption(
+                    $"Rule {item.RuleNum}: {item.ShortDesc}",
+                    item.RuleNum.ToString(),
+                    item.RuleText.Length > 99 ? item.RuleText[..95] + "..." : item.RuleText);
+                options.Add(option);
+            }
+            DiscordSelectComponent selectMenu = new DiscordSelectComponent("warnSelect", "Select a Rule!", options);
+
+            var message = await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
+                .AddComponents(selectMenu)
+                .WithContent("­")
+                .AsEphemeral(true));
+
+            var reaction = await Interactivity.WaitForSelectAsync(message, Mod, "warnSelect", TimeSpan.FromMinutes(2));
+            Rule = RuleService.rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
+            await reaction.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+            return message.Id;
+        }
+
         public async Task RequestPoints()
         {
             DiscordMessageBuilder discordMessage = new DiscordMessageBuilder
@@ -136,6 +166,39 @@ namespace WarnModule
             var interactpointsMessage = await Interactivity.WaitForButtonAsync(pointsMessage, Mod, TimeSpan.FromMinutes(2));
             PointsDeducted = int.Parse(interactpointsMessage.Result.Id);
             await pointsMessage.DeleteAsync();
+        }
+
+        public async Task<DiscordInteraction> RequestPointsEphemeral(ContextMenuContext ctx, ulong messageID)
+        {
+            DiscordWebhookBuilder webhook = new DiscordWebhookBuilder
+            {
+                Content = $"For this rule you can reduce the users chances by {Rule.MinPoints} - {Rule.MaxPoints}"
+            };
+            for (int i = 0; i < 3; i++)
+            {
+                List<DiscordButtonComponent> buttons = new List<DiscordButtonComponent>();
+                for (int index = i * 5; index < (i * 5) + 5; index++)
+                {
+                    buttons.Add(new DiscordButtonComponent
+                    (
+                        ButtonStyle.Primary,
+                        (index + 1).ToString(),
+                        (index + 1).ToString(),
+                        (index + 1) < Rule.MinPoints || (index + 1) > Rule.MaxPoints)
+                    );
+                }
+                webhook.AddComponents(buttons);
+            }
+            DiscordMessage pointsMessage = await ctx.EditFollowupAsync(messageID,  webhook);
+            var interactpointsMessage = await Interactivity.WaitForButtonAsync(pointsMessage, Mod, TimeSpan.FromMinutes(2));
+            PointsDeducted = int.Parse(interactpointsMessage.Result.Id);
+
+            foreach (var item in webhook.Components)
+                foreach (DiscordButtonComponent button in item.Components)
+                    button.Disable();
+
+            await ctx.EditFollowupAsync(messageID, webhook);
+            return interactpointsMessage.Result.Interaction;
         }
 
         public int CalculateSeverity(int pointsDeducted)
@@ -189,6 +252,29 @@ namespace WarnModule
                     tryagain = false;
                 }
             }
+        }
+
+        public async Task RequestReasonEphemeral(ContextMenuContext ctx, DiscordInteraction interaction)
+        {
+            var textInput = new TextInputComponent("If needed state a reason.",
+                "reason",
+                "NONE",
+                required: true,
+                style: TextInputStyle.Paragraph,
+                max_length: 250);
+
+            var responseBuilder = new DiscordInteractionResponseBuilder()
+                .WithCustomId("reason")
+                .WithTitle("Reason")
+                .AddComponents(textInput);
+            
+            await interaction.CreateResponseAsync(InteractionResponseType.Modal, responseBuilder);
+
+            var res = await ctx.Client.GetInteractivity().WaitForModalAsync("reason");
+
+            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+            Reason = res.Result.Values["reason"] ?? "/";
+            Reason = Reason.ToUpper() == "NONE" ? "/" : Reason;
         }
 
         public async Task<bool> WriteToDatabase()
@@ -422,6 +508,15 @@ namespace WarnModule
             {
                 await WarnChannel.SendMessageAsync($"User has {PointsLeft} points left.\n" +
                     $"By common practice the user should be muted{(PointsLeft < 6 ? ", kicked" : "")}{(PointsLeft < 1 ? ", or banned" : "")}.");
+            }
+        }
+
+        public async Task SendPunishMessageEphemeral(ContextMenuContext ctx, ulong messgeId)
+        {
+            if (PointsLeft < 11)
+            {
+                await ctx.EditFollowupAsync(messgeId, new DiscordWebhookBuilder().WithContent($"User has {PointsLeft} points left.\n" +
+                    $"By common practice the user should be muted{(PointsLeft < 6 ? ", kicked" : "")}{(PointsLeft < 1 ? ", or banned" : "")}."));
             }
         }
     }

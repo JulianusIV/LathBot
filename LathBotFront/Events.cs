@@ -21,6 +21,8 @@ using LathBotBack.Models;
 using LathBotBack.Logging;
 using LathBotBack.Services;
 using System.Net;
+using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.EventArgs;
 
 namespace LathBotFront
 {
@@ -128,7 +130,7 @@ namespace LathBotFront
 					return;
 				if (e.Channel.Id == 741340775530496013 && e.MentionedRoles.Contains(e.Guild.GetRole(741342066021367938)))
                 {
-					var oldThread = e.Channel.Threads.Where(x => !x.ThreadMetadata.IsArchived).First();
+					var oldThread = e.Channel.Threads.Where(x => !x.ThreadMetadata.IsArchived).FirstOrDefault();
 					await oldThread?.ModifyAsync(x => x.AutoArchiveDuration = AutoArchiveDuration.Hour);
 
                     var thread = await e.Message.CreateThreadAsync("text-answers", AutoArchiveDuration.Day);
@@ -187,7 +189,17 @@ namespace LathBotFront
 			return Task.CompletedTask;
 		}
 
-		internal static Task MessageUpdated(DiscordClient _1, MessageUpdateEventArgs e)
+        internal static Task ContextMenuErrored(SlashCommandsExtension sender, ContextMenuErrorEventArgs e)
+        {
+			_ = Task.Run(async () =>
+			{
+				await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
+				await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
+			});
+			return Task.CompletedTask;
+		}
+
+        internal static Task MessageUpdated(DiscordClient _1, MessageUpdateEventArgs e)
 		{
 			_ = Task.Run(async () =>
 			{
