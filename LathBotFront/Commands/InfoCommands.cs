@@ -152,7 +152,7 @@ namespace LathBotFront.Commands
                     TimeZoneInfo modTimeZone = TimeZoneInfo.FindSystemTimeZoneById(item.Timezone);
                     DateTime modTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, modTimeZone);
                     discordEmbed.AddField($"{mod.Username}#{mod.Discriminator}",
-                        modTime.ToString("yyyy-mm-dd     **HH:mm**") + "     (" + (modTimeZone.IsDaylightSavingTime(modTime) ?
+                        modTime.ToString("yyyy-MM-dd     **HH:mm**") + "     (" + (modTimeZone.IsDaylightSavingTime(modTime) ?
                         modTimeZone.DaylightName[..6] : modTimeZone.StandardName[..6]) + ")");
                 }
                 catch
