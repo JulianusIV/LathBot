@@ -3,9 +3,6 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
-COPY ["LathBotFront/nuget.config", "LathBotFront/"]
-COPY ["LathBotFront/nuget.config", "LathBotBack/"]
-COPY ["LathBotFront/nuget.config", "WarnModule/"]
 COPY ["LathBotFront/LathBotFront.csproj", "LathBotFront/"]
 COPY ["LathBotBack/LathBotBack.csproj", "LathBotBack/"]
 COPY ["WarnModule/WarnModule.csproj", "WarnModule/"]
