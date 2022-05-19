@@ -24,11 +24,11 @@ namespace LathBotBack.Services
 		}
 		#endregion
 
-		public static Rule[] rules;
+		public static Rule[] Rules;
 
 		public override void Init(DiscordClient client)
 		{
-			rules = new Rule[14]
+			Rules = new Rule[14]
 			{
 				new Rule(1, "Follow the discord [ToS](https://discord.com/terms) and [community guidelines](https://discord.com/guidelines).", 1, 15, "TOS"),
 				new Rule(2, "Do not ping Lathrix", 1, 1, "PING"),
@@ -43,7 +43,7 @@ namespace LathBotBack.Services
 				new Rule(11, "Don't use macros", 1, 3, "MACROS"),
 				new Rule(12, "Don't share personal information about others", 1, 15, "DOXXING"),
 				new Rule(13, "Holding bias as a staff member is prohibited, or if you are a member who is trying to make staff bias. This will be known as corruption and should be reported to Chewybaca and/or a member of the Senate immediately.", 3, 10, "BIAS"),
-				new Rule(0, "", 1, 15, "OTHER")
+				new Rule(0, "This rule is for anything that goes against basic human decency, and for cases not covered by the rules, that should be warned.", 1, 15, "OTHER")
 			};
 		}
 	}

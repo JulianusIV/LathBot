@@ -23,8 +23,8 @@ namespace LathBotFront.Commands
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder
             {
                 Color = new DiscordColor(101, 24, 201),
-                Title = $"Rule {RuleService.rules[ruleNum - 1].RuleNum}:",
-                Description = RuleService.rules[ruleNum - 1].RuleText
+                Title = $"Rule {RuleService.Rules[ruleNum - 1].RuleNum}:",
+                Description = RuleService.Rules[ruleNum - 1].RuleText
             };
             await ctx.RespondAsync(builder.Build());
         }
