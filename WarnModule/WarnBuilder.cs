@@ -75,7 +75,7 @@ namespace WarnModule
         public async Task RequestRule(ContextMenuContext ctx = null)
         {
             List<DiscordSelectComponentOption> options = new List<DiscordSelectComponentOption>();
-            foreach (var item in RuleService.rules)
+            foreach (var item in RuleService.Rules)
             {
                 if (item.RuleNum == 0)
                 {
@@ -106,14 +106,14 @@ namespace WarnModule
             }
 
             var reaction = await Interactivity.WaitForSelectAsync(message, Mod, "warnSelect", TimeSpan.FromMinutes(2));
-            Rule = RuleService.rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
+            Rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
             await message.DeleteAsync();
         }
 
         public async Task<ulong> RequestRuleEphemeral(ContextMenuContext ctx)
         {
             List<DiscordSelectComponentOption> options = new List<DiscordSelectComponentOption>();
-            foreach (var item in RuleService.rules)
+            foreach (var item in RuleService.Rules)
             {
                 if (item.RuleNum == 0)
                 {
@@ -136,7 +136,7 @@ namespace WarnModule
                 .AsEphemeral(true));
 
             var reaction = await Interactivity.WaitForSelectAsync(message, Mod, "warnSelect", TimeSpan.FromMinutes(2));
-            Rule = RuleService.rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
+            Rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
             await reaction.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
             return message.Id;
         }
@@ -189,7 +189,7 @@ namespace WarnModule
                 }
                 webhook.AddComponents(buttons);
             }
-            DiscordMessage pointsMessage = await ctx.EditFollowupAsync(messageID,  webhook);
+            DiscordMessage pointsMessage = await ctx.EditFollowupAsync(messageID, webhook);
             var interactpointsMessage = await Interactivity.WaitForButtonAsync(pointsMessage, Mod, TimeSpan.FromMinutes(2));
             PointsDeducted = int.Parse(interactpointsMessage.Result.Id);
 
@@ -267,7 +267,7 @@ namespace WarnModule
                 .WithCustomId("reason")
                 .WithTitle("Reason")
                 .AddComponents(textInput);
-            
+
             await interaction.CreateResponseAsync(InteractionResponseType.Modal, responseBuilder);
 
             var res = await ctx.Client.GetInteractivity().WaitForModalAsync("reason");
@@ -362,105 +362,28 @@ namespace WarnModule
 
         public async Task SendWarnMessage()
         {
-            if (CalculateSeverity(PointsDeducted) == 1)
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
             {
-                try
+                Color = CalculateSeverity(PointsDeducted) switch
                 {
-                    DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
-                    {
-                        Color = DiscordColor.Yellow,
-                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = Member.AvatarUrl },
-                        Title = $"You have been warned for Rule {Rule.RuleNum}:",
-                        Description = $"{Rule.RuleText}\n" +
-                            "\n" +
-                            $"{Reason}",
-                        Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = Mod.AvatarUrl, Text = $"{Mod.DisplayName}" }
-                    };
+                    1 => DiscordColor.Yellow,
+                    2 => DiscordColor.Orange,
+                    3 => DiscordColor.Red,
+                    _ => DiscordColor.Black,
+                },
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = Member.AvatarUrl },
+                Title = $"{Member.DisplayName}#{Member.Discriminator} ({Member.Id}) has been warned for Rule {Rule.RuleNum}:",
+                Description = $"{Rule.RuleText}\n" +
+                        "\n" +
+                        $"{Reason}",
+                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = Mod.AvatarUrl, Text = $"{Mod.DisplayName}" }
+            };
+            embedBuilder.AddField($"{PointsLeft} points remaining", "Please keep any talk of this to DM's");
+            DiscordEmbed embed = embedBuilder.Build();
 
-                    embedBuilder.AddField($"{PointsLeft} points remaining", "Please keep any talk of this to DM's");
+            DiscordChannel warnsChannel = Guild.GetChannel(722186358906421369);
+            await warnsChannel.SendMessageAsync($"{Member.Mention}", embed);
 
-                    DiscordEmbed embed = embedBuilder.Build();
-
-                    DiscordChannel directChannel = await Member.CreateDmChannelAsync();
-                    await directChannel.SendMessageAsync(embed);
-                }
-                catch (Exception e)
-                {
-                    DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
-                    {
-                        Color = DiscordColor.Yellow,
-                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = Member.AvatarUrl },
-                        Title = $"{Member.DisplayName}#{Member.Discriminator} ({Member.Id}) has been warned for Rule {Rule.RuleNum}:",
-                        Description = $"{Rule.RuleText}\n" +
-                            "\n" +
-                            $"{Reason}",
-                        Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = Mod.AvatarUrl, Text = $"{Mod.DisplayName}" }
-                    };
-                    embedBuilder.AddField($"{PointsLeft} points remaining", "Please keep any talk of this to DM's");
-                    DiscordEmbed embed = embedBuilder.Build();
-
-                    DiscordChannel warnsChannel = Guild.GetChannel(722186358906421369);
-                    await warnsChannel.SendMessageAsync($"{Member.Mention}", embed);
-
-                    SystemService.Instance.Logger.Log("Had to send low level warn to #warnings because of following error:\n" + e.Message);
-                }
-                finally
-                {
-                    DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
-                    {
-                        Color = DiscordColor.Yellow,
-                        Title = $"Successfully warned {Member.DisplayName}#{Member.Discriminator} ({Member.Id}).",
-                        Description = $"Rule {Rule.RuleNum}:\n" +
-                            "\n" +
-                            $"{Reason}\n" +
-                            "\n" +
-                            $"User has {PointsLeft} points left.",
-                        Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = Mod.AvatarUrl, Text = $"{Mod.DisplayName}" }
-                    };
-                    DiscordEmbed embed = embedBuilder.Build();
-                    await WarnChannel.SendMessageAsync(embed);
-                }
-            }
-            else if (CalculateSeverity(PointsDeducted) == 2)
-            {
-                DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
-                {
-                    Color = DiscordColor.Orange,
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = Member.AvatarUrl },
-                    Title = $"{Member.DisplayName}#{Member.Discriminator} ({Member.Id}) has been warned for Rule {Rule.RuleNum}:",
-                    Description = $"{Rule.RuleText}\n" +
-                            "\n" +
-                            $"{Reason}",
-                    Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = Mod.AvatarUrl, Text = $"{Mod.DisplayName}" }
-                };
-                embedBuilder.AddField($"{PointsLeft} points remaining", "Please keep any talk of this to DM's");
-                DiscordEmbed embed = embedBuilder.Build();
-
-                DiscordChannel warnsChannel = Guild.GetChannel(722186358906421369);
-                await warnsChannel.SendMessageAsync($"{Member.Mention}", embed);
-            }
-            else if (CalculateSeverity(PointsDeducted) == 3)
-            {
-                DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
-                {
-                    Color = DiscordColor.Red,
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = Member.AvatarUrl },
-                    Title = $"{Member.DisplayName}#{Member.Discriminator} ({Member.Id}) has been warned for Rule {Rule.RuleNum}:",
-                    Description = $"{Rule.RuleText}\n" +
-                            "\n" +
-                            $"{Reason}",
-                    Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = Mod.AvatarUrl, Text = $"{Mod.DisplayName}" }
-                };
-                embedBuilder.AddField($"{PointsLeft} points remaining", "Please keep any talk of this to DM's");
-                DiscordEmbed embed = embedBuilder.Build();
-
-                DiscordChannel warnsChannel = Guild.GetChannel(722186358906421369);
-                await warnsChannel.SendMessageAsync($"{Member.Mention}", embed);
-            }
-            else
-            {
-                await WarnChannel.SendMessageAsync("Task successfully failed!");
-            }
         }
 
         public async Task LogMessage()
