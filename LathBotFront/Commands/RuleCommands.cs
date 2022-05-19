@@ -6,6 +6,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 using LathBotBack;
 using LathBotBack.Services;
+using System.Linq;
 
 namespace LathBotFront.Commands
 {
@@ -20,11 +21,12 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync($"Rule number {ruleNum} does not exist here ~~yet~~!");
                 return;
             }
+            var rule = RuleService.Rules.First(x => x.RuleNum == ruleNum);
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder
             {
                 Color = new DiscordColor(101, 24, 201),
-                Title = $"Rule {RuleService.Rules[ruleNum - 1].RuleNum}:",
-                Description = RuleService.Rules[ruleNum - 1].RuleText
+                Title = $"Rule {rule.RuleNum} ({rule.ShortDesc}):",
+                Description = rule.RuleText
             };
             await ctx.RespondAsync(builder.Build());
         }
