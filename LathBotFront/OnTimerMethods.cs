@@ -30,7 +30,7 @@ namespace LathBotFront
             {
                 if ((item.Level > 0 && item.Level < 6 && item.Time <= DateTime.Now - TimeSpan.FromDays(14) ||
                     item.Level > 5 && item.Level < 11 && item.Time <= DateTime.Now - TimeSpan.FromDays(56) ||
-                    item.Time <= DateTime.Now - TimeSpan.FromDays((double)item.ExpirationTime)) &&
+                    (!(item.ExpirationTime is null) && item.Time <= DateTime.Now - TimeSpan.FromDays((double)item.ExpirationTime))) &&
                     !item.Persistent)
                 {
                     pardoned++;
