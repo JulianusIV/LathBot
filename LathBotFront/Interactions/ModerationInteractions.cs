@@ -23,7 +23,7 @@ namespace LathBotFront.Interactions
         {
             if (!ctx.Member.Permissions.HasPermission(Permissions.KickMembers))
             {
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder()
                         .AsEphemeral()
                         .WithContent("No!"));
@@ -78,6 +78,15 @@ namespace LathBotFront.Interactions
             [Option("ChangeBy", "By how much to extend or shorten the time the user is warned for")] long changeBy,
             [Option("Add", "True = Add days to the sentence, False = Remove days from the sentence")] bool add = true)
         {
+            if (!ctx.Member.Permissions.HasPermission(Permissions.Administrator))
+            {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder()
+                        .AsEphemeral()
+                        .WithContent("No!"));
+                return;
+            }
+
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
             var repo = new WarnRepository(ReadConfig.Config.ConnectionString);
             var urepo = new UserRepository(ReadConfig.Config.ConnectionString);
@@ -92,6 +101,9 @@ namespace LathBotFront.Interactions
                 warn.ExpirationTime -= (int)changeBy;
 
             repo.Update(warn);
+
+            await (await ((DiscordMember)member).CreateDmChannelAsync()).SendMessageAsync($"Your warn number {warn.Number} has been changed to expire after {warn.ExpirationTime}!");
+
             await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"Updated warn to expire {warn.ExpirationTime} days after warn creation."));
         }
     }
