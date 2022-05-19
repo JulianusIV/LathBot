@@ -1019,7 +1019,7 @@ namespace LathBotFront.Commands
 
 		[Command("allwarns")]
 		[Description("Display all currently unpardoned warns")]
-		[RequireUserPermissions(DSharpPlus.Permissions.KickMembers)]
+		[RequireUserPermissions(Permissions.KickMembers)]
 		public async Task AllWarns(CommandContext ctx)
 		{
 			await ctx.Channel.TriggerTypingAsync();

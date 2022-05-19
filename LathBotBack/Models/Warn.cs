@@ -12,5 +12,6 @@ namespace LathBotBack.Models
 		public int Level { get; set; }
 		public DateTime Time { get; set; }
 		public bool Persistent { get; set; }
-	}
+        public int? ExpirationTime { get; set; }
+    }
 }

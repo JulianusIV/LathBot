@@ -201,7 +201,7 @@ namespace WarnModule
             return interactpointsMessage.Result.Interaction;
         }
 
-        public int CalculateSeverity(int pointsDeducted)
+        public static int CalculateSeverity(int pointsDeducted)
         {
             return (pointsDeducted) switch
             {

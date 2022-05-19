@@ -130,7 +130,7 @@ namespace LathBotFront
                 {
                     var oldThread = e.Channel.Threads.Where(x => !x.ThreadMetadata.IsArchived).FirstOrDefault();
                     if (!(oldThread is null))
-                        await oldThread.ModifyAsync(x => 
+                        await oldThread.ModifyAsync(x =>
                         {
                             x.AutoArchiveDuration = AutoArchiveDuration.Hour;
                             x.Locked = true;
