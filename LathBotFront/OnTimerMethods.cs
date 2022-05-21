@@ -28,10 +28,13 @@ namespace LathBotFront
             int pardoned = 0;
             foreach (var item in list)
             {
-                if ((item.Level > 0 && item.Level < 6 && item.Time <= DateTime.Now - TimeSpan.FromDays(14) ||
-                    item.Level > 5 && item.Level < 11 && item.Time <= DateTime.Now - TimeSpan.FromDays(56) ||
-                    (!(item.ExpirationTime is null) && item.Time <= DateTime.Now - TimeSpan.FromDays((double)item.ExpirationTime))) &&
-                    !item.Persistent)
+                var expirationTimeExpression = (!(item.ExpirationTime is null) && item.Time <= DateTime.Now - TimeSpan.FromDays((double)item.ExpirationTime));
+                var sevOneExpression = item.Level > 0 && item.Level < 6 && item.Time <= DateTime.Now - TimeSpan.FromDays(14);
+                var sevTwoExpression = item.Level > 5 && item.Level < 11 && item.Time <= DateTime.Now - TimeSpan.FromDays(56);
+                var fullExpression = ((!(item.ExpirationTime is null) && expirationTimeExpression) || 
+                    item.ExpirationTime is null && (sevOneExpression || sevTwoExpression)) && 
+                    !item.Persistent;
+                if (fullExpression)
                 {
                     pardoned++;
                     result = repo.Delete(item.ID);
