@@ -42,7 +42,7 @@ namespace LathBotFront.Commands
 		[Command("freeze")]
 		[Description("Freeze a whole channel when you get too many people spamming to control by other measures.\n" +
             "**Never to be supported channels:**\nQuestions for Lathrix & Messages for Lathrix due to 6 hour slow mode.\nBooster-only due to low population\n" +
-            "**Currently unsupported channels that are being worked on:**\nCounting\nno-mic-for-vc\nideas-for-daily-channels\nentire roleme category\nentire games category, other than games-general")]
+            "**Currently unsupported channels that are being worked on:**\nno-mic-for-vc\nideas-for-daily-channels")]
 		[RequireUserPermissions(Permissions.BanMembers)]
 		public async Task ChFreeze(CommandContext ctx)
 		{
@@ -60,6 +60,8 @@ namespace LathBotFront.Commands
 				766322672321560628  //wh40k
 			};
 			if (perms.Any(x => rolemeIds.Contains(x.Id)))
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.SendMessages);
+			if (ctx.Channel.Id == 766463841059078205) //counting
 				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.SendMessages);
 			else
 				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.AccessChannels, Permissions.SendMessages);
@@ -86,7 +88,10 @@ namespace LathBotFront.Commands
 				766322672321560628  //wh40k
 			};
 			if (perms.Any(x => rolemeIds.Contains(x.Id)))
-				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.SendMessages | Permissions.None);
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.SendMessages,
+					ctx.Channel.Id == 718162681554534511 ? Permissions.AttachFiles | Permissions.EmbedLinks : Permissions.None); //if debate, no embeds or files
+			if (ctx.Channel.Id == 766463841059078205) //counting
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.EmbedLinks | Permissions.AttachFiles);
 			else
 				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.AccessChannels | Permissions.SendMessages, Permissions.None);
 			await ctx.Channel.SendMessageAsync("```This channel is no longer frozen.\n" +
