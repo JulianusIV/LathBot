@@ -104,7 +104,7 @@ namespace LathBotFront
                     }
                 }
             }
-            if (pardoned >= 0)
+            if (pardoned > 0)
             {
                 _ = DiscordObjectService.Instance.TimerChannel.SendMessageAsync($"Timer ticked, {pardoned} warns pardoned.");
             }
@@ -187,7 +187,7 @@ namespace LathBotFront
 
         public static async Task APOD()
         {
-            IReadOnlyList<DiscordMessage> lastmessageList = await DiscordObjectService.Instance.DailyFactsChannel.GetMessagesAsync(1);
+            IReadOnlyList<DiscordMessage> lastmessageList = await DiscordObjectService.Instance.APODChannel.GetMessagesAsync(1);
             DiscordMessage lastmessage = lastmessageList.First();
             if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(24))
             {
@@ -217,9 +217,9 @@ namespace LathBotFront
                 if (json.MediaType != "image")
                     builder2 = new DiscordMessageBuilder().WithContent(json.URL.Replace("embed/", "watch?v=").Replace("?rel=0", ""));
                 builder.WithAllowedMentions(Mentions.All);
-                await DiscordObjectService.Instance.DailyFactsChannel.SendMessageAsync(builder);
+                await DiscordObjectService.Instance.APODChannel.SendMessageAsync(builder);
                 if (!(builder2 is null))
-                    await DiscordObjectService.Instance.DailyFactsChannel.SendMessageAsync(builder2);
+                    await DiscordObjectService.Instance.APODChannel.SendMessageAsync(builder2);
             }
         }
     }

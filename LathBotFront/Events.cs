@@ -548,11 +548,18 @@ namespace LathBotFront
 
         internal static async void TimerTick(object sender, ElapsedEventArgs e)
         {
-            await OnTimerMethods.PardonWarns();
+            try
+            {
+                await OnTimerMethods.PardonWarns();
 
-            await OnTimerMethods.RemindMutes();
+                await OnTimerMethods.RemindMutes();
 
-            await OnTimerMethods.APOD();
+                await OnTimerMethods.APOD();
+            }
+            catch (Exception ex)
+            {
+                SystemService.Instance.Logger.Log(ex.Message);
+            }
         }
 
         internal static void OnLog(object sender, LoggingEventArgs e)
