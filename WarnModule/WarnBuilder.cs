@@ -203,7 +203,7 @@ namespace WarnModule
 
         public static int CalculateSeverity(int pointsDeducted)
         {
-            return (pointsDeducted) switch
+            return pointsDeducted switch
             {
                 1 => 1,
                 2 => 1,

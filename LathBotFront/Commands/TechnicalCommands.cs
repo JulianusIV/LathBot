@@ -40,19 +40,29 @@ namespace LathBotFront.Commands
 		}
 
 		[Command("freeze")]
-		[Description("Freeze a whole channel when you get too many people spamming to control by other measures")]
+		[Description("Freeze a whole channel when you get too many people spamming to control by other measures.\n" +
+            "**Never to be supported channels:**\nQuestions for Lathrix & Messages for Lathrix due to 6 hour slow mode.\nBooster-only due to low population\n" +
+            "**Currently unsupported channels that are being worked on:**\nCounting\nno-mic-for-vc\nideas-for-daily-channels\nentire roleme category\nentire games category, other than games-general")]
 		[RequireUserPermissions(Permissions.BanMembers)]
 		public async Task ChFreeze(CommandContext ctx)
 		{
 			IReadOnlyList<DiscordOverwrite> perms = ctx.Channel.PermissionOverwrites;
-			foreach (DiscordOverwrite perm in perms)
+			List<ulong> rolemeIds = new List<ulong>()
 			{
-				if (perm.Id == 767050052257447936)
-				{
-					await perm.UpdateAsync(Permissions.AccessChannels, Permissions.SendMessages);
-					break;
-				}
-			}
+				767039219403063307, //art
+				718162129609556121, //debate
+				812755886413971499, //venting
+				978954327907532811, //airships
+				701454853095817316, //ftd
+				713367380574732319, //mc
+				701454772900855819, //stellairs
+				850029252812210207, //reassembly
+				766322672321560628  //wh40k
+			};
+			if (perms.Any(x => rolemeIds.Contains(x.Id)))
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.SendMessages);
+			else
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.AccessChannels, Permissions.SendMessages);
 			await ctx.Channel.SendMessageAsync("```This channel is now frozen for moderation purposes.\n" +
 				"You will be able to send messages again once the situation has been resolved```");
 		}
@@ -63,14 +73,22 @@ namespace LathBotFront.Commands
 		public async Task ChUnFreeze(CommandContext ctx)
 		{
 			IReadOnlyList<DiscordOverwrite> perms = ctx.Channel.PermissionOverwrites;
-			foreach (DiscordOverwrite perm in perms)
+			List<ulong> rolemeIds = new List<ulong>()
 			{
-				if (perm.Id == 767050052257447936)
-				{
-					await perm.UpdateAsync(Permissions.AccessChannels | Permissions.SendMessages, Permissions.None);
-					break;
-				}
-			}
+				767039219403063307, //art
+				718162129609556121, //debate
+				812755886413971499, //venting
+				978954327907532811, //airships
+				701454853095817316, //ftd
+				713367380574732319, //mc
+				701454772900855819, //stellairs
+				850029252812210207, //reassembly
+				766322672321560628  //wh40k
+			};
+			if (perms.Any(x => rolemeIds.Contains(x.Id)))
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.SendMessages | Permissions.None);
+			else
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.AccessChannels | Permissions.SendMessages, Permissions.None);
 			await ctx.Channel.SendMessageAsync("```This channel is no longer frozen.\n" +
 				"You can now send messages as normal```");
 		}
