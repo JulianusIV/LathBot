@@ -352,6 +352,8 @@ namespace LathBotFront
                         return;
                     if (e.Message.Timestamp < DateTime.Now - TimeSpan.FromHours(4))
                         return;
+                    if (!GoodGuysService.Instance.GoodGuysStatus)
+                        return;
                     var reacts = await e.Message.GetReactionsAsync(DiscordEmoji.FromGuildEmote(sender, 723564837338349578));
                     if (reacts.Count >= GoodGuysService.Instance.GoodGuysReactionCount)
                     {

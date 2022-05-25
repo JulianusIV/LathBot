@@ -75,6 +75,19 @@ namespace LathBotFront.Commands
 				"You can now send messages as normal```");
 		}
 
+		[Command("toggleboard")]
+		[Description("Disable/enable the goodguys board")]
+		[RequireUserPermissions(Permissions.KickMembers)]
+		public async Task ToggleBoard(CommandContext ctx)
+        {
+			var repo = new VariableRepository(ReadConfig.Config.ConnectionString);
+			repo.Read(4, out var status);
+			var currentstatus = !bool.Parse(status.Value);
+			status.Value = currentstatus.ToString();
+			repo.Update(status);
+			await ctx.RespondAsync($"Goodguys board is now {(!currentstatus ? "Enabled" : "Disabled")}");
+        }
+
 		[Command("convert")]
 		[Aliases("time")]
 		[Description("Convert from one timezone to the others")]
