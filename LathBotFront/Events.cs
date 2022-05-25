@@ -299,50 +299,26 @@ namespace LathBotFront
                 }
                 else if (e.Message.Id == 767100276028342322)
                 {
-                    switch (e.Emoji.ToString())
+                    ulong roleid = e.Emoji.ToString() switch
                     {
-                        case "⭐":
-                            await member.GrantRoleAsync(e.Guild.GetRole(701454772900855819)); //Stellaris
-                            break;
-                        case "⛵":
-                            await member.GrantRoleAsync(e.Guild.GetRole(701454853095817316)); //FTD
-                            break;
-                        case "⛏️":
-                            await member.GrantRoleAsync(e.Guild.GetRole(713367380574732319)); //MC
-                            break;
-                        case "🔨":
-                            await member.GrantRoleAsync(e.Guild.GetRole(766322672321560628)); //WH40K
-                            break;
-                        case "📜":
-                            await member.GrantRoleAsync(e.Guild.GetRole(718162129609556121)); //Debate
-                            break;
-                        case "❓":
-                            await member.GrantRoleAsync(e.Guild.GetRole(741342066021367938)); //DQuestion
-                            break;
-                        case "💬":
-                            await member.GrantRoleAsync(e.Guild.GetRole(765622563338453023)); //DQuote
-                            break;
-                        case "🎨":
-                            await member.GrantRoleAsync(e.Guild.GetRole(767039219403063307)); //Art
-                            break;
-                        case "📢":
-                            await member.GrantRoleAsync(e.Guild.GetRole(794975835235942470)); //Ads
-                            break;
-                        case "💢":
-                            await member.GrantRoleAsync(e.Guild.GetRole(812755886413971499)); //Vent
-                            break;
-                        case "❗":
-                            await member.GrantRoleAsync(e.Guild.GetRole(848307821703200828)); //Facts
-                            break;
-                        case "👾":
-                            await member.GrantRoleAsync(e.Guild.GetRole(850029252812210207)); //Reassembly
-                            break;
-                        case "🏅":
-                            await member.GrantRoleAsync(e.Guild.GetRole(898720583154548777)); //Events
-                            break;
-                        default:
-                            break;
-                    }
+                        "⭐" => 701454772900855819, //Stellaris
+                        "⛵" => 701454853095817316, //FTD
+                        "⛏️" => 713367380574732319, //MC
+                        "🔨" => 766322672321560628, //WH40K
+                        "📜" => 718162129609556121, //Debate
+                        "❓" => 741342066021367938, //DQuestion
+                        "💬" => 765622563338453023, //DQuote
+                        "🎨" => 767039219403063307, //Art
+                        "📢" => 794975835235942470, //Ads
+                        "💢" => 812755886413971499, //Vent
+                        "❗" => 848307821703200828, //Facts
+                        "👾" => 850029252812210207, //Reassembly
+                        "🏅" => 898720583154548777, //Events
+                        "🛩" => 978954327907532811, //airships
+                        _ => 0
+                    };
+                    if (roleid != 0)
+                        await member.GrantRoleAsync(e.Guild.GetRole(roleid));
                 }
                 else if (e.Emoji.Name == "TheGoodGuys")
                 {
@@ -410,50 +386,26 @@ namespace LathBotFront
                 DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
                 if (e.Message.Id == 767100276028342322)
                 {
-                    switch (e.Emoji.ToString())
+                    ulong roleid = e.Emoji.ToString() switch
                     {
-                        case "⭐":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(701454772900855819)); //Stellaris
-                            break;
-                        case "⛵":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(701454853095817316)); //FTD
-                            break;
-                        case "⛏️":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(713367380574732319)); //MC
-                            break;
-                        case "🔨":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(766322672321560628)); //WH40K
-                            break;
-                        case "📜":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(718162129609556121)); //Debate
-                            break;
-                        case "❓":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(741342066021367938));//DQuestion
-                            break;
-                        case "💬":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(765622563338453023)); //DQuote
-                            break;
-                        case "🎨":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(767039219403063307)); //Art
-                            break;
-                        case "📢":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(794975835235942470)); //Ads
-                            break;
-                        case "💢":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(812755886413971499)); //Vent
-                            break;
-                        case "❗":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(848307821703200828)); //Facts
-                            break;
-                        case "👾":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(850029252812210207)); //Reassembly
-                            break;
-                        case "🏅":
-                            await member.RevokeRoleAsync(e.Guild.GetRole(898720583154548777)); //Events
-                            break;
-                        default:
-                            break;
-                    }
+                        "⭐" => 701454772900855819, //Stellaris
+                        "⛵" => 701454853095817316, //FTD
+                        "⛏️" => 713367380574732319, //MC
+                        "🔨" => 766322672321560628, //WH40K
+                        "📜" => 718162129609556121, //Debate
+                        "❓" => 741342066021367938, //DQuestion
+                        "💬" => 765622563338453023, //DQuote
+                        "🎨" => 767039219403063307, //Art
+                        "📢" => 794975835235942470, //Ads
+                        "💢" => 812755886413971499, //Vent
+                        "❗" => 848307821703200828, //Facts
+                        "👾" => 850029252812210207, //Reassembly
+                        "🏅" => 898720583154548777, //Events
+                        "🛩" => 978954327907532811, //airships
+                        _ => 0
+                    };
+                    if (roleid != 0)
+                        await member.RevokeRoleAsync(e.Guild.GetRole(roleid));
                 }
             });
             return Task.CompletedTask;
