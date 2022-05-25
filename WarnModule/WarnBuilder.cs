@@ -382,8 +382,21 @@ namespace WarnModule
             DiscordEmbed embed = embedBuilder.Build();
 
             DiscordChannel warnsChannel = Guild.GetChannel(722186358906421369);
-            await warnsChannel.SendMessageAsync($"{Member.Mention}", embed);
+            await warnsChannel.SendMessageAsync(Member.Mention, embed);
 
+            DiscordEmbedBuilder logEmbedBuilder = new DiscordEmbedBuilder
+            {
+                Color = DiscordColor.Yellow,
+                Title = $"Successfully warned {Member.DisplayName}#{Member.Discriminator} ({Member.Id}).",
+                Description = $"Rule {Rule.RuleNum}:\n" +
+                            "\n" +
+                            $"{Reason}\n" +
+                            "\n" +
+                            $"User has {PointsLeft} points left.",
+                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = Mod.AvatarUrl, Text = $"{Mod.DisplayName}" }
+            };
+            DiscordEmbed logEmbed = logEmbedBuilder.Build();
+            await WarnChannel.SendMessageAsync(logEmbed);
         }
 
         public async Task LogMessage()
@@ -429,17 +442,8 @@ namespace WarnModule
         {
             if (PointsLeft < 11)
             {
-                await WarnChannel.SendMessageAsync($"User has {PointsLeft} points left.\n" +
+                await WarnChannel.SendMessageAsync($"{Mod.Mention} User has {PointsLeft} points left.\n" +
                     $"By common practice the user should be muted{(PointsLeft < 6 ? ", kicked" : "")}{(PointsLeft < 1 ? ", or banned" : "")}.");
-            }
-        }
-
-        public async Task SendPunishMessageEphemeral(ContextMenuContext ctx, ulong messgeId)
-        {
-            if (PointsLeft < 11)
-            {
-                await ctx.EditFollowupAsync(messgeId, new DiscordWebhookBuilder().WithContent($"User has {PointsLeft} points left.\n" +
-                    $"By common practice the user should be muted{(PointsLeft < 6 ? ", kicked" : "")}{(PointsLeft < 1 ? ", or banned" : "")}."));
             }
         }
     }

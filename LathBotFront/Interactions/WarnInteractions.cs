@@ -41,7 +41,7 @@ namespace LathBotFront.Interactions
             await warnBuilder.ReadRemainingPoints();
             await warnBuilder.SendWarnMessage();
             await warnBuilder.LogMessage();
-            await warnBuilder.SendPunishMessageEphemeral(ctx, id);
+            await warnBuilder.SendPunishMessage();
         }
 
         [ContextMenu(ApplicationCommandType.UserContextMenu, "Warn User")]
@@ -73,7 +73,7 @@ namespace LathBotFront.Interactions
                 return;
             await warnBuilder.ReadRemainingPoints();
             await warnBuilder.SendWarnMessage();
-            await warnBuilder.SendPunishMessageEphemeral(ctx, id);
+            await warnBuilder.SendPunishMessage();
         }
     }
 }
