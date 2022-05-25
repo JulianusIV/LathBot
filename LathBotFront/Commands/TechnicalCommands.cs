@@ -103,6 +103,37 @@ namespace LathBotFront.Commands
 				"You can now send messages as normal```");
 		}
 
+		[Command("togglequestions")]
+		[Description("Closes/opens questions for lathrix channel")]
+		[RequireUserPermissions(Permissions.Administrator)]
+		public async Task ToggleQuestions(CommandContext ctx)
+        {
+			var channel = ctx.Guild.GetChannel(721082217119612969);
+			var perms = channel.PermissionOverwrites;
+			var toChange = new List<ulong>()
+			{
+				850019046345801768, //amateur
+				701844438153953420, //exp
+				722064316479701083, //resp
+				748533112404705281, //vet
+				819296501451980820, //true
+				707915540085342248, //god
+				759456739669704784, //ungod
+				769609970240061441, //dev
+				749576790929965136, //booster
+				702925135568437270  //booster
+			};
+			var open = perms.First(x => x.Id == 759456739669704784).Allowed.HasPermission(Permissions.SendMessages);
+            foreach (var change in toChange)
+				await perms.First(x => x.Id == change).UpdateAsync(open ? Permissions.None : Permissions.SendMessages, 
+																   open ? Permissions.SendMessages : Permissions.None);
+			if (open)
+				await channel.SendMessageAsync("Questions are currently closed due to a large amount piling up. " +
+					"Please be patient and wait until Lathrix has time to answer some again.");
+			else
+				await channel.SendMessageAsync("Questions are now open again!");
+        }
+
 		[Command("toggleboard")]
 		[Description("Disable/enable the goodguys board")]
 		[RequireUserPermissions(Permissions.KickMembers)]
