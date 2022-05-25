@@ -21,21 +21,7 @@ namespace LathBotFront.Commands
         public async Task InfoEmbed(CommandContext ctx)
         {
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
-            DiscordEmbedBuilder embedBuilderLinks = new DiscordEmbedBuilder
-            {
-                Color = lathrix.Color,
-                Title = "Links",
-                Description = "- [Youtube](https://www.youtube.com/user/Lathland)\n" +
-                "- [Twitter](https://twitter.com/Lathrix)\n" +
-                //"- [- Twitch](https://www.twitch.tv/lathrix)\n" +
-                "- [Role Information Document](https://docs.google.com/document/d/1Pq-7WVHn6uwcGWKH8fqznxRiJrRC4MeV7JmLUe-E2yA/edit#)\n" +
-                "- [Warn Information Document](https://docs.google.com/document/d/1FAJzwct6lgyuoxuVu_V8iSvzOVlP6_sqUuJYKZOhu8M/edit#)",
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 10, Width = 10, Url = lathrix.AvatarUrl }
-            };
-            DiscordEmbed embedLinks = embedBuilderLinks.Build();
-            await ctx.Channel.SendMessageAsync(embedLinks);
-
-            DiscordEmbedBuilder embedBuilderInfo = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
             {
                 Color = lathrix.Color,
                 Title = "Information",
@@ -43,11 +29,27 @@ namespace LathBotFront.Commands
                 " You can talk to fellow Lathrixians, share art and post videos. " +
                 "There is even a section where Lathrix will answer your questions! " +
                 "Make sure to head over to role-assign and rules to ensure you have a nice experience.",
-                ImageUrl = "https://pbs.twimg.com/media/EW-x7e1XkAAQqAw?format=jpg&name=small"
+                ImageUrl = "https://pbs.twimg.com/media/EW-x7e1XkAAQqAw?format=jpg&name=small",
             };
 
-            DiscordEmbed embedInfo = embedBuilderInfo.Build();
-            await ctx.Channel.SendMessageAsync(embedInfo);
+            var messageBuilder = new DiscordMessageBuilder()
+            {
+                Embed = embedBuilder,
+            };
+
+            foreach (var button in new DiscordComponent[]
+            {
+                new DiscordLinkButtonComponent("https://www.youtube.com/user/Lathland", "YouTube", emoji: new DiscordComponentEmoji(978916644426494002)),
+                new DiscordLinkButtonComponent("https://twitter.com/Lathrix", "Twitter", emoji: new DiscordComponentEmoji(978917283965583410)),
+                //new DiscordLinkButtonComponent("https://www.twitch.tv/lathrix", "Twitch", emoji: new DiscordComponentEmoji(978917615823101952)),
+                new DiscordLinkButtonComponent("https://docs.google.com/document/d/1Pq-7WVHn6uwcGWKH8fqznxRiJrRC4MeV7JmLUe-E2yA/edit#", "Role information document"),
+                new DiscordLinkButtonComponent("https://docs.google.com/document/d/1FAJzwct6lgyuoxuVu_V8iSvzOVlP6_sqUuJYKZOhu8M/edit#", "Warn information document")
+            })
+            {
+                messageBuilder.AddComponents(button);
+            }
+
+            await ctx.Channel.SendMessageAsync(messageBuilder);
         }
 
         /// <summary>
@@ -61,22 +63,7 @@ namespace LathBotFront.Commands
         public async Task UpdateInfoEmbed(CommandContext ctx)
         {
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
-            DiscordEmbedBuilder embedBuilderLinks = new DiscordEmbedBuilder
-            {
-                Color = lathrix.Color,
-                Title = "Links",
-                Description = "- [Youtube](https://www.youtube.com/user/Lathland)\n" +
-                "- [Twitter](https://twitter.com/Lathrix)\n" +
-                //"- [- Twitch](https://www.twitch.tv/lathrix)\n" +
-                "- [Role Information Document](https://docs.google.com/document/d/1Pq-7WVHn6uwcGWKH8fqznxRiJrRC4MeV7JmLUe-E2yA/edit#)\n" +
-                "- [Warn Information Document](https://docs.google.com/document/d/1FAJzwct6lgyuoxuVu_V8iSvzOVlP6_sqUuJYKZOhu8M/edit#)",
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 10, Width = 10, Url = lathrix.AvatarUrl }
-            };
-
-            DiscordMessage linksMessage = await ctx.Channel.GetMessageAsync(769235082878648340);
-            await linksMessage.ModifyAsync("", embedBuilderLinks.Build());
-
-            DiscordEmbedBuilder embedBuilderInfo = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
             {
                 Color = lathrix.Color,
                 Title = "Information",
@@ -87,9 +74,25 @@ namespace LathBotFront.Commands
                 ImageUrl = "https://pbs.twimg.com/media/EW-x7e1XkAAQqAw?format=jpg&name=small"
             };
 
-            DiscordEmbed embedInfo = embedBuilderInfo.Build();
+            var messageBuilder = new DiscordMessageBuilder()
+            {
+                Embed = embedBuilder,
+            };
+
+            foreach (var button in new DiscordComponent[]
+            {
+                new DiscordLinkButtonComponent("https://www.youtube.com/user/Lathland", "YouTube", emoji: new DiscordComponentEmoji(978916644426494002)),
+                new DiscordLinkButtonComponent("https://twitter.com/Lathrix", "Twitter", emoji: new DiscordComponentEmoji(978917283965583410)),
+                //new DiscordLinkButtonComponent("https://www.twitch.tv/lathrix", "Twitch", emoji: new DiscordComponentEmoji(978917615823101952)),
+                new DiscordLinkButtonComponent("https://docs.google.com/document/d/1Pq-7WVHn6uwcGWKH8fqznxRiJrRC4MeV7JmLUe-E2yA/edit#", "Role information document"),
+                new DiscordLinkButtonComponent("https://docs.google.com/document/d/1FAJzwct6lgyuoxuVu_V8iSvzOVlP6_sqUuJYKZOhu8M/edit#", "Warn information document")
+            })
+            {
+                messageBuilder.AddComponents(button);
+            }
+
             DiscordMessage infoMessage = await ctx.Channel.GetMessageAsync(769235106828386366);
-            await infoMessage.ModifyAsync("", embedInfo);
+            await infoMessage.ModifyAsync(messageBuilder);
         }
 
         /// <summary>
