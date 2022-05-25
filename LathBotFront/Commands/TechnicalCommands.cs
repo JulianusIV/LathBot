@@ -44,63 +44,102 @@ namespace LathBotFront.Commands
             "**Never to be supported channels:**\nQuestions for Lathrix & Messages for Lathrix due to 6 hour slow mode.\nBooster-only due to low population")]
 		[RequireUserPermissions(Permissions.BanMembers)]
 		public async Task ChFreeze(CommandContext ctx)
-		{
-			IReadOnlyList<DiscordOverwrite> perms = ctx.Channel.PermissionOverwrites;
-			List<ulong> rolemeIds = new List<ulong>()
-			{
-				767039219403063307, //art
-				718162129609556121, //debate
-				812755886413971499, //venting
-				978954327907532811, //airships
-				701454853095817316, //ftd
-				713367380574732319, //mc
-				701454772900855819, //stellairs
-				850029252812210207, //reassembly
-				766322672321560628, //wh40k
-				765622563338453023, //daily quote
-				741342066021367938, //daily question
-				702960377390039152  //nomic
-			};
-			if (perms.Any(x => rolemeIds.Contains(x.Id)))
-				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.SendMessages);
-			if (ctx.Channel.Id == 766463841059078205) //counting
-				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.SendMessages);
-			else
-				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.AccessChannels, Permissions.SendMessages);
-			await ctx.Channel.SendMessageAsync("```This channel is now frozen for moderation purposes.\n" +
-				"You will be able to send messages again once the situation has been resolved```");
-		}
+			=> await FreezeChannel(ctx.Channel);
 
 		[Command("unfreeze")]
 		[Description("Unfreeze a channel after it was previously frozen")]
 		[RequireUserPermissions(Permissions.Administrator)]
 		public async Task ChUnFreeze(CommandContext ctx)
-		{
-			IReadOnlyList<DiscordOverwrite> perms = ctx.Channel.PermissionOverwrites;
-			List<ulong> rolemeIds = new List<ulong>()
+			=> await UnfreezeChannel(ctx.Channel);
+
+		[Command("globalfreeze")]
+		[Description("Freeze all public channels.")]
+		[RequireUserPermissions(Permissions.Administrator)]
+		public async Task GlobalFreeze(CommandContext ctx)
+        {
+			var toFreeze = new List<ulong>()
 			{
-				767039219403063307, //art
-				718162129609556121, //debate
-				812755886413971499, //venting
-				978954327907532811, //airships
-				701454853095817316, //ftd
-				713367380574732319, //mc
-				701454772900855819, //stellairs
-				850029252812210207, //reassembly
-				766322672321560628, //wh40k
-				765622563338453023, //daily quote
-				741342066021367938, //daily question
-				702960377390039152  //nomic
+				825415177415032943, //latest vid
+				700346866595922020, //lath quotes
+				700350465174405170, //gen1
+				722915176067891230, //gen2
+				699566205379543041, //memes
+				721107980455641180, //chaos
+				766463841059078205, //counting
+				716457497464143993, //animals
+				788102512455450654, //music
+				699566218104799343, //bot commands
+				702960713471098900, //nomic
+				765619584794361886, //ideas
+				767037634710732831, //art
+				815272200197636116, //photography
+				718162681554534511, //debate
+				812755782067290162, //vent
+				759182971075952670, //cas1
+				759447366855294996, //cas2
+				898738258371031041, //food
+				833363182415904788, //study
+				843189922377629746, //tech
+				898731801063878676, //writing
+				700265288641282068, //games gen
+				898732720593719326, //airships
+				701457089481932892, //ftd
+				713369380125147168, //mc
+				701457040769286174, //stellairs
+				850029437998071838, //reassembly
+				766322531757326346, //wh40k
+				724313826786410508  //staff member comms
 			};
-			if (perms.Any(x => rolemeIds.Contains(x.Id)))
-				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.SendMessages,
-					ctx.Channel.Id == 718162681554534511 ? Permissions.AttachFiles | Permissions.EmbedLinks : Permissions.None); //if debate, no embeds or files
-			if (ctx.Channel.Id == 766463841059078205) //counting
-				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.EmbedLinks | Permissions.AttachFiles);
-			else
-				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.AccessChannels | Permissions.SendMessages, Permissions.None);
-			await ctx.Channel.SendMessageAsync("```This channel is no longer frozen.\n" +
-				"You can now send messages as normal```");
+
+			var channels = await ctx.Guild.GetChannelsAsync();
+
+			foreach (var channel in channels.Where(x => toFreeze.Contains(x.Id)))
+				await FreezeChannel(channel);
+        }
+
+		[Command("globalunfreeze")]
+		[Description("Unfreeze all public channels.")]
+		[RequireUserPermissions(Permissions.Administrator)]
+		public async Task GlobalUnfreeze(CommandContext ctx)
+		{
+			var toFreeze = new List<ulong>()
+			{
+				825415177415032943, //latest vid
+				700346866595922020, //lath quotes
+				700350465174405170, //gen1
+				722915176067891230, //gen2
+				699566205379543041, //memes
+				721107980455641180, //chaos
+				766463841059078205, //counting
+				716457497464143993, //animals
+				788102512455450654, //music
+				699566218104799343, //bot commands
+				702960713471098900, //nomic
+				765619584794361886, //ideas
+				767037634710732831, //art
+				815272200197636116, //photography
+				718162681554534511, //debate
+				812755782067290162, //vent
+				759182971075952670, //cas1
+				759447366855294996, //cas2
+				898738258371031041, //food
+				833363182415904788, //study
+				843189922377629746, //tech
+				898731801063878676, //writing
+				700265288641282068, //games gen
+				898732720593719326, //airships
+				701457089481932892, //ftd
+				713369380125147168, //mc
+				701457040769286174, //stellairs
+				850029437998071838, //reassembly
+				766322531757326346, //wh40k
+				724313826786410508  //staff member comms
+			};
+
+			var channels = await ctx.Guild.GetChannelsAsync();
+
+			foreach (var channel in channels.Where(x => toFreeze.Contains(x.Id)))
+				await UnfreezeChannel(channel);
 		}
 
 		[Command("togglequestions")]
@@ -421,6 +460,63 @@ namespace LathBotFront.Commands
 			{
 				await msg.ModifyAsync(embed: new DiscordEmbedBuilder { Title = "Evaluation Failure", Description = string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message), Color = new DiscordColor("#FF0000") }.Build());
 			}
+		}
+
+		private async Task FreezeChannel(DiscordChannel channel)
+        {
+			IReadOnlyList<DiscordOverwrite> perms = channel.PermissionOverwrites;
+			List<ulong> rolemeIds = new List<ulong>()
+			{
+				767039219403063307, //art
+				718162129609556121, //debate
+				812755886413971499, //venting
+				978954327907532811, //airships
+				701454853095817316, //ftd
+				713367380574732319, //mc
+				701454772900855819, //stellairs
+				850029252812210207, //reassembly
+				766322672321560628, //wh40k
+				765622563338453023, //daily quote
+				741342066021367938, //daily question
+				702960377390039152  //nomic
+			};
+			if (perms.Any(x => rolemeIds.Contains(x.Id)))
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.SendMessages);
+			if (channel.Id == 766463841059078205) //counting
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.SendMessages);
+			else
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.AccessChannels, Permissions.SendMessages);
+			await channel.SendMessageAsync("```This channel is now frozen for moderation purposes.\n" +
+				"You will be able to send messages again once the situation has been resolved```");
+		}
+
+		private async Task UnfreezeChannel(DiscordChannel channel)
+        {
+			IReadOnlyList<DiscordOverwrite> perms = channel.PermissionOverwrites;
+			List<ulong> rolemeIds = new List<ulong>()
+			{
+				767039219403063307, //art
+				718162129609556121, //debate
+				812755886413971499, //venting
+				978954327907532811, //airships
+				701454853095817316, //ftd
+				713367380574732319, //mc
+				701454772900855819, //stellairs
+				850029252812210207, //reassembly
+				766322672321560628, //wh40k
+				765622563338453023, //daily quote
+				741342066021367938, //daily question
+				702960377390039152  //nomic
+			};
+			if (perms.Any(x => rolemeIds.Contains(x.Id)))
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.SendMessages,
+					channel.Id == 718162681554534511 ? Permissions.AttachFiles | Permissions.EmbedLinks : Permissions.None); //if debate, no embeds or files
+			if (channel.Id == 766463841059078205) //counting
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.EmbedLinks | Permissions.AttachFiles);
+			else
+				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.AccessChannels | Permissions.SendMessages, Permissions.None);
+			await channel.SendMessageAsync("```This channel is no longer frozen.\n" +
+				"You can now send messages as normal```");
 		}
 	}
 	public class TestVariables
