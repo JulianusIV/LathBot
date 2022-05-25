@@ -41,8 +41,7 @@ namespace LathBotFront.Commands
 
 		[Command("freeze")]
 		[Description("Freeze a whole channel when you get too many people spamming to control by other measures.\n" +
-            "**Never to be supported channels:**\nQuestions for Lathrix & Messages for Lathrix due to 6 hour slow mode.\nBooster-only due to low population\n" +
-            "**Currently unsupported channels that are being worked on:**\nno-mic-for-vc\nideas-for-daily-channels")]
+            "**Never to be supported channels:**\nQuestions for Lathrix & Messages for Lathrix due to 6 hour slow mode.\nBooster-only due to low population")]
 		[RequireUserPermissions(Permissions.BanMembers)]
 		public async Task ChFreeze(CommandContext ctx)
 		{
@@ -57,7 +56,10 @@ namespace LathBotFront.Commands
 				713367380574732319, //mc
 				701454772900855819, //stellairs
 				850029252812210207, //reassembly
-				766322672321560628  //wh40k
+				766322672321560628, //wh40k
+				765622563338453023, //daily quote
+				741342066021367938, //daily question
+				702960377390039152  //nomic
 			};
 			if (perms.Any(x => rolemeIds.Contains(x.Id)))
 				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.None, Permissions.SendMessages);
@@ -85,7 +87,10 @@ namespace LathBotFront.Commands
 				713367380574732319, //mc
 				701454772900855819, //stellairs
 				850029252812210207, //reassembly
-				766322672321560628  //wh40k
+				766322672321560628, //wh40k
+				765622563338453023, //daily quote
+				741342066021367938, //daily question
+				702960377390039152  //nomic
 			};
 			if (perms.Any(x => rolemeIds.Contains(x.Id)))
 				await perms.First(x => x.Id == 767050052257447936).UpdateAsync(Permissions.SendMessages,
