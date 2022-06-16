@@ -60,10 +60,10 @@ namespace WarnModule
                 DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
                 {
                     Color = Mod.Color,
-                    Title = $"Trial Plague {Member.Nickname} just used a moderation command",
+                    Title = $"Trial Plague {Mod.Nickname} just used a moderation command",
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        IconUrl = Member.AvatarUrl,
+                        IconUrl = Mod.AvatarUrl,
                         Text = $"{Mod.Username}#{Mod.Discriminator} ({Mod.Id})"
                     }
                 };

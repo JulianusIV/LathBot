@@ -216,6 +216,12 @@ namespace LathBotFront
                     .WithThumbnail(e.Message.Author.AvatarUrl)
                     .WithColor(DiscordColor.Red);
 
+                if (!(e.Message.ReferencedMessage is null))
+                {
+                    embed.AddField("Replying to:", e.Message.ReferencedMessage.Author.Mention);
+                    embed.AddField("Ping reply:", e.Message.MentionedUsers.Contains(e.Message.ReferencedMessage.Author) ? "Yes" : "No");
+                }
+
                 var message = new DiscordMessageBuilder();
 
                 Dictionary<string, Stream> attachments = new Dictionary<string, Stream>();
