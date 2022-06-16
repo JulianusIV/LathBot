@@ -175,6 +175,9 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Author.IsBot)
+                    return;
+
                 if (e.Guild.Id != 699555747591094344)
                     return;
 
@@ -200,6 +203,9 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Message.Author.IsBot)
+                    return;
+
                 if (e.Guild.Id != 699555747591094344)
                     return;
 
