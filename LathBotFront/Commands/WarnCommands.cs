@@ -633,7 +633,7 @@ namespace LathBotFront.Commands
         [Aliases("yeet")]
         [RequireUserPermissions(Permissions.BanMembers)]
         [Description("Ban a user")]
-        public async Task Ban(CommandContext ctx, [Description("The user that you want to ban")] DiscordUser user, [RemainingText][Description("Why the user is being banned")] string reason)
+        public async Task Ban(CommandContext ctx, [Description("The user that you want to ban")] DiscordUser user, [Description("How many days of messages to remove (0-7)")]int deleteMessageDays, [RemainingText][Description("Why the user is being banned")] string reason)
         {
             await ctx.Channel.TriggerTypingAsync();
             DiscordMember member = null;
@@ -651,14 +651,19 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync("You cant ban someone higher or same rank as you!");
                 return;
             }
-            if (await AreYouSure(ctx, user, "ban"))
-                return;
             if (string.IsNullOrEmpty(reason))
             {
                 await ctx.RespondAsync("Please provide a reason");
                 return;
             }
-            await ctx.Guild.BanMemberAsync(user.Id, reason: reason);
+            if (deleteMessageDays > 7 || deleteMessageDays < 0)
+            {
+                await ctx.RespondAsync("Days to delete has to be between 0 and 7");
+                return;
+            }
+            if (await AreYouSure(ctx, user, "ban"))
+                return;
+            await ctx.Guild.BanMemberAsync(user.Id, deleteMessageDays, reason);
             AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
             UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
             bool userResult = urepo.GetIdByDcId(ctx.Member.Id, out int id);
