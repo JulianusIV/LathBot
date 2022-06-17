@@ -226,6 +226,7 @@ namespace LathBotFront
                 {
                     embed.AddField("Replying to:", e.Message.ReferencedMessage.Author.Mention);
                     embed.AddField("Ping reply:", e.Message.MentionedUsers.Contains(e.Message.ReferencedMessage.Author) ? "Yes" : "No");
+                    embed.AddField("Jump to replied message:", $"[Doing!]({e.Message.ReferencedMessage.JumpLink})");
                 }
 
                 var message = new DiscordMessageBuilder();
