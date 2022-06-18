@@ -304,6 +304,8 @@ namespace LathBotFront
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
                     .WithTimestamp(DateTime.Now)
                     .WithThumbnail(e.User.AvatarUrl);
+                if (e.Before?.Channel?.Id == e.After?.Channel?.Id)
+                    return;
                 if (e.Before is null)
                 {
                     embed.WithDescription($"<:add:930501217187156018> {e.User.Mention} ({e.User.Id}) joined voice channel\n" +
