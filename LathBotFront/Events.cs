@@ -13,6 +13,7 @@ using LathBotBack.Logging;
 using LathBotBack.Models;
 using LathBotBack.Repos;
 using LathBotBack.Services;
+using LathBotFront.Interactions.PreExecutionChecks;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -115,6 +116,12 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
+                if (e.Exception is SlashExecutionChecksFailedException checkException)
+                    if (checkException.FailedChecks.Any(x => x.GetType() == typeof(EmbedBannedAttribute)))
+                        await e.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
+                            .AsEphemeral()
+                            .WithContent("You are banned from using this command"));
+
                 await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
                 await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
             });
@@ -168,7 +175,7 @@ namespace LathBotFront
                     Regex rg = new Regex(pattern);
                     if (rg.Matches(e.Message.Content).Any())
                     {
-                        await e.Message.DeleteAsync();
+                        await e.Message.DeleteAsync($"Autoremove link in #{e.Channel.Name}");
                         await e.Channel.SendMessageAsync("No links allowed in here." + (e.Channel.Id == 718162681554534511 ? "\nUse /embed to get permissions." : ""));
                     }
                 }

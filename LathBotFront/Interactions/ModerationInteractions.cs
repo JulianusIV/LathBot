@@ -106,5 +106,30 @@ namespace LathBotFront.Interactions
 
             await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"Updated warn to expire {warn.ExpirationTime} days after warn creation."));
         }
+
+        [SlashCommand("embedban", "Ban a user from posting links/embeds/attachments in Debate")]
+        [SlashCommandPermissions(Permissions.KickMembers)]
+        public async Task EmbedBan(
+            InteractionContext ctx,
+            [Option("member", "The member to embedban")]
+            DiscordMember member
+            )
+        {
+            await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
+
+            var repo = new UserRepository(ReadConfig.Config.ConnectionString);
+
+            repo.GetIdByDcId(member.Id, out var id);
+            repo.Read(id, out var user);
+
+            if (user.EmbedBanned)
+            {
+                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("User is already banned from posting embeds in Debate."));
+                return;
+            }
+            user.EmbedBanned = true;
+            repo.Update(user);
+            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Done!"));
+        }
     }
 }

@@ -13,6 +13,7 @@ namespace LathBotFront.Interactions
         private static readonly CooldownSlash _embedCooldown = new CooldownSlash(300);
 
         [SlashCommand("embed", "Request permissions to embed links/attach files in Debate chat")]
+        [EmbedBanned]
         public async Task Embed(InteractionContext ctx)
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());

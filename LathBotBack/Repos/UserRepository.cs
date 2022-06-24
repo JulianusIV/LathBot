@@ -19,17 +19,18 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "SELECT * FROM Users;";
+				DbCommand.CommandText = "SELECT UserDcId, UserDbId, EmbedBanned FROM Users;";
 				DbCommand.Parameters.Clear();
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
 				while (reader.Read())
 				{
-					long temp = (long)reader["UserDcId"];
+					long temp = reader.GetInt64(0);
 					list.Add(new User
 					{
 						DcID = (ulong)temp,
-						ID = (int)reader["UserDbId"]
+						ID = reader.GetInt32(1),
+						EmbedBanned = reader.GetBoolean(2)
 					});
 				}
 				DbConnection.Close();
@@ -148,9 +149,10 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "INSERT INTO Users (UserDcId) OUTPUT INSERTED.UserDbId VALUES (@DcId);";
+				DbCommand.CommandText = "INSERT INTO Users (UserDcId, EmbedBanned) OUTPUT INSERTED.UserDbId VALUES (@DcId, @EmbedBanned);";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
+				DbCommand.Parameters.AddWithValue("EmbedBanned", entity.EmbedBanned);
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
 				reader.Read();
@@ -181,17 +183,18 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "SELECT UserDcId FROM Users WHERE UserDbId = @id;";
+				DbCommand.CommandText = "SELECT UserDcId, EmbedBanned FROM Users WHERE UserDbId = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("id", id);
 				DbConnection.Open();
 				using SqlDataReader reader = DbCommand.ExecuteReader();
 				reader.Read();
-				long temp = (long)reader["UserDcId"];
+				long temp = reader.GetInt64(0);
 				entity = new User
 				{
 					ID = id,
-					DcID = (ulong)temp
+					DcID = (ulong)temp,
+					EmbedBanned = reader.GetBoolean(1)
 				};
 				DbConnection.Close();
 
@@ -218,9 +221,10 @@ namespace LathBotBack.Repos
 
 			try
 			{
-				DbCommand.CommandText = "UPDATE Users SET UserDcId = @DcId WHERE UserDbId = @id;";
+				DbCommand.CommandText = "UPDATE Users SET UserDcId = @DcId, EmbedBanned = @EmbedBanned WHERE UserDbId = @id;";
 				DbCommand.Parameters.Clear();
 				DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
+				DbCommand.Parameters.AddWithValue("EmbedBanned", entity.EmbedBanned);
 				DbCommand.Parameters.AddWithValue("id", entity.ID);
 				DbConnection.Open();
 				DbCommand.ExecuteNonQuery();

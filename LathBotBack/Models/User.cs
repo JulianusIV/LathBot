@@ -4,5 +4,6 @@
 	{
 		public int ID { get; set; }
 		public ulong DcID { get; set; }
-	}
+        public bool EmbedBanned { get; set; }
+    }
 }
