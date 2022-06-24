@@ -111,6 +111,26 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
+        internal static Task SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
+        {
+            _ = Task.Run(async () =>
+            {
+                await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
+                await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
+            });
+            return Task.CompletedTask;
+        }
+
+        internal static Task AutoCompleteErrored(SlashCommandsExtension sender, AutocompleteErrorEventArgs e)
+        {
+            _ = Task.Run(async () =>
+            {
+                await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
+                await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
+            });
+            return Task.CompletedTask;
+        }
+
         internal static Task MessageCreated(DiscordClient _1, MessageCreateEventArgs e)
         {
             _ = Task.Run(async () =>
@@ -140,14 +160,16 @@ namespace LathBotFront
                     await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👍"));
                     await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👎"));
                 }
-                if (e.Channel.Id == 838088490704568341 && e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)))
+                if (((e.Channel.Id == 838088490704568341) || 
+                    (e.Channel.Id == 718162681554534511 && !e.Channel.PermissionOverwrites.Any(x => x.Id == e.Author.Id))) &&
+                    !(await e.Guild.GetMemberAsync(e.Author.Id)).Permissions.HasPermission(Permissions.KickMembers))
                 {
                     string pattern = @"[.]*(?:https?:\/\/(www\.)?)?(?<link>[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)";
                     Regex rg = new Regex(pattern);
                     if (rg.Matches(e.Message.Content).Any())
                     {
                         await e.Message.DeleteAsync();
-                        await e.Channel.SendMessageAsync("No links allowed in here.");
+                        await e.Channel.SendMessageAsync("No links allowed in here." + (e.Channel.Id == 718162681554534511 ? "\nUse /embed to get permissions." : ""));
                     }
                 }
                 if (e.Channel.Id == DiscordObjectService.Instance.QuestionsChannel.Id || e.Channel.Id == DiscordObjectService.Instance.StaffChannel.Id)

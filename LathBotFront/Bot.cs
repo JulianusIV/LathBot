@@ -135,10 +135,13 @@ namespace LathBotFront
 			//Register interactions
 			SlashCommands.RegisterCommands<WarnInteractions>(699555747591094344);
 			SlashCommands.RegisterCommands<ModerationInteractions>(699555747591094344);
+			SlashCommands.RegisterCommands<DebateInteractions>(699555747591094344);
 
 			//Register interaction events
 			SlashCommands.ContextMenuErrored += Events.ContextMenuErrored;
-
+			SlashCommands.AutocompleteErrored += Events.AutoCompleteErrored;
+			SlashCommands.SlashCommandErrored += Events.SlashCommandErrored;
+			
 			await Client.ConnectAsync();
 
 			LavalinkNodeConnection lavaNode = null;
