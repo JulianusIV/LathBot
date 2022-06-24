@@ -112,7 +112,7 @@ namespace LathBotFront.Interactions
         public async Task EmbedBan(
             InteractionContext ctx,
             [Option("member", "The member to embedban")]
-            DiscordMember member
+            DiscordUser member
             )
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
