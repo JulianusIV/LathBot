@@ -189,7 +189,7 @@ namespace LathBotBack.Repos
                 DbCommand.Parameters.Clear();
                 DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
                 DbCommand.Parameters.AddWithValue("EmbedBanned", entity.EmbedBanned);
-                DbCommand.Parameters.AddWithValue("LastPunish", entity.LastPunish);
+                DbCommand.Parameters.AddWithValue("LastPunish", (object)entity.LastPunish ?? DBNull.Value);
                 DbConnection.Open();
                 using SqlDataReader reader = DbCommand.ExecuteReader();
                 reader.Read();
@@ -266,7 +266,7 @@ namespace LathBotBack.Repos
                 DbCommand.Parameters.Clear();
                 DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
                 DbCommand.Parameters.AddWithValue("EmbedBanned", entity.EmbedBanned);
-                DbCommand.Parameters.AddWithValue("LastPunish", entity.LastPunish);
+                DbCommand.Parameters.AddWithValue("LastPunish", (object)entity.LastPunish ?? DBNull.Value);
                 DbCommand.Parameters.AddWithValue("id", entity.ID);
                 DbConnection.Open();
                 DbCommand.ExecuteNonQuery();
