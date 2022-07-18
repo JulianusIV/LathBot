@@ -827,7 +827,7 @@ namespace LathBotFront.Commands
             {
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = ctx.Member.AvatarUrl },
                 Title = $"You have {warns.Count} warnings:",
-                Description = $"Time of last punishment: {Formatter.Timestamp((DateTime)entity.LastPunish, TimestampFormat.ShortDateTime)}." +
+                Description = entity.LastPunish is null ? null : $"Time of last punishment: {Formatter.Timestamp((DateTime)entity.LastPunish, TimestampFormat.ShortDateTime)}." +
                     $"{Environment.NewLine}This time is used for the expiration times!"
             };
             int pointsLeft = 15;
@@ -885,7 +885,7 @@ namespace LathBotFront.Commands
             {
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl },
                 Title = $"The user has {warns.Count} warnings:",
-                Description = $"Time of last punishment: {Formatter.Timestamp((DateTime)entity.LastPunish, TimestampFormat.ShortDateTime)}." +
+                Description = entity.LastPunish is null ? null : $"Time of last punishment: {Formatter.Timestamp((DateTime)entity.LastPunish, TimestampFormat.ShortDateTime)}." +
                     $"{Environment.NewLine}This time is used for the expiration times!"
             };
             int pointsLeft = 15;
