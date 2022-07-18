@@ -185,7 +185,7 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "INSERT INTO Users (UserDcId, EmbedBanned, LastPunish) OUTPUT INSERTED.UserDbId VALUES (@DcId, @EmbedBanned. @LastPunish);";
+                DbCommand.CommandText = "INSERT INTO Users (UserDcId, EmbedBanned, LastPunish) OUTPUT INSERTED.UserDbId VALUES (@DcId, @EmbedBanned, @LastPunish);";
                 DbCommand.Parameters.Clear();
                 DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
                 DbCommand.Parameters.AddWithValue("EmbedBanned", entity.EmbedBanned);
