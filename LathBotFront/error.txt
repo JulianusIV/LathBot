@@ -103,3 +103,9 @@ Sequence contains no elements
    at DSharpPlus.Interactivity.InteractivityExtension.SendPaginatedMessageAsync(DiscordChannel c, DiscordUser u, IEnumerable`1 pages, PaginationEmojis emojis, Nullable`1 behaviour, Nullable`1 deletion, Nullable`1 timeoutoverride)
    at LathBotFront.Commands.WarnCommands.AllWarns(CommandContext ctx) in D:\Libraries\Documents\GitHub\LathBot\LathBotFront\Commands\WarnCommands.cs:line 846
    at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)
+18/07/2022 21:00:38:
+Object reference not set to an instance of an object.
+   at WarnModule.WarnBuilder.LogMessage() in D:\Libraries\Documents\GitHub\LathBot\WarnModule\WarnBuilder.cs:line 404
+   at LathBotFront.Commands.WarnCommands.WarnAsync(CommandContext ctx, DiscordMember member, DiscordMessage messageLink) in D:\Libraries\Documents\GitHub\LathBot\LathBotFront\Commands\WarnCommands.cs:line 1317
+   at LathBotFront.Commands.WarnCommands.Warn(CommandContext ctx, DiscordMember member, DiscordMessage messageLink) in D:\Libraries\Documents\GitHub\LathBot\LathBotFront\Commands\WarnCommands.cs:line 713
+   at DSharpPlus.CommandsNext.Command.ExecuteAsync(CommandContext ctx)

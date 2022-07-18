@@ -28,9 +28,12 @@ namespace LathBotFront
             int pardoned = 0;
             foreach (var item in list)
             {
-                var expirationTimeExpression = (!(item.ExpirationTime is null) && item.Time <= DateTime.Now - TimeSpan.FromDays((double)item.ExpirationTime));
-                var sevOneExpression = item.Level > 0 && item.Level < 6 && item.Time <= DateTime.Now - TimeSpan.FromDays(14);
-                var sevTwoExpression = item.Level > 5 && item.Level < 11 && item.Time <= DateTime.Now - TimeSpan.FromDays(56);
+                result = urepo.Read(item.User, out User entity);
+                DateTime timeToUse = entity.LastPunish is null ? item.Time : (DateTime)entity.LastPunish;
+
+                var expirationTimeExpression = (!(item.ExpirationTime is null) && timeToUse <= DateTime.Now - TimeSpan.FromDays((double)item.ExpirationTime));
+                var sevOneExpression = item.Level > 0 && item.Level < 6 && timeToUse <= DateTime.Now - TimeSpan.FromDays(14);
+                var sevTwoExpression = item.Level > 5 && item.Level < 11 && timeToUse <= DateTime.Now - TimeSpan.FromDays(56);
                 var fullExpression = ((!(item.ExpirationTime is null) && expirationTimeExpression) || 
                     item.ExpirationTime is null && (sevOneExpression || sevTwoExpression)) && 
                     !item.Persistent;
@@ -61,12 +64,7 @@ namespace LathBotFront
                         }
                     }
 
-                    result = urepo.Read(item.User, out User entity);
-                    if (!result)
-                    {
-                        _ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error reading a user from the database");
-                        continue;
-                    }
+                    
                     result = urepo.Read(item.Mod, out User modEntity);
                     if (!result)
                     {

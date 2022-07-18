@@ -446,5 +446,16 @@ namespace WarnModule
                     $"By common practice the user should be muted{(PointsLeft < 6 ? ", kicked" : "")}{(PointsLeft < 1 ? ", or banned" : "")}.");
             }
         }
+
+        public static Task ResetLastPunish(ulong userID)
+        {
+            UserRepository repo = new UserRepository(ReadConfig.Config.ConnectionString);
+
+            repo.GetIdByDcId(userID, out var dbId);
+
+            repo.UpdateLastPunish(dbId, DateTime.Now);
+
+            return Task.CompletedTask;
+        }
     }
 }

@@ -220,6 +220,7 @@ namespace LathBotFront.Commands
                     }
                 }
             }
+            await WarnBuilder.ResetLastPunish(member.Id);
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
             {
                 Color = DiscordColor.Gray,
@@ -509,6 +510,7 @@ namespace LathBotFront.Commands
                     await ctx.RespondAsync("There was a problem writing to the Audit table");
                 }
             }
+            await WarnBuilder.ResetLastPunish(member.Id);
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
             {
                 Color = DiscordColor.Gray,
@@ -616,6 +618,7 @@ namespace LathBotFront.Commands
                     }
                 }
             }
+            await WarnBuilder.ResetLastPunish(member.Id);
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
             {
                 Color = DiscordColor.DarkButNotBlack,
@@ -819,11 +822,13 @@ namespace LathBotFront.Commands
             {
                 await ctx.RespondAsync("There has been an error getting the warns from the database");
             }
-
+            urepo.Read(id, out var entity);
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
             {
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = ctx.Member.AvatarUrl },
                 Title = $"You have {warns.Count} warnings:",
+                Description = $"Time of last punishment: {Formatter.Timestamp((DateTime)entity.LastPunish, TimestampFormat.ShortDateTime)}." +
+                    $"{Environment.NewLine}This time is used for the expiration times!"
             };
             int pointsLeft = 15;
             foreach (Warn warn in warns)
@@ -875,11 +880,13 @@ namespace LathBotFront.Commands
             {
                 await ctx.RespondAsync("There has been an error getting the warns from the database");
             }
-
+            urepo.Read(id, out var entity);
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
             {
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl },
                 Title = $"The user has {warns.Count} warnings:",
+                Description = $"Time of last punishment: {Formatter.Timestamp((DateTime)entity.LastPunish, TimestampFormat.ShortDateTime)}." +
+                    $"{Environment.NewLine}This time is used for the expiration times!"
             };
             int pointsLeft = 15;
             foreach (Warn warn in warns)
@@ -1001,6 +1008,8 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync("Error reading the moderator from the database. (But warn has been persistet)");
                 return;
             }
+            await WarnBuilder.ResetLastPunish(member.Id);
+
             DiscordMember moderator = await ctx.Guild.GetMemberAsync(mod.DcID);
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder
             {
@@ -1299,8 +1308,10 @@ namespace LathBotFront.Commands
                 return;
             await warnBuilder.ReadRemainingPoints();
             await warnBuilder.SendWarnMessage();
-            await warnBuilder.LogMessage();
+            if (!(messageLink is null))
+                await warnBuilder.LogMessage();
             await warnBuilder.SendPunishMessage();
+            await WarnBuilder.ResetLastPunish(member.Id);
         }
     }
 }
