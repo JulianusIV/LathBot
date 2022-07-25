@@ -1,30 +1,17 @@
-﻿using System.Threading.Tasks;
-
-using DSharpPlus.Entities;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
+using DSharpPlus.Entities;
 using LathBotBack.Services;
 using System.Collections.Generic;
-using System.Net;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
 {
-	class ReactionCommands : BaseCommandModule
+    class ReactionCommands : BaseCommandModule
     {
-        [Command("blood")]
-        [Description("Give someone blood so they can [insert order here].")]
-        public async Task Blood(CommandContext ctx, [Description("The person you want to give blood to.")] DiscordMember target, [Description("What they should do with the blood.")][RemainingText] string reason)
-        {
-            DiscordMessageBuilder builder = new DiscordMessageBuilder
-            {
-                Content = $"Hey {target.Mention}, you just got some blood from {ctx.Member.Mention} so you can{reason}!"
-            };
-            await ctx.Channel.SendMessageAsync(builder);
-        }
-
         [Command("slap")]
         [Description("Slap someone, but be careful who you choose to slap, they might slap harder!\n" +
             "Inspired by a xelA tag originally creatd by @ThaTheoMans#7006.")]
@@ -69,26 +56,11 @@ namespace LathBotFront.Commands
             }
         }
 
-        [Command("poke")]
-        [Description("Poke someone! Made possible by Dodo™")]
-        public async Task Poke(CommandContext ctx, [Description("Who you want to poke.")] DiscordUser target)
-        {
-            if (target.Id == 192037157416730625) //Lathrix
-            {
-                await ctx.Channel.SendMessageAsync($"Don`t poke Lath {ctx.Member.Mention}... he might be drunk and fall over... (god i hope i dont get killed for that joke)");
-            }
-            else
-            {
-                await ctx.Channel.SendMessageAsync($"Hey {target.Mention} you just got poked by {ctx.Member.DisplayName}!");
-            }
-
-        }
-
         [Command("repeat")]
         [Description("Let the Bot repeat something.")]
         public async Task Repeat(CommandContext ctx, [Description("What the bot should repeat.")][RemainingText] string repetition)
         {
-            if (ctx.Channel.Id == 718162681554534511)
+            if (ctx.Channel.Id == 718162681554534511 || ctx.Channel.Id == 812755782067290162) //debate and venting
                 return;
             if (repetition.ToUpper() == "I'M STUPID" || repetition.ToUpper() == "IM STUPID")
             {
@@ -104,40 +76,32 @@ namespace LathBotFront.Commands
             }
         }
 
-        [Command("chewy")]
-        [Description("Chewy!")]
+        [Command("parth")]
+        [Description("Parth!")]
         public async Task Chewy(CommandContext ctx)
         {
             await ctx.Channel.SendMessageAsync("Boss man! (even tho the whole senate technically are all equal but i am keeping this for the laughs)");
         }
 
-        [Command("repent")]
-        [Description("REPENT FOR YOUR SINS HERETIC!")]
-        public async Task Repent(CommandContext ctx, [RemainingText] string message)
-        {
-            DiscordMessageBuilder builder = new DiscordMessageBuilder
-            {
-                Content = $"Thou shalt now REPENT {message}"
-            };
-            await ctx.Channel.SendMessageAsync(builder);
-        }
-
         [Command("snipe")]
         [Description("Snipe a deleted message")]
         public async Task Snipe(CommandContext ctx)
-		{
+        {
+            if (ctx.Channel.Id == 812755782067290162) //venting
+                return;
+
             if (!DiscordObjectService.Instance.LastDeletes.ContainsKey(ctx.Channel.Id))
                 return;
             if (!DiscordObjectService.Instance.LastDeletes.TryGetValue(ctx.Channel.Id, out var lastDelete))
-			{
+            {
                 SystemService.Instance.Logger.Log($"Error while trying to get last deleted message in {ctx.Channel.Id}");
                 return;
-			}
+            }
             if ((lastDelete.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastDelete.Author.IsBot || lastDelete.Content.Contains("submit"))
-			{
+            {
                 await ctx.RespondAsync("No");
                 return;
-			}
+            }
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder
             {
                 Title = "Boom headshot!",
@@ -168,17 +132,20 @@ namespace LathBotFront.Commands
             await ctx.RespondAsync(message.WithEmbed(builder).WithAllowedMentions(Mentions.None));
             foreach (var attachment in attachments)
                 attachment.Value.Close();
-		}
+        }
 
         [Command("snipeedit")]
         [Aliases("se")]
         [Description("Snipe an edited message")]
         public async Task SnipeEdit(CommandContext ctx)
         {
-			if (!DiscordObjectService.Instance.LastEdits.ContainsKey(ctx.Channel.Id))
-			{
+            if (ctx.Channel.Id == 812755782067290162) //venting
                 return;
-			}
+
+            if (!DiscordObjectService.Instance.LastEdits.ContainsKey(ctx.Channel.Id))
+            {
+                return;
+            }
             if (!DiscordObjectService.Instance.LastEdits.TryGetValue(ctx.Channel.Id, out var lastEdit))
             {
                 SystemService.Instance.Logger.Log($"Error while trying to get last edited message in {ctx.Channel.Id}");
