@@ -155,17 +155,24 @@ namespace LathBotFront
                     return;
                 if (e.Channel.Id == 741340775530496013 && e.MentionedRoles.Contains(e.Guild.GetRole(741342066021367938)))
                 {
-                    var oldThread = e.Channel.Threads.Where(x => !x.ThreadMetadata.IsArchived).FirstOrDefault();
-                    if (!(oldThread is null))
-                        await oldThread.ModifyAsync(x =>
-                        {
-                            x.AutoArchiveDuration = AutoArchiveDuration.Hour;
-                            x.Locked = true;
-                        });
+                    try
+                    {
+                        var oldThread = e.Channel.Threads.Where(x => !x.ThreadMetadata.IsArchived).FirstOrDefault();
+                        if (!(oldThread is null))
+                            await oldThread.ModifyAsync(x =>
+                            {
+                                x.AutoArchiveDuration = AutoArchiveDuration.Hour;
+                                x.Locked = true;
+                            });
 
-                    var thread = await e.Message.CreateThreadAsync("text-answers", AutoArchiveDuration.Week);
-                    await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👍"));
-                    await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👎"));
+                        var thread = await e.Message.CreateThreadAsync("text-answers", AutoArchiveDuration.Week);
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👍"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👎"));
+                    }
+                    catch (Exception e)
+                    {
+                        SystemService.Instance.Logger.Log(e.Message + Environment.NewLine + e.StackTrace);
+                    }
                 }
                 if (((e.Channel.Id == 838088490704568341) || 
                     (e.Channel.Id == 718162681554534511 && !e.Channel.PermissionOverwrites.Any(x => x.Id == e.Author.Id))) &&
