@@ -381,7 +381,7 @@ namespace LathBotFront.Commands
         {
             if (!ctx.Member.Roles.Contains(ctx.Guild.GetRole(701446136208293969)))
             {
-                await ctx.RespondAsync("Your are not muted smh.");
+                await ctx.RespondAsync("You are not muted smh.");
                 return;
             }
             UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
