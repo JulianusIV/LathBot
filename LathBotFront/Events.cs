@@ -338,29 +338,6 @@ namespace LathBotFront
                         await member.GrantRoleAsync(e.Guild.GetRole(699562710144385095));
                     }
                 }
-                else if (e.Message.Id == 767100276028342322)
-                {
-                    ulong roleid = e.Emoji.ToString() switch
-                    {
-                        "⭐" => 701454772900855819, //Stellaris
-                        "⛵" => 701454853095817316, //FTD
-                        "⛏️" => 713367380574732319, //MC
-                        "🔨" => 766322672321560628, //WH40K
-                        "📜" => 718162129609556121, //Debate
-                        "❓" => 741342066021367938, //DQuestion
-                        "💬" => 765622563338453023, //DQuote
-                        "🎨" => 767039219403063307, //Art
-                        "📢" => 794975835235942470, //Ads
-                        "💢" => 812755886413971499, //Vent
-                        "❗" => 848307821703200828, //Facts
-                        "👾" => 850029252812210207, //Reassembly
-                        "🏅" => 898720583154548777, //Events
-                        "🛩️" => 978954327907532811, //airships
-                        _ => 0
-                    };
-                    if (roleid != 0)
-                        await member.GrantRoleAsync(e.Guild.GetRole(roleid));
-                }
                 else if (e.Emoji.Name == "TheGoodGuys")
                 {
                     if (e.Channel.Id == 795654190143766578 || //Goodguyschannel
@@ -411,42 +388,6 @@ namespace LathBotFront
                         foreach (var attachment in attachments)
                             attachment.Value.Close();
                     }
-                }
-            });
-            return Task.CompletedTask;
-        }
-
-        internal static Task ReactionRemoved(DiscordClient _1, MessageReactionRemoveEventArgs e)
-        {
-            _ = Task.Run(async () =>
-            {
-                if (!StartupService.Instance.StartUpCompleted)
-                {
-                    return;
-                }
-                DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
-                if (e.Message.Id == 767100276028342322)
-                {
-                    ulong roleid = e.Emoji.ToString() switch
-                    {
-                        "⭐" => 701454772900855819, //Stellaris
-                        "⛵" => 701454853095817316, //FTD
-                        "⛏️" => 713367380574732319, //MC
-                        "🔨" => 766322672321560628, //WH40K
-                        "📜" => 718162129609556121, //Debate
-                        "❓" => 741342066021367938, //DQuestion
-                        "💬" => 765622563338453023, //DQuote
-                        "🎨" => 767039219403063307, //Art
-                        "📢" => 794975835235942470, //Ads
-                        "💢" => 812755886413971499, //Vent
-                        "❗" => 848307821703200828, //Facts
-                        "👾" => 850029252812210207, //Reassembly
-                        "🏅" => 898720583154548777, //Events
-                        "🛩️" => 978954327907532811, //airships
-                        _ => 0
-                    };
-                    if (roleid != 0)
-                        await member.RevokeRoleAsync(e.Guild.GetRole(roleid));
                 }
             });
             return Task.CompletedTask;

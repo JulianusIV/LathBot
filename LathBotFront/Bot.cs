@@ -1,190 +1,191 @@
-﻿using System;
-using System.Net.WebSockets;
-using System.Threading.Tasks;
-
-using DSharpPlus;
-using DSharpPlus.Net;
-using DSharpPlus.Lavalink;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
-
-using LathBotBack.Repos;
+using DSharpPlus.Lavalink;
+using DSharpPlus.Net;
+using DSharpPlus.SlashCommands;
 using LathBotBack.Config;
 using LathBotBack.Models;
+using LathBotBack.Repos;
 using LathBotBack.Services;
 using LathBotFront.Commands;
-using DSharpPlus.SlashCommands;
+using LathBotFront.EventHandlers;
 using LathBotFront.Interactions;
+using System;
+using System.Net.WebSockets;
+using System.Threading.Tasks;
 
 namespace LathBotFront
 {
-	public class Bot
-	{
-		#region Singleton
-		private static Bot instance = null;
-		private static readonly object padlock = new object();
-		public static Bot Instance
-		{
-			get
-			{
-				lock (padlock)
-				{
-					if (instance == null)
-						instance = new Bot();
-					return instance;
-				}
-			}
-		}
-		#endregion
+    public class Bot
+    {
+        #region Singleton
+        private static Bot instance = null;
+        private static readonly object padlock = new object();
+        public static Bot Instance
+        {
+            get
+            {
+                lock (padlock)
+                {
+                    if (instance == null)
+                        instance = new Bot();
+                    return instance;
+                }
+            }
+        }
+        #endregion
 
-		public DiscordClient Client { get; private set; }
+        public DiscordClient Client { get; private set; }
 
-		public InteractivityExtension Interactivity { get; private set; }
+        public InteractivityExtension Interactivity { get; private set; }
 
-		public CommandsNextExtension Commands { get; private set; }
+        public CommandsNextExtension Commands { get; private set; }
 
         public SlashCommandsExtension SlashCommands { get; set; }
 
         public async Task RunAsync()
-		{
-			ReadConfig.Read();
-			var varrepo = new VariableRepository(ReadConfig.Config.ConnectionString);
-			bool result;
+        {
+            ReadConfig.Read();
+            var varrepo = new VariableRepository(ReadConfig.Config.ConnectionString);
+            bool result;
 #if DEBUG
-			result = varrepo.Read(3, out Variable prefix); //get testPrefix if in designmode
+            result = varrepo.Read(3, out Variable prefix); //get testPrefix if in designmode
 #else
 			result = varrepo.Read(2, out Variable prefix); //otherwise get default prefix
 #endif
-			DiscordConfiguration config = new DiscordConfiguration
-			{
-				Token = ReadConfig.Config.Token,
-				TokenType = TokenType.Bot,
-				AutoReconnect = true,
+            DiscordConfiguration config = new DiscordConfiguration
+            {
+                Token = ReadConfig.Config.Token,
+                TokenType = TokenType.Bot,
+                AutoReconnect = true,
 #if DEBUG
-				MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Debug,
+                MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Debug,
 #endif
-				Intents = DiscordIntents.All
-			};
+                Intents = DiscordIntents.All
+            };
 
-			Client = new DiscordClient(config);
+            Client = new DiscordClient(config);
 
-			//Register client events
-			Client.Ready += Events.OnClientReady;
-			Client.GuildDownloadCompleted += Events.Client_GuildDownloadCompleted;
-			Client.MessageCreated += Events.MessageCreated;
-			Client.MessageUpdated += Events.MessageUpdated;
-			Client.MessageDeleted += Events.MessageDeleted;
-			Client.GuildMemberAdded += Events.MemberAdded;
-			Client.MessageReactionAdded += Events.ReactionAdded;
-			Client.MessageReactionRemoved += Events.ReactionRemoved;
-			Client.VoiceStateUpdated += Events.VoiceStateUpdated;
-			Client.ClientErrored += Events.ClientErrored;
-			Client.ComponentInteractionCreated += Events.ComponentTriggered;
+            //Register client events
+            Client.Ready += Events.OnClientReady;
+            Client.GuildDownloadCompleted += Events.Client_GuildDownloadCompleted;
+            Client.MessageCreated += Events.MessageCreated;
+            Client.MessageUpdated += Events.MessageUpdated;
+            Client.MessageDeleted += Events.MessageDeleted;
+            Client.GuildMemberAdded += Events.MemberAdded;
+            Client.MessageReactionAdded += Events.ReactionAdded;
+            Client.VoiceStateUpdated += Events.VoiceStateUpdated;
+            Client.ClientErrored += Events.ClientErrored;
+            Client.ComponentInteractionCreated += Events.ComponentTriggered;
 
-			//Register client events for logging
-			Client.GuildBanAdded += Logger.BanAdded;
-			Client.GuildBanRemoved += Logger.BanRemoved;
-			Client.GuildMemberUpdated += Logger.MemberUpdated;
-			Client.ChannelUpdated += Logger.ChannelUpdated;
-			Client.GuildRoleUpdated += Logger.RoleUpdated;
-			Client.MessageUpdated += Logger.MessageEdited;
-			Client.MessageDeleted += Logger.MessageDeleted;
-			Client.MessagesBulkDeleted += Logger.BulkMessagesDeleted;
-			//Client.GuildEmojisUpdated += Logger.EmojiUpdated;
-			Client.VoiceStateUpdated += Logger.VoiceUpdate;
+            //register handlers in event handler folder
+            Client.ComponentInteractionCreated += RoleAssign.ComponentTriggered;
 
-			
-			//Register timer events
-			SystemService.Instance.WarnTimer.Elapsed += Events.TimerTick;
+            //Register client events for logging
+            Client.GuildBanAdded += Logger.BanAdded;
+            Client.GuildBanRemoved += Logger.BanRemoved;
+            Client.GuildMemberUpdated += Logger.MemberUpdated;
+            Client.ChannelUpdated += Logger.ChannelUpdated;
+            Client.GuildRoleUpdated += Logger.RoleUpdated;
+            Client.MessageUpdated += Logger.MessageEdited;
+            Client.MessageDeleted += Logger.MessageDeleted;
+            Client.MessagesBulkDeleted += Logger.BulkMessagesDeleted;
+            //Client.GuildEmojisUpdated += Logger.EmojiUpdated;
+            Client.VoiceStateUpdated += Logger.VoiceUpdate;
 
-			//Register Logger events
-			SystemService.Instance.Logger.RaiseLogEvent += Events.OnLog;
 
-			Client.UseInteractivity(new InteractivityConfiguration
-			{
-				Timeout = TimeSpan.FromMinutes(5),
-				PollBehaviour = PollBehaviour.KeepEmojis,
-				AckPaginationButtons = true
-			});
+            //Register timer events
+            SystemService.Instance.WarnTimer.Elapsed += Events.TimerTick;
 
-			CommandsNextConfiguration commandsConfig = new CommandsNextConfiguration
-			{
-				StringPrefixes = new string[] { prefix.Value },
-				EnableMentionPrefix = true
-			};
-			Commands = Client.UseCommandsNext(commandsConfig);
+            //Register Logger events
+            SystemService.Instance.Logger.RaiseLogEvent += Events.OnLog;
 
-			//Register commands
-			Commands.RegisterCommands<AuditCommands>();
-			Commands.RegisterCommands<EmbedCommands>();
-			Commands.RegisterCommands<InfoCommands>();
-			Commands.RegisterCommands<LavalinkCommands>();
-			Commands.RegisterCommands<ReactionCommands>();
-			Commands.RegisterCommands<RuleCommands>();
-			Commands.RegisterCommands<TechnicalCommands>();
-			Commands.RegisterCommands<WarnCommands>();
-			Commands.RegisterCommands<EventCommands>();
+            Client.UseInteractivity(new InteractivityConfiguration
+            {
+                Timeout = TimeSpan.FromMinutes(5),
+                PollBehaviour = PollBehaviour.KeepEmojis,
+                AckPaginationButtons = true
+            });
 
-			//Register command events
-			Commands.CommandErrored += Events.CommandErrored;
+            CommandsNextConfiguration commandsConfig = new CommandsNextConfiguration
+            {
+                StringPrefixes = new string[] { prefix.Value },
+                EnableMentionPrefix = true
+            };
+            Commands = Client.UseCommandsNext(commandsConfig);
 
-			SlashCommands = Client.UseSlashCommands();
+            //Register commands
+            Commands.RegisterCommands<AuditCommands>();
+            Commands.RegisterCommands<EmbedCommands>();
+            Commands.RegisterCommands<InfoCommands>();
+            Commands.RegisterCommands<LavalinkCommands>();
+            Commands.RegisterCommands<ReactionCommands>();
+            Commands.RegisterCommands<RuleCommands>();
+            Commands.RegisterCommands<TechnicalCommands>();
+            Commands.RegisterCommands<WarnCommands>();
+            Commands.RegisterCommands<EventCommands>();
 
-			//Register interactions
-			SlashCommands.RegisterCommands<WarnInteractions>(699555747591094344);
-			SlashCommands.RegisterCommands<ModerationInteractions>(699555747591094344);
-			SlashCommands.RegisterCommands<DebateInteractions>(699555747591094344);
+            //Register command events
+            Commands.CommandErrored += Events.CommandErrored;
 
-			//Register interaction events
-			SlashCommands.ContextMenuErrored += Events.ContextMenuErrored;
-			SlashCommands.AutocompleteErrored += Events.AutoCompleteErrored;
-			SlashCommands.SlashCommandErrored += Events.SlashCommandErrored;
-			
-			await Client.ConnectAsync();
+            SlashCommands = Client.UseSlashCommands();
 
-			LavalinkNodeConnection lavaNode = null;
-			lavaNode = await ConnectLavaNodeAsync();
+            //Register interactions
+            SlashCommands.RegisterCommands<WarnInteractions>(699555747591094344);
+            SlashCommands.RegisterCommands<ModerationInteractions>(699555747591094344);
+            SlashCommands.RegisterCommands<DebateInteractions>(699555747591094344);
 
-			if (lavaNode != null)
-			{
-				//Register lava commands
-				lavaNode.PlaybackFinished += Events.PlaybackFinished;
-			}
+            //Register interaction events
+            SlashCommands.ContextMenuErrored += Events.ContextMenuErrored;
+            SlashCommands.AutocompleteErrored += Events.AutoCompleteErrored;
+            SlashCommands.SlashCommandErrored += Events.SlashCommandErrored;
 
-			await Task.Delay(-1);
-		}
+            await Client.ConnectAsync();
 
-		private async Task<LavalinkNodeConnection> ConnectLavaNodeAsync()
-		{
-			ConnectionEndpoint endpoint = new ConnectionEndpoint
-			{
-				Hostname = "server.local",
-				Port = 2333
-			};
+            LavalinkNodeConnection lavaNode = null;
+            lavaNode = await ConnectLavaNodeAsync();
 
-			LavalinkConfiguration lavalinkConfig = new LavalinkConfiguration
-			{
-				Password = ReadConfig.Config.LavaLinkPass,
-				RestEndpoint = endpoint,
-				SocketEndpoint = endpoint,
-				SocketAutoReconnect = false
-			};
+            if (lavaNode != null)
+            {
+                //Register lava commands
+                lavaNode.PlaybackFinished += Events.PlaybackFinished;
+            }
 
-			LavalinkExtension lavalink = Client.UseLavalink();
+            await Task.Delay(-1);
+        }
 
-			LavalinkNodeConnection res = null;
-			try
-			{
-				res = await lavalink.ConnectAsync(lavalinkConfig);
-			}
-			catch (WebSocketException e)
-			{
-				SystemService.Instance.Logger.Log("Failed to start connection with Lavalink server:\n" + e.Message);
-			}
+        private async Task<LavalinkNodeConnection> ConnectLavaNodeAsync()
+        {
+            ConnectionEndpoint endpoint = new ConnectionEndpoint
+            {
+                Hostname = "server.local",
+                Port = 2333
+            };
 
-			return res;
-		}
-	}
+            LavalinkConfiguration lavalinkConfig = new LavalinkConfiguration
+            {
+                Password = ReadConfig.Config.LavaLinkPass,
+                RestEndpoint = endpoint,
+                SocketEndpoint = endpoint,
+                SocketAutoReconnect = false
+            };
+
+            LavalinkExtension lavalink = Client.UseLavalink();
+
+            LavalinkNodeConnection res = null;
+            try
+            {
+                res = await lavalink.ConnectAsync(lavalinkConfig);
+            }
+            catch (WebSocketException e)
+            {
+                SystemService.Instance.Logger.Log("Failed to start connection with Lavalink server:\n" + e.Message);
+            }
+
+            return res;
+        }
+    }
 }
