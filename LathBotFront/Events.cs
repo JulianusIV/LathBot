@@ -153,6 +153,11 @@ namespace LathBotFront
                     return;
                 if (!StartupService.Instance.StartUpCompleted)
                     return;
+                if (e.Channel.Id == 765619584794361886) //ideas for daily
+                {
+                    _ = e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👍"));
+                    _ = e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👎"));
+                }
                 if (e.Channel.Id == 741340775530496013 && e.MentionedRoles.Contains(e.Guild.GetRole(741342066021367938)))
                 {
                     try
