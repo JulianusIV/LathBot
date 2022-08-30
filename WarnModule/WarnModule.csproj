@@ -5,10 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.3.0-nightly-01160" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.3.0-nightly-01160" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.3.0-nightly-01160" />
-    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.3.0-nightly-01160" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.3.0-nightly-01159" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.3.0-nightly-01159" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.3.0-nightly-01159" />
+    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.3.0-nightly-01159" />
   </ItemGroup>
 
   <ItemGroup>

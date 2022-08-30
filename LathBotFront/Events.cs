@@ -112,7 +112,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
+        internal static Task SlashCommandErrored(SlashCommandsExtension _1, SlashCommandErrorEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -128,7 +128,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task AutoCompleteErrored(SlashCommandsExtension sender, AutocompleteErrorEventArgs e)
+        internal static Task AutoCompleteErrored(SlashCommandsExtension _1, AutocompleteErrorEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -232,7 +232,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task ContextMenuErrored(SlashCommandsExtension sender, ContextMenuErrorEventArgs e)
+        internal static Task ContextMenuErrored(SlashCommandsExtension _1, ContextMenuErrorEventArgs e)
         {
             _ = Task.Run(async () =>
             {
