@@ -38,6 +38,36 @@ namespace LathBotFront.Commands
             await ctx.Channel.SendMessageAsync(messageBuilder);
         }
 
+        [Command("updateroleme")]
+        [RequireRoles(RoleCheckMode.Any, "Bot Management")]
+        [Description("Creates the embed for #role-assign")]
+        public async Task EditRolemeEmbed(CommandContext ctx)
+        {
+            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
+            var embedBuilder = new DiscordEmbedBuilder()
+            {
+                Color = lathrix.Color,
+                Title = "Role Assign",
+                Description = "Get your roles here.\n" +
+                    "Each role unlocks new channels (once you are verified) for you to see and/or send messages in.\n" +
+                    "This will still be available after you successfully verified yourself in <#767049785223020556>"
+            };
+
+            var messageBuilder = new DiscordMessageBuilder()
+            {
+                Embed = embedBuilder.Build()
+            };
+
+            messageBuilder.AddComponents(new List<DiscordComponent>()
+            {
+                new DiscordButtonComponent(ButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
+                new DiscordButtonComponent(ButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷"))
+            });
+
+            DiscordMessage infoMessage = await ctx.Channel.GetMessageAsync(1014293811435942040);
+            await infoMessage.ModifyAsync(messageBuilder);
+        }
+
         /// <summary>
         /// creates the embed for #information
         /// </summary>
