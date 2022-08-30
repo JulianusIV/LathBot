@@ -21,8 +21,8 @@ namespace LathBotFront.Commands
                 Color = lathrix.Color,
                 Title = "Role Assign",
                 Description = "Get your roles here.\n" +
-                    "Each role unlocks new Channels (once you are verified) for you to see and/or send messages in.\n" +
-                    "this will still be available after your successfully verified yourself in <#767049785223020556>"
+                    "Each role unlocks new channels (once you are verified) for you to see and/or send messages in.\n" +
+                    "This will still be available after you successfully verified yourself in <#767049785223020556>"
             };
 
             var messageBuilder = new DiscordMessageBuilder()

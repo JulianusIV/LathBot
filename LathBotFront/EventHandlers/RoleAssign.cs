@@ -57,11 +57,11 @@ namespace LathBotFront.EventHandlers
                     var member = await e.Guild.GetMemberAsync(e.User.Id);
                     var options = new List<DiscordSelectComponentOption>()
                     {
-                        new DiscordSelectComponentOption("Airships conquer the skies", "airships", "Get access to the Airships conquer game channel", member.Roles.Any(x => x.Id == 978954327907532811), new DiscordComponentEmoji("🛩️")),
+                        new DiscordSelectComponentOption("Airships: Conquer the Skies", "airships", "Get access to the Airships: Conquer the Skies game channel", member.Roles.Any(x => x.Id == 978954327907532811), new DiscordComponentEmoji("🛩️")),
                         new DiscordSelectComponentOption("From the Depths", "ftd", "Get access to the From the Depths game channel", member.Roles.Any(x => x.Id == 701454853095817316), new DiscordComponentEmoji("⛵")),
                         new DiscordSelectComponentOption("Minecraft", "minecraft", "Get access to the Minecraft game channel", member.Roles.Any(x => x.Id == 713367380574732319), new DiscordComponentEmoji("⛏️")),
                         new DiscordSelectComponentOption("Reassembly", "reassembly", "Get access to the Reassembly game channel", member.Roles.Any(x => x.Id == 701454772900855819), new DiscordComponentEmoji("👾")),
-                        new DiscordSelectComponentOption("Stellairs", "stellaris", "Get access to the Stellaris game channel", member.Roles.Any(x => x.Id == 701454772900855819), new DiscordComponentEmoji("⭐")),
+                        new DiscordSelectComponentOption("Stellairs", "stellaris", "Get access to the Stellairs game channel", member.Roles.Any(x => x.Id == 701454772900855819), new DiscordComponentEmoji("⭐")),
                         new DiscordSelectComponentOption("Terra Tech", "tt", "Get access to the Terra Tech game channel", member.Roles.Any(x => x.Id == 1014261454624542810), new DiscordComponentEmoji("🤖")),
                         new DiscordSelectComponentOption("Warhammer 40k", "wh40k", "Get access to the Warhammer 40k game channel", member.Roles.Any(x => x.Id == 766322672321560628), new DiscordComponentEmoji("🔨"))
                     };
@@ -91,7 +91,7 @@ namespace LathBotFront.EventHandlers
 
 
                     if (member.Roles.Any(x => greetingsEnabledRoleIds.Contains(x.Id)))
-                        options.Add(new DiscordSelectComponentOption("Greetings", "greetings", "Gives you permissions to send messages in greetings", member.Roles.Any(x => x.Id == 1014280593929928797), new DiscordComponentEmoji("👋")));
+                        options.Add(new DiscordSelectComponentOption("Greetings", "greetings", "Gives you permissions to send messages in Greetings", member.Roles.Any(x => x.Id == 1014280593929928797), new DiscordComponentEmoji("👋")));
 
                     builder.AddComponents(new DiscordSelectComponent("roleme_misc_dropdown", "Select your roles", options, false, 0, options.Count));
 
