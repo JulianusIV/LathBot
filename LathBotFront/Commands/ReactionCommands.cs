@@ -100,6 +100,8 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithSticker(ctx.Guild.Stickers[964256150054899742]));
             else if (member.Id == 700373370491109489)//femke
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithSticker(ctx.Guild.Stickers[1013888253272801310]));
+            else if (member.Id == ctx.Client.CurrentUser.Id)
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithSticker(ctx.Guild.Stickers[967807862007029880]));
             else
                 await ctx.RespondAsync($"{member.Mention} you just got pat by {ctx.Member.Mention}.");
 
