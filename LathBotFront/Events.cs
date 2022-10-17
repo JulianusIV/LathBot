@@ -183,7 +183,7 @@ namespace LathBotFront
                     (e.Channel.Id == 718162681554534511 && !e.Channel.PermissionOverwrites.Any(x => x.Id == e.Author.Id))) &&
                     !(await e.Guild.GetMemberAsync(e.Author.Id)).Permissions.HasPermission(Permissions.KickMembers))
                 {
-                    string pattern = @"[.]*(?:https?:\/\/(www\.)?)?(?<link>[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)";
+                    string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
                     Regex rg = new Regex(pattern);
                     if (rg.Matches(e.Message.Content).Any())
                     {
