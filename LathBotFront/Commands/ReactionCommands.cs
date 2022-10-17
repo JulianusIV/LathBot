@@ -78,9 +78,24 @@ namespace LathBotFront.Commands
 
         [Command("parth")]
         [Description("Parth!")]
-        public async Task Chewy(CommandContext ctx)
+        public async Task Parth(CommandContext ctx)
         {
             await ctx.Channel.SendMessageAsync("Boss man! (even tho the whole senate technically are all equal but i am keeping this for the laughs)");
+        }
+
+        [Command("pat")]
+        [Description("Pat someone")]
+        public async Task Pat(CommandContext ctx, [Description("Who to pat")]DiscordMember member)
+        {
+            if (member.Id == 192037157416730625)
+                await ctx.RespondAsync("Not gonna ping Lath, but im guessing he would pat back.");
+            else if (member.Id == 395566758989135882)//neb
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithSticker(ctx.Guild.Stickers[964256150054899742]));
+            else if (member.Id == 700373370491109489)//femke
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithSticker(ctx.Guild.Stickers[1013888253272801310]));
+            else
+                await ctx.RespondAsync($"{member.Mention} you just got pat by {ctx.Member.Mention}.");
+
         }
 
         [Command("snipe")]
