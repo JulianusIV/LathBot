@@ -30,8 +30,7 @@ namespace LathBotFront
             {
                 lock (padlock)
                 {
-                    if (instance == null)
-                        instance = new Bot();
+                    instance ??= new Bot();
                     return instance;
                 }
             }
@@ -93,8 +92,11 @@ namespace LathBotFront
             Client.MessageUpdated += Logger.MessageEdited;
             Client.MessageDeleted += Logger.MessageDeleted;
             Client.MessagesBulkDeleted += Logger.BulkMessagesDeleted;
-            //Client.GuildEmojisUpdated += Logger.EmojiUpdated;
             Client.VoiceStateUpdated += Logger.VoiceUpdate;
+            Client.ThreadCreated += Logger.ThreadCreated;
+            Client.ThreadDeleted += Logger.ThreadDeleted;
+            //Library broken as fuck here, so not yet enabled
+            //Client.ThreadUpdated += Logger.ThreadUpdated;
 
 
             //Register timer events

@@ -120,7 +120,7 @@ namespace LathBotFront
                 if (e.Guild.Id != 699555747591094344)
                     return;
 
-                if (e.ChannelBefore.Id == 722905404354592900)
+                if (e.ChannelBefore.Id == 722905404354592900) //senate
                     return;
                 if (e.ChannelBefore.Name == e.ChannelAfter.Name
                     && e.ChannelBefore.Parent.Name == e.ChannelAfter.Parent.Name
@@ -181,7 +181,7 @@ namespace LathBotFront
                 if (e.Guild.Id != 699555747591094344)
                     return;
 
-                if (e.Channel.Id == 722905404354592900)
+                if (e.Channel.Id == 722905404354592900) //senate
                     return;
 
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
@@ -209,7 +209,7 @@ namespace LathBotFront
                 if (e.Guild.Id != 699555747591094344)
                     return;
 
-                if (e.Channel.Id == 722905404354592900 || e.Channel.Id == 700009728151126036)
+                if (e.Channel.Id == 722905404354592900 || e.Channel.Id == 700009728151126036) //senate & logs
                     return;
                 if (e.Message.Content is null)
                     return;
@@ -289,11 +289,6 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task EmojiUpdated(DiscordClient _1, GuildEmojisUpdateEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         internal static Task VoiceUpdate(DiscordClient _1, VoiceStateUpdateEventArgs e)
         {
             _ = Task.Run(async () =>
@@ -329,5 +324,85 @@ namespace LathBotFront
             });
             return Task.CompletedTask;
         }
+
+        internal static Task ThreadCreated(DiscordClient _1, ThreadCreateEventArgs e)
+        {
+            _ = Task.Run(async () =>
+            {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+                if (e.Parent.Id == 722905404354592900) //senate
+                    return;
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                    .WithTimestamp(DateTime.Now)
+                    .WithColor(DiscordColor.Green)
+                    .WithDescription("<:add:930501217187156018> New Thread has been created");
+
+                var creator = await e.Guild.GetMemberAsync(e.Thread.CreatorId);
+
+                embed.AddField("Thread:", e.Thread.Mention);
+                embed.AddField("Parent channel:", e.Parent.Mention);
+                embed.AddField("Creator:", $"{creator.Mention} ({creator.Id})");
+
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+            });
+            return Task.CompletedTask;
+        }
+
+        internal static Task ThreadDeleted(DiscordClient _1, ThreadDeleteEventArgs e)
+        {
+            _ = Task.Run(async () =>
+            {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+                if (e.Parent.Id == 722905404354592900) //senate
+                    return;
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                    .WithTimestamp(DateTime.Now)
+                    .WithColor(DiscordColor.Red)
+                    .WithDescription($"<:remove:930501216889360425> Thread has been deleted");
+
+                embed.AddField("Thread:", e.Thread.Name);
+                embed.AddField("Parent channel:", e.Parent.Mention);
+
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+            });
+            return Task.CompletedTask;
+        }
+
+
+        //Library broken as fuck here, so not yet enabled
+        //internal static Task ThreadUpdated(DiscordClient _1, ThreadUpdateEventArgs e)
+        //{
+        //    _ = Task.Run(async () =>
+        //    {
+        //        if (e.Guild.Id != 699555747591094344)
+        //            return;
+        //        if (e.Parent.Id == 722905404354592900) //senate
+        //            return;
+
+        //        if (e.ThreadBefore.Name == e.ThreadAfter.Name
+        //            && e.ThreadBefore.ThreadMetadata.AutoArchiveDuration == e.ThreadAfter.ThreadMetadata.AutoArchiveDuration
+        //            && e.ThreadBefore.ThreadMetadata.IsArchived == e.ThreadAfter.ThreadMetadata.IsArchived
+        //            && e.ThreadBefore.ThreadMetadata.IsLocked == e.ThreadAfter.ThreadMetadata.IsLocked
+        //            && e.ThreadBefore.PerUserRateLimit == e.ThreadAfter.PerUserRateLimit)
+        //            return;
+        //        DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+        //            .WithTimestamp(DateTime.Now)
+        //            .WithColor(DiscordColor.Blurple)
+        //            .WithDescription($":information_source: The thread {e.ThreadAfter.Mention} ({e.ThreadAfter.Id}) was just updated")
+        //            .AddField("Name", e.ThreadBefore.Name == e.ThreadAfter.Name ? "No change" : $"{e.ThreadBefore.Name} -> {e.ThreadAfter.Name}", true)
+        //            .AddField("Auto Archive Duration ", e.ThreadBefore.ThreadMetadata.AutoArchiveDuration == e.ThreadAfter.ThreadMetadata.AutoArchiveDuration ?
+        //                "No change" : 
+        //                $"{TimeSpan.FromMinutes((int)e.ThreadBefore.ThreadMetadata.AutoArchiveDuration)} -> {TimeSpan.FromMinutes((int)e.ThreadAfter.ThreadMetadata.AutoArchiveDuration)}", true)
+        //            .AddField("Closed", e.ThreadBefore.ThreadMetadata.IsArchived == e.ThreadAfter.ThreadMetadata.IsArchived ? "No change" : $"{e.ThreadBefore.ThreadMetadata.IsArchived} -> {e.ThreadAfter.ThreadMetadata.IsArchived}", true)
+        //            .AddField("Locked", e.ThreadBefore.ThreadMetadata.IsLocked == e.ThreadAfter.ThreadMetadata.IsLocked ? "No change" : $"{e.ThreadBefore.ThreadMetadata.IsLocked} -> {e.ThreadAfter.ThreadMetadata.IsLocked}", true)
+        //            .AddField("Slowmode (seconds)", e.ThreadBefore.PerUserRateLimit == e.ThreadAfter.PerUserRateLimit ? "No change" : $"{e.ThreadBefore.PerUserRateLimit} -> {e.ThreadAfter.PerUserRateLimit}", true)
+        //            .WithFooter("Currently the slowmode will always show as changed, because of what is most likely a library bug that i cant do much about.");
+
+        //        await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+        //    });
+        //    return Task.CompletedTask;
+        //}
     }
 }
