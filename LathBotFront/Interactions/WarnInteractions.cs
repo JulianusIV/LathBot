@@ -113,7 +113,7 @@ namespace LathBotFront.Interactions
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("User is already muted."));
                 return;
             }
-            if (!await AreYouSure(ctx, member, "mute"))
+            if (!await AreYouSure(ctx, user, "mute"))
                 return;
 
             if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
@@ -174,6 +174,74 @@ namespace LathBotFront.Interactions
                 Color = DiscordColor.Gray,
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
                 Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been muted",
+                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
+            };
+            DiscordEmbed embed = embedBuilder.Build();
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.Member.Mention}").AddEmbed(embed));
+            DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
+            await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
+        }
+
+        [SlashCommand("Unmute", "Unmute a muted user")]
+        [SlashCommandPermissions(Permissions.KickMembers)]
+        public async Task Unmute(InteractionContext ctx,
+            [Option("Member", "Who you want to unmute")]
+            DiscordUser user)
+        {
+            await ctx.DeferAsync();
+
+            DiscordMember member = null;
+            if (ctx.Guild.Members.ContainsKey(user.Id))
+                member = await ctx.Guild.GetMemberAsync(user.Id);
+
+            if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
+            {
+                DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+                {
+                    Color = ctx.Member.Color,
+                    Title = $"Trial Plague {ctx.Member.Nickname} just used a moderation command",
+                    Description = $"[Link to usage]({(await ctx.GetOriginalResponseAsync()).JumpLink})",
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        IconUrl = ctx.Member.AvatarUrl,
+                        Text = $"{ctx.Member.Username}#{ctx.Member.Discriminator} ({ctx.Member.Id})"
+                    }
+                };
+                await ctx.Guild.GetChannel(722905404354592900).SendMessageAsync(discordEmbed.Build());
+            }
+
+            IEnumerable<DiscordRole> roles = member.Roles;
+            if ((!roles.Contains(ctx.Guild.GetRole(701446136208293969))) || (roles.Contains(ctx.Guild.GetRole(767050052257447936))))
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("User is not muted."));
+                return;
+            }
+
+            if (!await AreYouSure(ctx, user, "unmute"))
+                return;
+
+            DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
+            DiscordRole mutedRole = ctx.Guild.GetRole(701446136208293969);
+            await member.RevokeRoleAsync(mutedRole);
+            await member.GrantRoleAsync(verificationRole);
+
+            AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
+            MuteRepository mrepo = new MuteRepository(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+
+            urepo.GetIdByDcId(member.Id, out int userId);
+            mrepo.GetMuteByUser(userId, out Mute entity);
+            mrepo.Delete(entity.Id);
+            urepo.GetIdByDcId(ctx.Member.Id, out int id);
+            repo.Read(id, out Audit audit);
+            audit.Unmutes++;
+            repo.Update(audit);
+
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            {
+                Color = DiscordColor.White,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
+                Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been unmuted",
                 Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
             };
             DiscordEmbed embed = embedBuilder.Build();
