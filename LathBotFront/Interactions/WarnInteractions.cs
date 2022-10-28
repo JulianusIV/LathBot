@@ -2,8 +2,16 @@
 
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
-
+using LathBotBack.Config;
+using LathBotBack.Models;
+using LathBotBack.Repos;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using WarnModule;
 
 namespace LathBotFront.Interactions
@@ -76,6 +84,40 @@ namespace LathBotFront.Interactions
             await warnBuilder.SendWarnMessage();
             await warnBuilder.SendPunishMessage();
             await WarnBuilder.ResetLastPunish(ctx.TargetUser.Id);
+        }
+        private async Task<bool> AreYouSure(BaseContext ctx, DiscordUser user, string operation)
+        {
+            DiscordMember member = null;
+            if (ctx.Guild.Members.ContainsKey(user.Id))
+                member = await ctx.Guild.GetMemberAsync(user.Id);
+
+            DiscordWebhookBuilder builder = new DiscordWebhookBuilder()
+                .AddEmbed(new DiscordEmbedBuilder
+                {
+                    Title = "Are you fucking sure about that?",
+                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
+                    {
+                        Url = user.AvatarUrl
+                    },
+                    Color = member == null ? new DiscordColor("#FF0000") : member.Color
+                }
+                .AddField("Member you selected:", member == null ? user.ToString() : member.ToString()));
+            List<DiscordComponent> components = new List<DiscordComponent>
+            {
+                new DiscordButtonComponent(ButtonStyle.Danger, "sure", "Yes I fucking am!"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
+            };
+            builder.AddComponents(components);
+            DiscordMessage message = await ctx.EditResponseAsync(builder);
+            InteractivityExtension interactivity = ctx.Client.GetInteractivity();
+            var interactivityResult = await interactivity.WaitForButtonAsync(message, ctx.User, TimeSpan.FromMinutes(1));
+
+            if (interactivityResult.Result.Id == "abort")
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Okay i will not {operation} the user."));
+                return false;
+            }
+            return true;
         }
     }
 }
