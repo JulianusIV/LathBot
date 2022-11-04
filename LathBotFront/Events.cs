@@ -153,6 +153,12 @@ namespace LathBotFront
                     return;
                 if (!StartupService.Instance.StartUpCompleted)
                     return;
+                if (e.Message.Attachments.Any(x => x.FileName.ToLower().EndsWith(".webm")))
+                {
+                    await e.Message.DeleteAsync();
+                    await e.Channel.SendMessageAsync("webm files are currently instantly deleted due to the risk of a trojan, sorry.");
+                    return;
+                }
                 if (e.Channel.Id == 765619584794361886) //ideas for daily
                 {
                     _ = e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👍"));
