@@ -293,6 +293,39 @@ namespace LathBotFront.Interactions
                 .AddField("Proposed unmute time:", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(entity.Duration)).ToUnixTimeSeconds()}:R> ({entity.Duration} days after mute)")));
         }
 
+        [SlashCommand("Muted", "Check when you got muted")]
+        public async Task Muted(InteractionContext ctx)
+        {
+            await ctx.DeferAsync(true);
+
+            if (!ctx.Member.Roles.Contains(ctx.Guild.GetRole(701446136208293969)))
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You are not muted smh."));
+                return;
+            }
+            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            MuteRepository repo = new MuteRepository(ReadConfig.Config.ConnectionString);
+            urepo.GetIdByDcId(ctx.Member.Id, out int id);
+            repo.GetMuteByUser(id, out Mute entity);
+            urepo.Read(entity.Mod, out User mod);
+            DiscordMember moderator = await ctx.Guild.GetMemberAsync(mod.DcID);
+
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder
+            {
+                Title = $"Muted user: {ctx.Member.DisplayName}#{ctx.Member.Discriminator} ({ctx.Member.Id})",
+                Description = $"Responsible moderator: {moderator.DisplayName}#{moderator.Discriminator} ({moderator.Id})",
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
+                {
+                    Url = ctx.Member.AvatarUrl
+                },
+                Color = DiscordColor.Gray,
+            }
+                .AddField("Muted at:", $"<t:{((DateTimeOffset)entity.Timestamp).ToUnixTimeSeconds()}:F>")
+                .AddField("Muted since: ", $"<t:{((DateTimeOffset)entity.Timestamp).ToUnixTimeSeconds()}:R>")
+                .AddField("Earliest unmute date:", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(2)).ToUnixTimeSeconds()}:R>")
+                .AddField("Latest unmute date (without Senate decision for longer mute):", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(14)).ToUnixTimeSeconds()}:R>")));
+        }
+
         private async Task<bool> AreYouSure(BaseContext ctx, DiscordUser user, string operation)
         {
             DiscordMember member = null;
