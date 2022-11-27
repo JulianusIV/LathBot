@@ -15,6 +15,8 @@ using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Services;
 using System.Text.RegularExpressions;
+using System.Linq;
+using DSharpPlus;
 
 namespace LathBotFront.Commands
 {
@@ -138,26 +140,26 @@ namespace LathBotFront.Commands
                 return;
             }
 
-            foreach (var item in list)
+            var modList = list.ToDictionary(dbMod =>
             {
-                result = urepo.Read(item.DbId, out User entity);
-                if (!result)
-                {
-                    await ctx.RespondAsync($"Error reading a user from the database.");
-                    continue;
-                }
-                DiscordMember mod = await ctx.Guild.GetMemberAsync(entity.DcID);
+                urepo.Read(dbMod.DbId, out User entity);
+                return ctx.Guild.GetMemberAsync(entity.DcID).GetAwaiter().GetResult();
+            });
+
+            modList.OrderByDescending(x => x.Key.Hierarchy);
+
+            foreach (var item in modList)
+            {
                 try
                 {
-                    TimeZoneInfo modTimeZone = TimeZoneInfo.FindSystemTimeZoneById(item.Timezone);
+                    TimeZoneInfo modTimeZone = TimeZoneInfo.FindSystemTimeZoneById(item.Value.Timezone);
                     DateTime modTime = TimeZoneInfo.ConvertTime(thisTime, TimeZoneInfo.Local, modTimeZone);
-                    discordEmbed.AddField($"{mod.Username}#{mod.Discriminator}",
-                        modTime.ToString("yyyy-MM-dd     **HH:mm**") + "     (" + (modTimeZone.IsDaylightSavingTime(modTime) ?
-                        modTimeZone.DaylightName[..6] : modTimeZone.StandardName[..6]) + ")");
+                    discordEmbed.AddField($"{item.Key.Username}#{item.Key.Discriminator}",
+                        modTime.ToString("yyyy-MM-dd     **HH:mm**") + "     (" + (modTimeZone.IsDaylightSavingTime(modTime) ? modTimeZone.DaylightName : modTimeZone.StandardName) + ")");
                 }
                 catch
                 {
-                    await ctx.RespondAsync($"Error creating the embed for user {mod.DisplayName}#{mod.Discriminator} ({mod.Id}).");
+                    await ctx.RespondAsync($"Error creating the embed for user {item.Key.DisplayName}#{item.Key.Discriminator} ({item.Key.Id}).");
                     continue;
                 }
             }

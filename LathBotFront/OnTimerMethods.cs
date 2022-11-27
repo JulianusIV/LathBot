@@ -122,6 +122,14 @@ namespace LathBotFront
                 _ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting all mutes in TimerTick.");
                 return;
             }
+            list.Add(new Mute()
+            {
+                Id = 1,
+                Mod = 751,
+                User = 398,
+                Duration = 2,
+                Timestamp = DateTime.Now - TimeSpan.FromDays(2)
+            });
             foreach (var item in list)
             {
                 if (item.Timestamp + TimeSpan.FromDays(item.Duration) <= DateTime.Now)
@@ -156,7 +164,11 @@ namespace LathBotFront
                     {
                         _ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting a user from discord.");
                     }
-                    if (!(user is null) && user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
+                    if (user is null)
+                    {
+                        _ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error in mute handling, user was null");
+                    }
+                    else if (user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
                     {
                         if (!(await (await mod.CreateDmChannelAsync()).GetMessagesAsync(5)).Any(x => x.Content.Contains("You will be reminded again tomorrow.") && x.CreationTimestamp > DateTime.Now - TimeSpan.FromHours(24)))
                         {
@@ -170,7 +182,7 @@ namespace LathBotFront
                             }
                         }
                     }
-                    else if (user is null || !user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
+                    else if (!user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
                     {
                         result = repo.Delete(item.Id);
                         if (!result)
@@ -178,6 +190,7 @@ namespace LathBotFront
                             _ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error deleting a Mute from database.");
                             continue;
                         }
+                        _ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Successfully deleted a mute from the database due to missing muted role.");
                     }
                 }
             }
