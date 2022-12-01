@@ -122,14 +122,6 @@ namespace LathBotFront
                 _ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting all mutes in TimerTick.");
                 return;
             }
-            list.Add(new Mute()
-            {
-                Id = 1,
-                Mod = 751,
-                User = 398,
-                Duration = 2,
-                Timestamp = DateTime.Now - TimeSpan.FromDays(2)
-            });
             foreach (var item in list)
             {
                 if (item.Timestamp + TimeSpan.FromDays(item.Duration) <= DateTime.Now)
