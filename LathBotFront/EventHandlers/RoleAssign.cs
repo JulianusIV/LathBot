@@ -23,6 +23,7 @@ namespace LathBotFront.EventHandlers
         private static readonly ulong[] gamesRoleIds = new ulong[]
         {
             978954327907532811,  //airships
+            1046124300761043004, //dnd
             701454853095817316,  //ftd
             713367380574732319,  //minecraft
             850029252812210207,  //reassembly
@@ -58,6 +59,7 @@ namespace LathBotFront.EventHandlers
                     var options = new List<DiscordSelectComponentOption>()
                     {
                         new DiscordSelectComponentOption("Airships: Conquer the Skies", "airships", "Get access to the Airships: Conquer the Skies game channel", member.Roles.Any(x => x.Id == 978954327907532811), new DiscordComponentEmoji("🛩️")),
+                        new DiscordSelectComponentOption("Dungeons and Dragons", "dnd", "Get access to the Dungeons and Dragons game channel and vc", member.Roles.Any(x => x.Id == 1046124300761043004), new DiscordComponentEmoji("🐉")),
                         new DiscordSelectComponentOption("From the Depths", "ftd", "Get access to the From the Depths game channel", member.Roles.Any(x => x.Id == 701454853095817316), new DiscordComponentEmoji("⛵")),
                         new DiscordSelectComponentOption("Minecraft", "minecraft", "Get access to the Minecraft game channel", member.Roles.Any(x => x.Id == 713367380574732319), new DiscordComponentEmoji("⛏️")),
                         new DiscordSelectComponentOption("Reassembly", "reassembly", "Get access to the Reassembly game channel", member.Roles.Any(x => x.Id == 701454772900855819), new DiscordComponentEmoji("👾")),
@@ -111,6 +113,7 @@ namespace LathBotFront.EventHandlers
                         {
                             "airships" => 978954327907532811,
                             "ftd" => 701454853095817316,
+                            "dnd" => 1046124300761043004,
                             "minecraft" => 713367380574732319,
                             "reassembly" => 850029252812210207,
                             "stellaris" => 701454772900855819,
