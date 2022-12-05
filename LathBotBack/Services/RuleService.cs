@@ -42,7 +42,7 @@ namespace LathBotBack.Services
 				new Rule(10, "Don't mini-mod", 1, 2, "MINI-MOD"),
 				new Rule(11, "Don't use macros", 1, 3, "MACROS"),
 				new Rule(12, "Don't share personal information about others", 1, 15, "DOXXING"),
-				new Rule(13, "Holding bias as a staff member is prohibited, or if you are a member who is trying to make staff bias. This will be known as corruption and should be reported to Chewybaca and/or a member of the Senate immediately.", 3, 10, "BIAS"),
+				new Rule(13, "Holding bias as a staff member is prohibited, or if you are a member who is trying to make staff bias. This will be known as corruption and should be reported to a member of the Senate immediately.", 3, 10, "BIAS"),
 				new Rule(0, "This rule is for anything that goes against basic human decency, and for cases not covered by the rules, that should be warned.", 1, 15, "OTHER")
 			};
 		}
