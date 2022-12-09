@@ -73,7 +73,7 @@ namespace LathBotFront.Interactions
         public async Task ChangeWarnTime(InteractionContext ctx,
             [Option("Member", "The member")] DiscordUser member,
             [Option("Warn", "The warn to change", true)]
-            [Autocomplete(typeof(Autocomplete.ChangeWarnTimeAutocompleteProvider))]
+            [Autocomplete(typeof(Autocomplete.UserWarnAutocompleteProvider))]
             long warnNumber,
             [Option("ChangeBy", "By how much to extend or shorten the time the user is warned for")] long changeBy,
             [Option("Add", "True = Add days to the sentence, False = Remove days from the sentence")] bool add = true)

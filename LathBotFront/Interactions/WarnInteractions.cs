@@ -424,6 +424,48 @@ namespace LathBotFront.Interactions
             await warnsChannel.SendMessageAsync($"{user.Mention}", embed);
         }
 
+        [SlashCommand("Pardon", "Pardon a warn of a user")]
+        [SlashCommandPermissions(Permissions.BanMembers)]
+        public async Task Pardon(InteractionContext ctx,
+            [Option("Member", "The member you want to pardon a warn of")]
+            DiscordUser user,
+            [Option("Warn", "The warn you want to pardon", true)]
+            [Autocomplete(typeof(Autocomplete.UserWarnAutocompleteProvider))]
+            long warnNumber)
+        {
+            await ctx.DeferAsync();
+
+            WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            urepo.GetIdByDcId(user.Id, out int id);
+            repo.GetWarnByUserAndNum(id, (int)warnNumber, out Warn warn);
+            repo.Delete(warn.ID);
+            repo.GetAllByUser(warn.User, out List<Warn> others);
+            int counter = 0;
+            foreach (var item in others)
+            {
+                counter++;
+                item.Number = counter;
+                repo.Update(item);
+            }
+            AuditRepository auditRepo = new AuditRepository(ReadConfig.Config.ConnectionString);
+            urepo.GetIdByDcId(ctx.Member.Id, out int userid);
+            auditRepo.Read(userid, out Audit audit);
+            audit.Pardons++;
+            auditRepo.Update(audit);
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            {
+                Color = DiscordColor.Green,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl },
+                Title = $"Pardoned warn number {warnNumber} of {user.Username}#{user.Discriminator} ({user.Id})",
+                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = ctx.Member.DisplayName }
+            };
+            DiscordEmbed embed = embedBuilder.Build();
+            DiscordChannel warningsChannel = ctx.Guild.GetChannel(722186358906421369);
+            await warningsChannel.SendMessageAsync(user.Mention, embed);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(ctx.Member.Mention).AddEmbed(embed));
+        }
+
         private async Task<bool> AreYouSure(BaseContext ctx, DiscordUser user, string operation)
         {
             DiscordMember member = null;
