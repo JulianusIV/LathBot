@@ -178,10 +178,9 @@ namespace LathBotFront.Interactions
                 Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been muted",
                 Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
             };
-            DiscordEmbed embed = embedBuilder.Build();
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.Member.Mention}").AddEmbed(embed));
-            DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-            await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Done!"));
+            await ctx.Guild.GetChannel(764251867135475713).SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embedBuilder));
+            await ctx.Guild.GetChannel(722186358906421369).SendMessageAsync($"{member.Mention}", embedBuilder);
         }
 
         [SlashCommand("Unmute", "Unmute a muted user")]
@@ -246,10 +245,9 @@ namespace LathBotFront.Interactions
                 Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been unmuted",
                 Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
             };
-            DiscordEmbed embed = embedBuilder.Build();
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.Member.Mention}").AddEmbed(embed));
-            DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-            await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Done!"));
+            await ctx.Guild.GetChannel(764251867135475713).SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embedBuilder));
+            await ctx.Guild.GetChannel(722186358906421369).SendMessageAsync($"{member.Mention}", embedBuilder);
         }
 
         [SlashCommand("CheckMuted", "Check how long a user is muted for")]
@@ -363,11 +361,9 @@ namespace LathBotFront.Interactions
                 Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been kicked",
                 Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
             };
-            DiscordEmbed embed = embedBuilder.Build();
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.Member.Mention}").AddEmbed(embed));
-            DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-            await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Done!"));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Done!"));
+            await ctx.Guild.GetChannel(764251867135475713).SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embedBuilder));
+            await ctx.Guild.GetChannel(722186358906421369).SendMessageAsync($"{member.Mention}", embedBuilder);
         }
 
         [SlashCommand("Ban", "Ban a user")]
@@ -418,10 +414,9 @@ namespace LathBotFront.Interactions
                 Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" },
                 Description = reason
             };
-            DiscordEmbed embed = embedBuilder.Build();
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.Member.Mention}").AddEmbed(embed));
-            DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
-            await warnsChannel.SendMessageAsync($"{user.Mention}", embed);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Done!"));
+            await ctx.Guild.GetChannel(764251867135475713).SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embedBuilder));
+            await ctx.Guild.GetChannel(722186358906421369).SendMessageAsync($"{user.Mention}", embedBuilder);
         }
 
         [SlashCommand("Pardon", "Pardon a warn of a user")]
@@ -460,10 +455,9 @@ namespace LathBotFront.Interactions
                 Title = $"Pardoned warn number {warnNumber} of {user.Username}#{user.Discriminator} ({user.Id})",
                 Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = ctx.Member.DisplayName }
             };
-            DiscordEmbed embed = embedBuilder.Build();
-            DiscordChannel warningsChannel = ctx.Guild.GetChannel(722186358906421369);
-            await warningsChannel.SendMessageAsync(user.Mention, embed);
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(ctx.Member.Mention).AddEmbed(embed));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Done!"));
+            await ctx.Guild.GetChannel(764251867135475713).SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embedBuilder));
+            await ctx.Guild.GetChannel(722186358906421369).SendMessageAsync($"{user.Mention}", embedBuilder);
         }
 
         [SlashCommand("Warns", "Check your or someone elses warnings")]
