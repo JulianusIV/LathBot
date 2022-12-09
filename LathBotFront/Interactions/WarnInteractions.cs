@@ -90,7 +90,7 @@ namespace LathBotFront.Interactions
             [Option("Member", "Who you want to mute")]
             DiscordUser user,
             [Option("Duration", "When you want to be reminded tho unmute this member")]
-            DurationChoices duration)
+            MuteDurationChoices duration)
         {
             await ctx.DeferAsync();
 
@@ -326,6 +326,48 @@ namespace LathBotFront.Interactions
                 .AddField("Latest unmute date (without Senate decision for longer mute):", $"<t:{((DateTimeOffset)entity.Timestamp + TimeSpan.FromDays(14)).ToUnixTimeSeconds()}:R>")));
         }
 
+        [SlashCommand("Kick", "Kick a user")]
+        [SlashCommandPermissions(Permissions.KickMembers)]
+        public async Task Kick(InteractionContext ctx,
+            [Option("Member", "Who you want to kick")]
+            DiscordUser user)
+        {
+            await ctx.DeferAsync();
+            if (user.Id == 192037157416730625)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You cant kick Lathrix!"));
+                return;
+            }
+            var member = await ctx.Guild.GetMemberAsync(user.Id);
+            if (ctx.Member.Hierarchy <= member.Hierarchy)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You cant kick someone higher or same rank as you!"));
+                return;
+            }
+            if (await AreYouSure(ctx, user, "kick"))
+                return;
+            await member.RemoveAsync();
+            AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            urepo.GetIdByDcId(ctx.Member.Id, out int id);
+            repo.Read(id, out Audit audit);
+            audit.Kicks++;
+            repo.Update(audit);
+            await WarnBuilder.ResetLastPunish(user.Id);
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            {
+                Color = DiscordColor.DarkButNotBlack,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
+                Title = $"{member.DisplayName}#{member.Discriminator} ({member.Id}) has been kicked",
+                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
+            };
+            DiscordEmbed embed = embedBuilder.Build();
+            await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", embed);
+            DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
+            await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Done!"));
+        }
+
         private async Task<bool> AreYouSure(BaseContext ctx, DiscordUser user, string operation)
         {
             DiscordMember member = null;
@@ -362,7 +404,7 @@ namespace LathBotFront.Interactions
         }
     }
 
-    public enum DurationChoices
+    public enum MuteDurationChoices
     {
         [ChoiceName("2 - Two days")]
         TwoDays = 2,
