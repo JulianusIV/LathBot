@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using System;
+using System.Timers;
 
 using DSharpPlus;
 
@@ -27,12 +28,28 @@ namespace LathBotBack.Services
 		#endregion
 
 		public Timer WarnTimer = new Timer(3600000);
+		public Timer TakeYourMeds = new Timer();
 
-		public LoggingPublisher Logger = new LoggingPublisher();
+
+        public LoggingPublisher Logger = new LoggingPublisher();
 
 		public override void Init(DiscordClient client)
 		{
 			WarnTimer.Start();
+
+#if DEBUG
+			TimeZoneInfo insertTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+#else
+			TimeZoneInfo insertTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/London");
+#endif
+			DateTime insertTime = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, insertTimeZone);
+			DateTime wantedTime = insertTime.Date + TimeSpan.FromHours(7.5);
+
+			if (insertTime > wantedTime)
+				wantedTime += TimeSpan.FromDays(1);
+
+			TakeYourMeds.Interval = (wantedTime - insertTime).TotalMilliseconds;
+			TakeYourMeds.Start();
 		}
 	}
 }

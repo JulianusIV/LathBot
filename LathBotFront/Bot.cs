@@ -103,6 +103,7 @@ namespace LathBotFront
 
             //Register timer events
             SystemService.Instance.WarnTimer.Elapsed += Events.TimerTick;
+            SystemService.Instance.TakeYourMeds.Elapsed += Events.TakeYourMeds;
 
             //Register Logger events
             SystemService.Instance.Logger.RaiseLogEvent += Events.OnLog;
@@ -141,7 +142,6 @@ namespace LathBotFront
             SlashCommands.RegisterCommands<WarnInteractions>(699555747591094344);
             SlashCommands.RegisterCommands<ModerationInteractions>(699555747591094344);
             SlashCommands.RegisterCommands<DebateInteractions>(699555747591094344);
-            SlashCommands.RegisterCommands<RolemeInteractions>(699555747591094344);
 
             //Register interaction events
             SlashCommands.ContextMenuErrored += Events.ContextMenuErrored;
