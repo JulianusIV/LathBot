@@ -17,6 +17,7 @@ namespace LathBotFront.Interactions
     public class WarnInteractions : ApplicationCommandModule
     {
         [ContextMenu(ApplicationCommandType.MessageContextMenu, "Warn message")]
+        [SlashCommandPermissions(Permissions.KickMembers)]
         public async Task WarnMessage(ContextMenuContext ctx)
         {
             await ctx.DeferAsync(true);
@@ -52,6 +53,7 @@ namespace LathBotFront.Interactions
         }
 
         [ContextMenu(ApplicationCommandType.UserContextMenu, "Warn user")]
+        [SlashCommandPermissions(Permissions.KickMembers)]
         public async Task WarnUser(ContextMenuContext ctx)
         {
             await ctx.DeferAsync(true);
@@ -277,7 +279,7 @@ namespace LathBotFront.Interactions
             urepo.GetIdByDcId(member.Id, out int id);
             repo.GetMuteByUser(id, out Mute entity);
             urepo.Read(entity.Mod, out User mod);
-            var moderator = await ctx.Guild.GetMemberAsync(mod.DcID);           
+            var moderator = await ctx.Guild.GetMemberAsync(mod.DcID);
 
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
             {
