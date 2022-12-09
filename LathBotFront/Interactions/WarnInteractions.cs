@@ -375,7 +375,7 @@ namespace LathBotFront.Interactions
         public async Task Ban(InteractionContext ctx,
             [Option("Member", "Who you want to ban")]
             DiscordUser user,
-            [Option("Delete message days", "How many days of messages to remove (0-7)")]
+            [Option("DeleteMessageDays", "How many days of messages to remove (0-7)")]
             BanMessageDeletionChoices deleteMessageDays,
             [Option("Reason", "Why the user is being banned")]
             string reason)
@@ -518,6 +518,61 @@ namespace LathBotFront.Interactions
             if (user is null)
                 webhook.WithContent(ctx.Member.Mention);
             await ctx.EditResponseAsync(webhook);
+        }
+
+        [SlashCommand("Report", "Report a staff member to the senate.")]
+        public async Task Report(InteractionContext ctx,
+            [Option("Member", "The staff member you want to report")]
+            DiscordUser user)
+        {
+            var member = await ctx.Guild.GetMemberAsync(user.Id);
+            if (!member.Roles.Contains(ctx.Guild.GetRole(796234634316873759)) && !member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
+            {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
+                    new DiscordInteractionResponseBuilder().WithContent("```User is not staff or is part of the Senate.\n" + "If they are part of the Senate try messaging another member of the senate instead!```").AsEphemeral());
+                return;
+            }
+            var textInput = new TextInputComponent("Please state a reason for your report.",
+                "report_reason",
+                required: true,
+                style: TextInputStyle.Paragraph);
+
+            var responseBuilder = new DiscordInteractionResponseBuilder()
+                .WithCustomId("report_reason")
+                .WithTitle("Reason")
+                .AddComponents(textInput);
+
+            await ctx.CreateResponseAsync(InteractionResponseType.Modal, responseBuilder);
+
+            var res = await ctx.Client.GetInteractivity().WaitForModalAsync("report_reason");
+
+            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+            var reason = res.Result.Values["report_reason"];
+
+            if (reason is null)
+            {
+                await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Please state a reason!").AsEphemeral());
+                return;
+            }
+
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            {
+                Color = DiscordColor.Red,
+                Title = $"Report from user {ctx.User.Username}#{ctx.User.Discriminator} ({ctx.User.Id})",
+                Description = $"Reported user: {member.Username}#{member.Discriminator} ({member.Id})",
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
+                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.User.AvatarUrl, Text = ctx.User.Username }
+            };
+
+            embedBuilder.AddField("Reason:", reason);
+
+            DiscordEmbed embed = embedBuilder.Build();
+            var senate = (await ctx.Guild.GetAllMembersAsync()).Where(x => x.Roles.Any(y => y.Id == 784852719449276467));
+            foreach (DiscordMember senator in senate)
+                await senator.SendMessageAsync(embed);
+            
+            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
+                new DiscordInteractionResponseBuilder().WithContent("Report successfully sent. The senate will get back to you, until then please be patient.").AsEphemeral());
         }
 
         private async Task<bool> AreYouSure(BaseContext ctx, DiscordUser user, string operation)
