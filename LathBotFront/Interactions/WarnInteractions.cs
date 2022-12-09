@@ -466,6 +466,60 @@ namespace LathBotFront.Interactions
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(ctx.Member.Mention).AddEmbed(embed));
         }
 
+        [SlashCommand("Warns", "Check your or someone elses warnings")]
+        public async Task Warns(InteractionContext ctx,
+            [Option("Member", "The member that you want to check")]
+            DiscordUser user = null)
+        {
+            await ctx.DeferAsync();
+            WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            urepo.GetIdByDcId(user is null ? ctx.Member.Id : user.Id, out int id);
+            repo.GetAllByUser(id, out List<Warn> warns);
+            urepo.Read(id, out var entity);
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            {
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user is null ? ctx.Member.AvatarUrl : user.AvatarUrl },
+                Title = $"{(user is null ? "You have" : "The user has")} {warns.Count} warnings:",
+                Description = entity.LastPunish is null ? null : $"Time of last punishment: {Formatter.Timestamp((DateTime)entity.LastPunish, TimestampFormat.ShortDateTime)}." +
+                    $"{Environment.NewLine}This time is used for the expiration times!"
+            };
+            int pointsLeft = 15;
+            foreach (Warn warn in warns)
+            {
+                urepo.Read(warn.Mod, out User mod);
+                DiscordMember moderator = await ctx.Guild.GetMemberAsync(mod.DcID);
+                int severity = WarnBuilder.CalculateSeverity(warn.Level);
+                string expiresAfter = warn.ExpirationTime is null ? severity switch
+                {
+                    1 => "14 days",
+                    2 => "56 days",
+                    3 => "never",
+                    _ => "unknown"
+                } : warn.ExpirationTime.ToString() + " days";
+                if (warn.Persistent)
+                    expiresAfter = "never";
+                embedBuilder.AddField($"{warn.Number}: {warn.Reason}",
+                    $"Points: -{warn.Level}; Date: {warn.Time}; Warned by {moderator.DisplayName}#{moderator.Discriminator}; Expires after: {expiresAfter}");
+                pointsLeft -= warn.Level;
+            }
+            embedBuilder.AddField($"{pointsLeft} points left", "­");
+
+            if (pointsLeft == 15)
+                embedBuilder.Color = DiscordColor.Green;
+            else if (pointsLeft > 10)
+                embedBuilder.Color = DiscordColor.Yellow;
+            else if (pointsLeft > 5)
+                embedBuilder.Color = DiscordColor.Orange;
+            else
+                embedBuilder.Color = DiscordColor.Red;
+
+            var webhook = new DiscordWebhookBuilder().AddEmbed(embedBuilder);
+            if (user is null)
+                webhook.WithContent(ctx.Member.Mention);
+            await ctx.EditResponseAsync(webhook);
+        }
+
         private async Task<bool> AreYouSure(BaseContext ctx, DiscordUser user, string operation)
         {
             DiscordMember member = null;
