@@ -528,7 +528,7 @@ namespace LathBotFront.Interactions
             var member = await ctx.Guild.GetMemberAsync(user.Id);
             if (!member.Roles.Contains(ctx.Guild.GetRole(796234634316873759)) && !member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
             {
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().WithContent("```User is not staff or is part of the Senate.\n" + "If they are part of the Senate try messaging another member of the senate instead!```").AsEphemeral());
                 return;
             }
@@ -570,9 +570,79 @@ namespace LathBotFront.Interactions
             var senate = (await ctx.Guild.GetAllMembersAsync()).Where(x => x.Roles.Any(y => y.Id == 784852719449276467));
             foreach (DiscordMember senator in senate)
                 await senator.SendMessageAsync(embed);
-            
-            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, 
+
+            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                 new DiscordInteractionResponseBuilder().WithContent("Report successfully sent. The senate will get back to you, until then please be patient.").AsEphemeral());
+        }
+
+        [SlashCommand("Persist", "Persist a warn of a user")]
+        [SlashCommandPermissions(Permissions.Administrator)]
+        public async Task Persist(InteractionContext ctx,
+            [Option("Member", "The member you want to persist a warn of")]
+            DiscordUser user,
+            [Option("Warn", "The warn you want to persist", true)]
+            [Autocomplete(typeof(Autocomplete.UserWarnAutocompleteProvider))]
+            long warnNumber)
+        {
+            await ctx.DeferAsync();
+
+            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
+
+            urepo.GetIdByDcId(user.Id, out int userDbId);
+            repo.GetWarnByUserAndNum(userDbId, (int)warnNumber, out Warn warn);
+            if (warn.Level > 10)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Warn is already persistent by level"));
+                return;
+            }
+            else if (warn.Persistent)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Warn is already persistent"));
+                return;
+            }
+
+            warn.Persistent = true;
+            repo.Update(warn);
+            urepo.Read(warn.Mod, out User mod);
+
+            await WarnBuilder.ResetLastPunish(user.Id);
+
+            DiscordMember moderator = await ctx.Guild.GetMemberAsync(mod.DcID);
+            DiscordEmbedBuilder builder = new DiscordEmbedBuilder
+            {
+                Title = $"Persistet warn {warn.ID}",
+                Description = warn.Reason,
+                Color = DiscordColor.Red,
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    IconUrl = moderator.AvatarUrl,
+                    Text = $"{moderator.DisplayName}#{moderator.Discriminator} ({moderator.Id})"
+                }
+            };
+            builder.AddField("Level:", warn.Level.ToString());
+            builder.AddField("Number:", warn.Number.ToString());
+            builder.AddField("Time of the Warn:", warn.Time.ToString("yyyy-mm-ddTHH:mm:ss.ffff"));
+            builder.AddField("Persistent:", warn.Persistent.ToString());
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(builder));
+
+            DiscordEmbedBuilder dmBuilder = new DiscordEmbedBuilder
+            {
+                Title = "Persistent warns",
+                Description = "One of your warns has been persistet and will no longer expire. The warn will only ever be removed after manual review by an Admin.",
+                Color = DiscordColor.Red,
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    IconUrl = ctx.Member.AvatarUrl,
+                    Text = $"{ctx.Member.DisplayName}#{ctx.Member.Discriminator} ({ctx.Member.Id})"
+                }
+            };
+
+            dmBuilder.AddField("Reason: ", warn.Reason);
+            dmBuilder.AddField("Level:", warn.Level.ToString());
+            dmBuilder.AddField("Number:", warn.Number.ToString());
+            dmBuilder.AddField("Time of the Warn:", warn.Time.ToString("yyyy-mm-dd HH:mm:ss.ffff"));
+            await ((DiscordMember)user).SendMessageAsync(dmBuilder);
         }
 
         private async Task<bool> AreYouSure(BaseContext ctx, DiscordUser user, string operation)
