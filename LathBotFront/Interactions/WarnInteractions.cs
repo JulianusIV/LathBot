@@ -362,10 +362,64 @@ namespace LathBotFront.Interactions
                 Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" }
             };
             DiscordEmbed embed = embedBuilder.Build();
-            await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention}", embed);
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.Member.Mention}").AddEmbed(embed));
             DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
             await warnsChannel.SendMessageAsync($"{member.Mention}", embed);
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Done!"));
+        }
+
+        [SlashCommand("Ban", "Ban a user")]
+        [SlashCommandPermissions(Permissions.BanMembers)]
+        public async Task Ban(InteractionContext ctx,
+            [Option("Member", "Who you want to ban")]
+            DiscordUser user,
+            [Option("Delete message days", "How many days of messages to remove (0-7)")]
+            BanMessageDeletionChoices deleteMessageDays,
+            [Option("Reason", "Why the user is being banned")]
+            string reason)
+        {
+            await ctx.DeferAsync();
+            if (user.Id == 192037157416730625)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You cant ban Lathrix!"));
+                return;
+            }
+            DiscordMember member = null;
+            if (ctx.Guild.Members.ContainsKey(user.Id))
+            {
+                member = await ctx.Guild.GetMemberAsync(user.Id);
+            }
+            if (ctx.Member.Hierarchy <= member?.Hierarchy)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You cant ban someone higher or same rank as you!"));
+                return;
+            }
+            if (string.IsNullOrEmpty(reason))
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Please provide a reason"));
+                return;
+            }
+            if (await AreYouSure(ctx, user, "ban"))
+                return;
+            await ctx.Guild.BanMemberAsync(user.Id, (int)deleteMessageDays, reason);
+            AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            urepo.GetIdByDcId(ctx.Member.Id, out int id);
+            repo.Read(id, out Audit audit);
+            audit.Bans++;
+            repo.Update(audit);
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            {
+                Color = DiscordColor.Black,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl },
+                Title = $"{user.Username}#{user.Discriminator} ({user.Id}) has been banned",
+                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" },
+                Description = reason
+            };
+            DiscordEmbed embed = embedBuilder.Build();
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.Member.Mention}").AddEmbed(embed));
+            DiscordChannel warnsChannel = ctx.Guild.GetChannel(722186358906421369);
+            await warnsChannel.SendMessageAsync($"{user.Mention}", embed);
         }
 
         private async Task<bool> AreYouSure(BaseContext ctx, DiscordUser user, string operation)
@@ -432,5 +486,25 @@ namespace LathBotFront.Interactions
         ThirteenDays = 13,
         [ChoiceName("14 - Fourteen days")]
         FourteenDays = 14
+    }
+
+    public enum BanMessageDeletionChoices
+    {
+        [ChoiceName("None - Dont delete any messages")]
+        None = 0,
+        [ChoiceName("1 - Delete last one day of messages")]
+        OneDay = 1,
+        [ChoiceName("2 - Delete last two days of messages")]
+        TwoDays = 2,
+        [ChoiceName("3 - Delete last three days of messages")]
+        ThreeDays = 3,
+        [ChoiceName("4 - Delete last four days of messages")]
+        FourDays = 4,
+        [ChoiceName("5 - Delete last five days of messages")]
+        FiveDays = 5,
+        [ChoiceName("6 - Delete last six days of messages")]
+        SixDays = 6,
+        [ChoiceName("7 - Delete last seven days of messages")]
+        SevenDays = 7
     }
 }
