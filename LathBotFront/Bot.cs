@@ -83,6 +83,7 @@ namespace LathBotFront
             //register handlers in event handler folder
             Client.ComponentInteractionCreated += RoleAssign.ComponentTriggered;
 
+#if !DEBUG
             //Register client events for logging
             Client.GuildBanAdded += Logger.BanAdded;
             Client.GuildBanRemoved += Logger.BanRemoved;
@@ -96,7 +97,8 @@ namespace LathBotFront
             Client.ThreadCreated += Logger.ThreadCreated;
             Client.ThreadDeleted += Logger.ThreadDeleted;
             //Library broken as fuck here, so not yet enabled
-            //Client.ThreadUpdated += Logger.ThreadUpdated;
+            //Client.ThreadUpdated += Logger.ThreadUpdated;  
+#endif
 
 
             //Register timer events

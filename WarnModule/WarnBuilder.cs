@@ -194,7 +194,7 @@ namespace WarnModule
             PointsDeducted = int.Parse(interactpointsMessage.Result.Id);
 
             foreach (var item in webhook.Components)
-                foreach (DiscordButtonComponent button in item.Components)
+                foreach (DiscordButtonComponent button in item.Components.Cast<DiscordButtonComponent>())
                     button.Disable();
 
             await ctx.EditFollowupAsync(messageID, webhook);

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LathBotFront.Interactions.Autocomplete
 {
-    public class ChangeWarnTimeAutocompleteProvider : IAutocompleteProvider
+    public class UserWarnAutocompleteProvider : IAutocompleteProvider
     {
         public Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
         {
