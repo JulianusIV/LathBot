@@ -549,20 +549,21 @@ namespace LathBotFront
                 SystemService.Instance.Logger.Log(ex.Message);
             }
         }
+
         internal static async void TakeYourMeds(object sender, ElapsedEventArgs e)
         {
             try
             {
                 var timer = (Timer)sender;
-                timer.Stop();
                 timer.Interval = TimeSpan.FromDays(1).TotalMilliseconds;
-                timer.Start();
+                if (!timer.Enabled)
+                    timer.Start();
                 var insertMember = await DiscordObjectService.Instance.Lathland.GetMemberAsync(993302594275524738);
                 await insertMember.SendMessageAsync("Yo time to drug up! ( also good mornin :D )");
             }
             catch (Exception ex)
             {
-                SystemService.Instance.Logger.Log(ex.Message);
+                SystemService.Instance.Logger.Log("Error in drug reminder:\n" + ex.Message);
             }
         }
 
