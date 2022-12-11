@@ -49,6 +49,7 @@ namespace LathBotBack.Services
 				wantedTime += TimeSpan.FromDays(1);
 
 			TakeYourMeds.Interval = (wantedTime - insertTime).TotalMilliseconds;
+			TakeYourMeds.AutoReset = false;
 			TakeYourMeds.Start();
 		}
 	}

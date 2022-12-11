@@ -6,9 +6,11 @@ using DSharpPlus.SlashCommands;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
+using LathBotFront._2FA;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using WarnModule;
 
@@ -399,6 +401,10 @@ namespace LathBotFront.Interactions
             }
             if (await AreYouSure(ctx, user, "ban"))
                 return;
+            var result = await Ensure2FA(ctx);
+            if (!result.Item1)
+                return;
+
             await ctx.Guild.BanMemberAsync(user.Id, (int)deleteMessageDays, reason);
             AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
             UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
@@ -414,7 +420,7 @@ namespace LathBotFront.Interactions
                 Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" },
                 Description = reason
             };
-            await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Done!"));
+            await result.Item2.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"Done!"));
             await ctx.Guild.GetChannel(764251867135475713).SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embedBuilder));
             await ctx.Guild.GetChannel(722186358906421369).SendMessageAsync($"{user.Mention}", embedBuilder);
         }
@@ -540,12 +546,12 @@ namespace LathBotFront.Interactions
 
             var res = await ctx.Client.GetInteractivity().WaitForModalAsync("report_reason");
 
-            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate, new DiscordInteractionResponseBuilder().AsEphemeral());
             var reason = res.Result.Values["report_reason"];
 
             if (reason is null)
             {
-                await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Please state a reason!").AsEphemeral());
+                await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Please state a reason!"));
                 return;
             }
 
@@ -565,8 +571,7 @@ namespace LathBotFront.Interactions
             foreach (DiscordMember senator in senate)
                 await senator.SendMessageAsync(embed);
 
-            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().WithContent("Report successfully sent. The senate will get back to you, until then please be patient.").AsEphemeral());
+            await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Report successfully sent. The senate will get back to you, until then please be patient."));
         }
 
         [SlashCommand("Persist", "Persist a warn of a user")]
@@ -637,6 +642,54 @@ namespace LathBotFront.Interactions
             dmBuilder.AddField("Number:", warn.Number.ToString());
             dmBuilder.AddField("Time of the Warn:", warn.Time.ToString("yyyy-mm-dd HH:mm:ss.ffff"));
             await ((DiscordMember)user).SendMessageAsync(dmBuilder);
+        }
+
+        private async Task<(bool, DiscordInteraction)> Ensure2FA(BaseContext ctx)
+        {
+            UserRepository userrepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            ModRepository repo = new ModRepository(ReadConfig.Config.ConnectionString);
+            userrepo.GetIdByDcId(ctx.Member.Id, out int dbId);
+            repo.GetModById(dbId, out Mod mod);
+
+            if (mod.TwoFAKey is null || mod.TwoFAKey.Length <= 0)
+                return (true, ctx.Interaction);
+
+            var twoFAKey = RijndaelManagedEncryption.DecryptRijndael(mod.TwoFAKey, mod.TwoFAKeySalt);
+
+            var textInput = new TextInputComponent("Please input your 2FA Code.",
+                "2famodal",
+                placeholder: "000000",
+                required: true,
+                min_length: 6,
+                max_length: 6
+                );
+
+            var responseBuilder = new DiscordInteractionResponseBuilder()
+                .WithCustomId("2famodal")
+                .WithTitle("2FA")
+                .AddComponents(textInput);
+
+            await ctx.CreateResponseAsync(InteractionResponseType.Modal, responseBuilder);
+
+            var res = await ctx.Client.GetInteractivity().WaitForModalAsync("2famodal");
+
+            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate, new DiscordInteractionResponseBuilder().AsEphemeral());
+            var reason = res.Result.Values["2famodal"];
+
+            if (reason is null)
+            {
+                await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Please provide a 2FA code!"));
+                return (false, null);
+            }
+
+            var pin = GoogleAuthenticator.GeneratePin(Encoding.UTF8.GetBytes(twoFAKey));
+            if (reason != pin)
+            {
+                await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Pin does not match!"));
+                return (false, null);
+            }
+
+            return (true, res.Result.Interaction);
         }
 
         private async Task<bool> AreYouSure(BaseContext ctx, DiscordUser user, string operation)

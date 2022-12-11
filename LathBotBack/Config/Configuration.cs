@@ -9,5 +9,6 @@ namespace LathBotBack.Config
 		public string NasaApiKey { get; set; }
 
 		public string LavaLinkPass { get; set; }
+		public string RijndaelInputKey { get; set; }
 	}
 }

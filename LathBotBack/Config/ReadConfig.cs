@@ -17,7 +17,8 @@ namespace LathBotBack.Config
 				Token = Environment.GetEnvironmentVariable("Token"),
 				ConnectionString = Environment.GetEnvironmentVariable("ConnectionString"),
 				NasaApiKey = Environment.GetEnvironmentVariable("NASAApiKey"),
-				LavaLinkPass = Environment.GetEnvironmentVariable("LavaLinkPass")
+				LavaLinkPass = Environment.GetEnvironmentVariable("LavaLinkPass"),
+				RijndaelInputKey = Environment.GetEnvironmentVariable("RijndaelInputKey")
 			};
 		}
 	}

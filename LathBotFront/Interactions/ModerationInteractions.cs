@@ -1,12 +1,16 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
 using LathBotBack.Services;
+using LathBotFront._2FA;
 using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using WarnModule;
 
@@ -130,6 +134,93 @@ namespace LathBotFront.Interactions
             user.EmbedBanned = true;
             repo.Update(user);
             await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Done!"));
+        }
+
+        [SlashCommand("AddTwoFA", "Add 2FA")]
+        [SlashCommandPermissions(Permissions.KickMembers)]
+        public async Task AddTwoFA(InteractionContext ctx)
+        {
+            await ctx.DeferAsync(true);
+
+            UserRepository userrepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            ModRepository repo = new ModRepository(ReadConfig.Config.ConnectionString);
+            userrepo.GetIdByDcId(ctx.Member.Id, out int dbId);
+            repo.GetModById(dbId, out Mod mod);
+
+            if (!(mod.TwoFAKey is null) && mod.TwoFAKey.Length > 0)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You already have 2FA set up, message JulianusIV if you need to reset it."));
+                return;
+            }
+            mod.TwoFAKeySalt = Guid.NewGuid().ToString("D");
+            var twoFAKey = Guid.NewGuid().ToString("D");
+            mod.TwoFAKey = RijndaelManagedEncryption.EncryptRijndael(twoFAKey, mod.TwoFAKeySalt);
+            repo.Update(mod);
+
+            var image = GoogleAuthenticator.GenerateProvisioningImage(ctx.Member.Username, Encoding.UTF8.GetBytes(twoFAKey));
+            using var stream = new MemoryStream(image);
+            var embedBuilder = new DiscordEmbedBuilder()
+            {
+                Title = "Add 2FA",
+                Description = "Scan this QR code with your Google Authenticator app, or similar app, that supports that authentication standard.",
+
+                Color = new DiscordColor(27, 116, 226),
+            }.WithImageUrl("attachment://qrcode.png");
+            var webhookBuilder = new DiscordWebhookBuilder().AddEmbed(embedBuilder).AddFile("qrcode.png", stream);
+            await ctx.EditResponseAsync(webhookBuilder);
+        }
+
+        [SlashCommand("Test2FA", "Test 2FA")]
+        [SlashCommandPermissions(Permissions.KickMembers)]
+        public async Task Test2FA(InteractionContext ctx)
+        {
+            UserRepository userrepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            ModRepository repo = new ModRepository(ReadConfig.Config.ConnectionString);
+            userrepo.GetIdByDcId(ctx.Member.Id, out int dbId);
+            repo.GetModById(dbId, out Mod mod);
+
+            if (mod.TwoFAKey is null || mod.TwoFAKey.Length <= 0)
+            {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("2FA not set up!").AsEphemeral());
+                return;
+            }
+            var twoFAKey = RijndaelManagedEncryption.DecryptRijndael(mod.TwoFAKey, mod.TwoFAKeySalt);
+
+
+            var textInput = new TextInputComponent("Please input your 2FA Code.",
+                "2famodal",
+                placeholder: "000000",
+                required: true,
+                min_length: 6,
+                max_length: 6
+                );
+
+            var responseBuilder = new DiscordInteractionResponseBuilder()
+                .WithCustomId("2famodal")
+                .WithTitle("2FA")
+                .AddComponents(textInput);
+
+            await ctx.CreateResponseAsync(InteractionResponseType.Modal, responseBuilder);
+
+            var res = await ctx.Client.GetInteractivity().WaitForModalAsync("2famodal");
+
+            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
+            var reason = res.Result.Values["2famodal"];
+
+            if (reason is null)
+            {
+                await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Please provide a 2FA code!"));
+                return;
+            }
+
+            var pin = GoogleAuthenticator.GeneratePin(Encoding.UTF8.GetBytes(twoFAKey));
+            if (reason != pin)
+            {
+                await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Pin does not match!"));
+                return;
+            }
+
+            await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successful!"));
         }
     }
 }
