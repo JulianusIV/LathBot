@@ -117,7 +117,7 @@ namespace LathBotFront.Interactions
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("User is already muted."));
                 return;
             }
-            if (!await AreYouSure(ctx, user, "mute"))
+            if (!await AreYouSure(ctx.Interaction, user, ctx.Client, "mute"))
                 return;
 
             if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
@@ -220,7 +220,7 @@ namespace LathBotFront.Interactions
                 return;
             }
 
-            if (!await AreYouSure(ctx, user, "unmute"))
+            if (!await AreYouSure(ctx.Interaction, user, ctx.Client, "unmute"))
                 return;
 
             DiscordRole verificationRole = ctx.Guild.GetRole(767050052257447936);
@@ -346,7 +346,7 @@ namespace LathBotFront.Interactions
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You cant kick someone higher or same rank as you!"));
                 return;
             }
-            if (await AreYouSure(ctx, user, "kick"))
+            if (await AreYouSure(ctx.Interaction, user, ctx.Client, "kick"))
                 return;
             await member.RemoveAsync();
             AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
@@ -399,10 +399,10 @@ namespace LathBotFront.Interactions
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Please provide a reason"));
                 return;
             }
-            if (await AreYouSure(ctx, user, "ban"))
-                return;
             var result = await Ensure2FA(ctx);
             if (!result.Item1)
+                return;
+            if (await AreYouSure(result.Item2, user, ctx.Client, "ban"))
                 return;
 
             await ctx.Guild.BanMemberAsync(user.Id, (int)deleteMessageDays, reason);
@@ -692,7 +692,7 @@ namespace LathBotFront.Interactions
             return (true, res.Result.Interaction);
         }
 
-        private async Task<bool> AreYouSure(BaseContext ctx, DiscordUser user, string operation)
+        private async Task<bool> AreYouSure(DiscordInteraction ctx, DiscordUser user, DiscordClient client, string operation)
         {
             DiscordMember member = null;
             if (ctx.Guild.Members.ContainsKey(user.Id))
@@ -715,13 +715,13 @@ namespace LathBotFront.Interactions
                 new DiscordButtonComponent(ButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
             };
             builder.AddComponents(components);
-            DiscordMessage message = await ctx.EditResponseAsync(builder);
-            InteractivityExtension interactivity = ctx.Client.GetInteractivity();
+            DiscordMessage message = await ctx.EditOriginalResponseAsync(builder);
+            InteractivityExtension interactivity = client.GetInteractivity();
             var interactivityResult = await interactivity.WaitForButtonAsync(message, ctx.User, TimeSpan.FromMinutes(1));
 
             if (interactivityResult.Result.Id == "abort")
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Okay i will not {operation} the user."));
+                await ctx.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"Okay i will not {operation} the user."));
                 return false;
             }
             return true;
