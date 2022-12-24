@@ -378,25 +378,23 @@ namespace LathBotFront.Interactions
             [Option("Reason", "Why the user is being banned")]
             string reason)
         {
-            await ctx.DeferAsync();
             if (user.Id == 192037157416730625)
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You cant ban Lathrix!"));
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("You cant ban Lathrix!"));
                 return;
             }
             DiscordMember member = null;
             if (ctx.Guild.Members.ContainsKey(user.Id))
-            {
                 member = await ctx.Guild.GetMemberAsync(user.Id);
-            }
+            
             if (ctx.Member.Hierarchy <= member?.Hierarchy)
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You cant ban someone higher or same rank as you!"));
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("You cant ban someone higher or same rank as you!"));
                 return;
             }
             if (string.IsNullOrEmpty(reason))
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Please provide a reason"));
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Please provide a reason"));
                 return;
             }
             var result = await Ensure2FA(ctx);
@@ -662,7 +660,7 @@ namespace LathBotFront.Interactions
                 required: true,
                 min_length: 6,
                 max_length: 6
-                );
+            );
 
             var responseBuilder = new DiscordInteractionResponseBuilder()
                 .WithCustomId("2famodal")
