@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace LathBotFront
@@ -104,7 +104,7 @@ namespace LathBotFront
                         .WithThumbnail(e.Member.AvatarUrl)
                         .WithColor(DiscordColor.Red);
                 }
-                if (!(embed.Description is null))
+                if (embed.Description is not null)
                     await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
 
             });
@@ -222,7 +222,7 @@ namespace LathBotFront
                     .WithThumbnail(e.Message.Author.AvatarUrl)
                     .WithColor(DiscordColor.Red);
 
-                if (!(e.Message.ReferencedMessage is null))
+                if (e.Message.ReferencedMessage is not null)
                 {
                     embed.AddField("Replying to:", e.Message.ReferencedMessage.Author.Mention);
                     embed.AddField("Ping reply:", e.Message.MentionedUsers.Contains(e.Message.ReferencedMessage.Author) ? "Yes" : "No");
@@ -231,16 +231,14 @@ namespace LathBotFront
 
                 var message = new DiscordMessageBuilder();
 
-                Dictionary<string, Stream> attachments = new Dictionary<string, Stream>();
-                if (!(e.Message.Attachments is null) && e.Message.Attachments.Any())
+                Dictionary<string, Stream> attachments = new();
+                if (e.Message.Attachments is not null && e.Message.Attachments.Any())
                 {
-                    foreach (var attachment in e.Message.Attachments)
-                    {
-                        attachments.Add(attachment.FileName, WebRequest.Create(attachment.Url).GetResponse().GetResponseStream());
-                        if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(embed.ImageUrl))
-                            embed.WithImageUrl("attachment://" + attachment.FileName);
-                    }
-                    message.WithFiles(attachments);
+                    using HttpClient httpClient = new();
+                    Dictionary<string, Stream> files = new();
+                    foreach (DiscordAttachment attachment in e.Message.Attachments)
+                        files.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.Url));
+                    message.AddFiles(attachments);
                 }
 
                 await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(message.WithEmbed(embed).WithAllowedMentions(Mentions.None));
@@ -277,9 +275,9 @@ namespace LathBotFront
                             (e.Messages[index].IsEdited ? $" (edited at {e.Messages[index].EditedTimestamp})\n" : "\n");
                     }
                     File.WriteAllText("Bulklog.txt", toSave);
-                    using FileStream stream = new FileStream("Bulklog.txt", FileMode.Open);
+                    using FileStream stream = new("Bulklog.txt", FileMode.Open);
                     DiscordMessageBuilder embed = new DiscordMessageBuilder()
-                        .WithFile(stream)
+                        .AddFile(stream)
                         .WithContent("Bulk delete logs dumped to text file.\n" +
                             "Creation Time: " + Formatter.Timestamp(DateTime.Now, TimestampFormat.LongTime));
 

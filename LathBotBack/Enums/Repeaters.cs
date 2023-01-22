@@ -1,9 +1,9 @@
 ﻿namespace LathBotBack.Enums
 {
-	public enum Repeaters
-	{
-		single,
-		all,
-		off
-	}
+    public enum Repeaters
+    {
+        single,
+        all,
+        off
+    }
 }

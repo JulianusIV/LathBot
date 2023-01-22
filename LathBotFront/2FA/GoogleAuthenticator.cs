@@ -1,8 +1,8 @@
-﻿using System.Globalization;
+﻿using QRCoder;
+using System;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using System;
-using QRCoder;
 
 namespace LathBotFront._2FA
 {
@@ -11,7 +11,7 @@ namespace LathBotFront._2FA
         const int IntervalLength = 30;
         const int PinLength = 6;
         static readonly int PinModulo = (int)Math.Pow(10, PinLength);
-        static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        static readonly DateTime UnixEpoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         ///   Number of intervals that have elapsed.

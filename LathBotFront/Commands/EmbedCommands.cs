@@ -79,7 +79,7 @@ namespace LathBotFront.Commands
         public async Task InfoEmbed(CommandContext ctx)
         {
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = lathrix.Color,
                 Title = "Information",
@@ -121,7 +121,7 @@ namespace LathBotFront.Commands
         public async Task UpdateInfoEmbed(CommandContext ctx)
         {
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = lathrix.Color,
                 Title = "Information",
@@ -164,7 +164,7 @@ namespace LathBotFront.Commands
         public async Task RuleEmbed(CommandContext ctx)
         {
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
-            DiscordEmbedBuilder embedBuilderRules = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilderRules = new()
             {
                 Color = lathrix.Color,
                 Title = "Rules",
@@ -199,7 +199,7 @@ namespace LathBotFront.Commands
             DiscordEmbed embedRules = embedBuilderRules.Build();
             await ctx.Channel.SendMessageAsync(embedRules);
 
-            DiscordEmbedBuilder embedBuilderNsfw = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilderNsfw = new()
             {
                 Color = lathrix.Color,
                 Title = "NSFW definition / guideline",
@@ -227,7 +227,7 @@ namespace LathBotFront.Commands
         public async Task UpdateRuleEmbed(CommandContext ctx)
         {
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
-            DiscordEmbedBuilder embedBuilderRules = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilderRules = new()
             {
                 Color = lathrix.Color,
                 Title = "Rules",
@@ -262,7 +262,7 @@ namespace LathBotFront.Commands
             DiscordMessage rulesMessage = await ctx.Channel.GetMessageAsync(769235312907649044);
             await rulesMessage.ModifyAsync("", embedBuilderRules.Build());
 
-            DiscordEmbedBuilder embedBuilderNsfw = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilderNsfw = new()
             {
                 Color = lathrix.Color,
                 Title = "NSFW definition / guideline",

@@ -18,7 +18,7 @@ namespace LathBotFront._2FA
         public static byte[] EncryptRijndael(string text, string salt)
         {
             if (string.IsNullOrEmpty(text))
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
 
             using var aesAlg = NewRijndaelManaged(salt);
             var encrypter = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
@@ -47,7 +47,7 @@ namespace LathBotFront._2FA
         public static string DecryptRijndael(byte[] cipherText, string salt)
         {
             if (cipherText is null || cipherText.Length <= 0)
-                throw new ArgumentNullException("cipherText");
+                throw new ArgumentNullException(nameof(cipherText));
 
             string text;
 
@@ -73,7 +73,7 @@ namespace LathBotFront._2FA
         private static RijndaelManaged NewRijndaelManaged(string salt)
         {
             if (salt == null)
-                throw new ArgumentNullException("salt");
+                throw new ArgumentNullException(nameof(salt));
             var saltBytes = Encoding.ASCII.GetBytes(salt);
             var key = new Rfc2898DeriveBytes(ReadConfig.Config.RijndaelInputKey, saltBytes);
 

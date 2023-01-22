@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace LathBotFront
@@ -17,8 +17,8 @@ namespace LathBotFront
     {
         public static async Task PardonWarns()
         {
-            WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            WarnRepository repo = new(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
             bool result = repo.GetAll(out List<Warn> list);
             if (!result)
             {
@@ -31,11 +31,11 @@ namespace LathBotFront
                 result = urepo.Read(item.User, out User entity);
                 DateTime timeToUse = entity.LastPunish is null ? item.Time : (DateTime)entity.LastPunish;
 
-                var expirationTimeExpression = (!(item.ExpirationTime is null) && timeToUse <= DateTime.Now - TimeSpan.FromDays((double)item.ExpirationTime));
+                var expirationTimeExpression = (item.ExpirationTime is not null && timeToUse <= DateTime.Now - TimeSpan.FromDays((double)item.ExpirationTime));
                 var sevOneExpression = item.Level > 0 && item.Level < 6 && timeToUse <= DateTime.Now - TimeSpan.FromDays(14);
                 var sevTwoExpression = item.Level > 5 && item.Level < 11 && timeToUse <= DateTime.Now - TimeSpan.FromDays(56);
-                var fullExpression = ((!(item.ExpirationTime is null) && expirationTimeExpression) || 
-                    item.ExpirationTime is null && (sevOneExpression || sevTwoExpression)) && 
+                var fullExpression = ((item.ExpirationTime is not null && expirationTimeExpression) ||
+                    item.ExpirationTime is null && (sevOneExpression || sevTwoExpression)) &&
                     !item.Persistent;
                 if (fullExpression)
                 {
@@ -64,7 +64,7 @@ namespace LathBotFront
                         }
                     }
 
-                    
+
                     result = urepo.Read(item.Mod, out User modEntity);
                     if (!result)
                     {
@@ -75,7 +75,7 @@ namespace LathBotFront
                     {
                         DiscordMember member = await DiscordObjectService.Instance.Lathland.GetMemberAsync(entity.DcID);
                         DiscordMember moderator = await DiscordObjectService.Instance.Lathland.GetMemberAsync(modEntity.DcID);
-                        DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+                        DiscordEmbedBuilder embedBuilder = new()
                         {
                             Color = DiscordColor.Green,
                             Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
@@ -89,7 +89,7 @@ namespace LathBotFront
                     }
                     catch
                     {
-                        DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+                        DiscordEmbedBuilder embedBuilder = new()
                         {
                             Color = DiscordColor.Green,
                             Title = $"Pardoned warn of {entity.DcID}",
@@ -114,8 +114,8 @@ namespace LathBotFront
 
         public static async Task RemindMutes()
         {
-            MuteRepository repo = new MuteRepository(ReadConfig.Config.ConnectionString);
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            MuteRepository repo = new(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
             bool result = repo.GetAll(out List<Mute> list);
             if (!result)
             {
@@ -191,11 +191,11 @@ namespace LathBotFront
         public static async Task APOD()
         {
             IReadOnlyList<DiscordMessage> lastmessageList = await DiscordObjectService.Instance.APODChannel.GetMessagesAsync(1);
-            DiscordMessage lastmessage = lastmessageList.First();
+            DiscordMessage lastmessage = lastmessageList[0];
             if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(24))
             {
-                using WebClient client = new WebClient();
-                string content = client.DownloadString("https://api.nasa.gov/planetary/apod?api_key=" + ReadConfig.Config.NasaApiKey + "&thumbs=True");
+                using HttpClient httpClient = new();
+                string content = await httpClient.GetStringAsync("https://api.nasa.gov/planetary/apod?api_key=" + ReadConfig.Config.NasaApiKey + "&thumbs=True");
 
                 APODJsonObject json = JsonConvert.DeserializeObject<APODJsonObject>(content);
 
@@ -211,7 +211,7 @@ namespace LathBotFront
                     }
                 }.AddField("Links:", json.HdUrl is null ? $"[Source Link]({json.URL})" : $"[Source Link]({json.HdUrl})\n[Low resolution source]({json.URL})");
 
-                DiscordMessageBuilder builder = new DiscordMessageBuilder
+                DiscordMessageBuilder builder = new()
                 {
                     Embed = embedBuilder,
                     Content = DiscordObjectService.Instance.Lathland.GetRole(848307821703200828).Mention
@@ -221,7 +221,7 @@ namespace LathBotFront
                     builder2 = new DiscordMessageBuilder().WithContent(json.URL.Replace("embed/", "watch?v=").Replace("?rel=0", ""));
                 builder.WithAllowedMentions(Mentions.All);
                 await DiscordObjectService.Instance.APODChannel.SendMessageAsync(builder);
-                if (!(builder2 is null))
+                if (builder2 is not null)
                     await DiscordObjectService.Instance.APODChannel.SendMessageAsync(builder2);
             }
         }

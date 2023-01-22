@@ -1,21 +1,18 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
-using DSharpPlus;
-using DSharpPlus.Entities;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-
 using LathBotFront.Commands.Events;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
 {
-	[Group("event")]
+    [Group("event")]
     [Aliases("e")]
     [Description("All the event commands, use -help event <subcommand> for more info")]
     public class EventCommands : BaseCommandModule
@@ -35,11 +32,11 @@ namespace LathBotFront.Commands
             EventParams.Instance.IsInEventMode = setTo;
 
             if (setTo && setTo == EventParams.Instance.IsInEventMode)
-			{
+            {
                 EventParams.Instance.Submissions.Clear();
                 await ctx.Guild.GetChannel(EventParams.Instance.SubmissionsChannelId)
                     .AddOverwriteAsync(ctx.Guild.GetRole(767050052257447936), Permissions.None, Permissions.SendMessages | Permissions.AccessChannels);
-			}
+            }
             else if (setTo == EventParams.Instance.IsInEventMode)
                 await ctx.Guild.GetChannel(EventParams.Instance.SubmissionsChannelId)
                     .AddOverwriteAsync(ctx.Guild.GetRole(767050052257447936), Permissions.AccessChannels, Permissions.SendMessages);
@@ -71,13 +68,13 @@ namespace LathBotFront.Commands
                 await ctx.Channel.SendMessageAsync("Submissions are not open!");
                 return;
             }
-			if (string.IsNullOrEmpty(submission))
-			{
+            if (string.IsNullOrEmpty(submission))
+            {
                 await ctx.Channel.SendMessageAsync("Please add a submission text!");
                 await ctx.Message.DeleteAsync();
                 return;
-			}
-            DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+            }
+            DiscordEmbedBuilder discordEmbed = new()
             {
                 Color = ctx.Member.Color,
                 Title = $"Submission from {ctx.Member.Username}#{ctx.Member.Discriminator}",
@@ -98,21 +95,17 @@ namespace LathBotFront.Commands
             {
                 if (ctx.Message.Attachments.Count > 0)
                 {
-                    using var client = new WebClient();
-                    Dictionary<string, Stream> files = new Dictionary<string, Stream>();
+                    using HttpClient httpClient = new();
+                    Dictionary<string, Stream> files = new();
                     foreach (DiscordAttachment attachment in ctx.Message.Attachments)
-                    {
-                        client.DownloadFile(new Uri(attachment.Url), attachment.FileName);
-                        FileStream stream = new FileStream(attachment.FileName, FileMode.Open);
-                        files.Add(attachment.FileName, stream);
-                    }
+                        files.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.Url));
 
-                    DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder
+                    DiscordMessageBuilder messageBuilder = new()
                     {
                         Content = "",
                         Embed = discordEmbed.Build(),
                     };
-                    messageBuilder.WithFiles(files);
+                    messageBuilder.AddFiles(files);
 
                     DiscordMessage submissionMessage = await ctx.Guild.GetChannel(EventParams.Instance.SubmissionsChannelId).SendMessageAsync(messageBuilder);
 
@@ -152,7 +145,7 @@ namespace LathBotFront.Commands
                 await ctx.Message.DeleteAsync();
                 return;
             }
-            DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+            DiscordEmbedBuilder discordEmbed = new()
             {
                 Color = ctx.Member.Color,
                 Title = $"Submission from {ctx.Member.Username}#{ctx.Member.Discriminator}",

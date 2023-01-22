@@ -5,7 +5,7 @@ using LathBotBack.Services;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
@@ -75,7 +75,7 @@ namespace LathBotFront.Commands
             }
             else
             {
-                DiscordMessageBuilder builder = new DiscordMessageBuilder
+                DiscordMessageBuilder builder = new()
                 {
                     Content = repetition,
                 };
@@ -92,7 +92,7 @@ namespace LathBotFront.Commands
 
         [Command("pat")]
         [Description("Pat someone")]
-        public async Task Pat(CommandContext ctx, [Description("Who to pat")]DiscordMember member)
+        public async Task Pat(CommandContext ctx, [Description("Who to pat")] DiscordMember member)
         {
             if (member.Id == 192037157416730625)
                 await ctx.RespondAsync("Not gonna ping Lath, but im guessing he would pat back.");
@@ -128,7 +128,7 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync("No");
                 return;
             }
-            DiscordEmbedBuilder builder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder builder = new()
             {
                 Title = "Boom headshot!",
                 Description = lastDelete.Content,
@@ -143,16 +143,14 @@ namespace LathBotFront.Commands
 
             var message = new DiscordMessageBuilder();
 
-            Dictionary<string, Stream> attachments = new Dictionary<string, Stream>();
-            if (!(lastDelete.Attachments is null) && lastDelete.Attachments.Any())
+            Dictionary<string, Stream> attachments = new();
+            if (lastDelete.Attachments is not null && lastDelete.Attachments.Any())
             {
-                foreach (var attachment in lastDelete.Attachments)
-                {
-                    attachments.Add(attachment.FileName, WebRequest.Create(attachment.Url).GetResponse().GetResponseStream());
-                    if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(builder.ImageUrl))
-                        builder.WithImageUrl("attachment://" + attachment.FileName);
-                }
-                message.WithFiles(attachments);
+                using HttpClient httpClient = new();
+                Dictionary<string, Stream> files = new();
+                foreach (DiscordAttachment attachment in ctx.Message.Attachments)
+                    files.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.Url));
+                message.AddFiles(attachments);
             }
 
             await ctx.RespondAsync(message.WithEmbed(builder).WithAllowedMentions(Mentions.None));
@@ -182,7 +180,7 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync("No");
                 return;
             }
-            DiscordEmbedBuilder builder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder builder = new()
             {
                 Title = "Boom headshot!",
                 Description = lastEdit.Content,

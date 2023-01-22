@@ -142,12 +142,12 @@ namespace LathBotFront.Interactions
         {
             await ctx.DeferAsync(true);
 
-            UserRepository userrepo = new UserRepository(ReadConfig.Config.ConnectionString);
-            ModRepository repo = new ModRepository(ReadConfig.Config.ConnectionString);
+            UserRepository userrepo = new(ReadConfig.Config.ConnectionString);
+            ModRepository repo = new(ReadConfig.Config.ConnectionString);
             userrepo.GetIdByDcId(ctx.Member.Id, out int dbId);
             repo.GetModById(dbId, out Mod mod);
 
-            if (!(mod.TwoFAKey is null) && mod.TwoFAKey.Length > 0)
+            if (mod.TwoFAKey is not null && mod.TwoFAKey.Length > 0)
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You already have 2FA set up, message JulianusIV if you need to reset it."));
                 return;
@@ -174,8 +174,8 @@ namespace LathBotFront.Interactions
         [SlashCommandPermissions(Permissions.KickMembers)]
         public async Task Test2FA(InteractionContext ctx)
         {
-            UserRepository userrepo = new UserRepository(ReadConfig.Config.ConnectionString);
-            ModRepository repo = new ModRepository(ReadConfig.Config.ConnectionString);
+            UserRepository userrepo = new(ReadConfig.Config.ConnectionString);
+            ModRepository repo = new(ReadConfig.Config.ConnectionString);
             userrepo.GetIdByDcId(ctx.Member.Id, out int dbId);
             repo.GetModById(dbId, out Mod mod);
 

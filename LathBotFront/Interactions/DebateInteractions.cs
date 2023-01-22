@@ -10,7 +10,7 @@ namespace LathBotFront.Interactions
 {
     public class DebateInteractions : ApplicationCommandModule
     {
-        private static readonly CooldownSlash _embedCooldown = new CooldownSlash(300);
+        private static readonly CooldownSlash _embedCooldown = new(300);
 
         [SlashCommand("embed", "Request permissions to embed links/attach files in Debate chat")]
         [EmbedBanned]

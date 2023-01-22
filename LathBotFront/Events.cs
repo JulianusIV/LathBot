@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
@@ -29,11 +29,11 @@ namespace LathBotFront
     {
         internal static Task OnClientReady(DiscordClient sender, ReadyEventArgs _)
         {
-            //DiscordActivity activity = new DiscordActivity("a Turtle.", ActivityType.Streaming)
-            //{
-            //	StreamUrl = "https://www.twitch.tv/lathland"
-            //};
-            DiscordActivity activity = new DiscordActivity("flamethrower music.", ActivityType.ListeningTo);
+            DiscordActivity activity = new("the camera outside your location.", ActivityType.Streaming)
+            {
+                StreamUrl = "https://www.twitch.tv/lathland"
+            };
+            //DiscordActivity activity = new("flamethrower music.", ActivityType.ListeningTo);
             sender.UpdateStatusAsync(activity);
             return Task.CompletedTask;
         }
@@ -45,7 +45,7 @@ namespace LathBotFront
                 BaseService.InitAll(sender);
 
                 int added = 0;
-                UserRepository repo = new UserRepository(ReadConfig.Config.ConnectionString);
+                UserRepository repo = new(ReadConfig.Config.ConnectionString);
 
                 bool result = repo.GetAll(out List<User> list);
                 if (!result)
@@ -57,7 +57,7 @@ namespace LathBotFront
                 IEnumerable<DiscordMember> toAdd = allMembers.Where(x => !list.Any(y => y.DcID == x.Id));
                 foreach (var item in toAdd)
                 {
-                    User entity = new User { DcID = item.Id };
+                    User entity = new() { DcID = item.Id };
                     DiscordMember mem = await DiscordObjectService.Instance.Lathland.GetMemberAsync(item.Id);
                     result = repo.Create(ref entity);
                     if (!result)
@@ -169,7 +169,7 @@ namespace LathBotFront
                     try
                     {
                         var oldThread = e.Channel.Threads.Where(x => !x.ThreadMetadata.IsArchived).FirstOrDefault();
-                        if (!(oldThread is null))
+                        if (oldThread is not null)
                             await oldThread.ModifyAsync(x =>
                             {
                                 x.AutoArchiveDuration = AutoArchiveDuration.Hour;
@@ -185,12 +185,12 @@ namespace LathBotFront
                         SystemService.Instance.Logger.Log(e.Message + Environment.NewLine + e.StackTrace);
                     }
                 }
-                if (((e.Channel.Id == 838088490704568341) || 
+                if (((e.Channel.Id == 838088490704568341) ||
                     (e.Channel.Id == 718162681554534511 && !e.Channel.PermissionOverwrites.Any(x => x.Id == e.Author.Id))) &&
                     !(await e.Guild.GetMemberAsync(e.Author.Id)).Permissions.HasPermission(Permissions.KickMembers))
                 {
                     string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
-                    Regex rg = new Regex(pattern);
+                    Regex rg = new(pattern);
                     if (rg.Matches(e.Message.Content).Any())
                     {
                         await e.Message.DeleteAsync($"Autoremove link in #{e.Channel.Name}");
@@ -266,7 +266,7 @@ namespace LathBotFront
                 if (e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)) && e.Channel.Id == 726046413816987709)
                 {
                     string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
-                    Regex rg = new Regex(pattern);
+                    Regex rg = new(pattern);
                     if (rg.Matches(e.Message.Content).Any())
                     {
                         await e.Message.DeleteAsync();
@@ -305,7 +305,7 @@ namespace LathBotFront
                 {
                     return;
                 }
-                UserRepository repo = new UserRepository(ReadConfig.Config.ConnectionString);
+                UserRepository repo = new(ReadConfig.Config.ConnectionString);
                 bool result = repo.ExistsDcId(e.Member.Id, out bool exists);
                 if (!result)
                 {
@@ -314,7 +314,7 @@ namespace LathBotFront
                 }
                 if (!exists)
                 {
-                    User user = new User { DcID = e.Member.Id };
+                    User user = new() { DcID = e.Member.Id };
                     result = repo.Create(ref user);
                     if (!result)
                     {
@@ -363,7 +363,7 @@ namespace LathBotFront
                             if (entry.Content.Contains(e.Message.Id.ToString()))
                                 return;
                         DiscordMessage message = await e.Channel.GetMessageAsync(e.Message.Id);
-                        DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+                        DiscordEmbedBuilder discordEmbed = new()
                         {
                             Author = new DiscordEmbedBuilder.EmbedAuthor
                             {
@@ -378,16 +378,14 @@ namespace LathBotFront
 
                         var messageBuilder = new DiscordMessageBuilder();
 
-                        Dictionary<string, Stream> attachments = new Dictionary<string, Stream>();
-                        if (!(e.Message.Attachments is null) && e.Message.Attachments.Any())
+                        Dictionary<string, Stream> attachments = new();
+                        if (e.Message.Attachments is not null && e.Message.Attachments.Any())
                         {
-                            foreach (var attachment in e.Message.Attachments)
-                            {
-                                attachments.Add(attachment.FileName, WebRequest.Create(attachment.Url).GetResponse().GetResponseStream());
-                                if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(discordEmbed.ImageUrl))
-                                    discordEmbed.WithImageUrl("attachment://" + attachment.FileName);
-                            }
-                            messageBuilder.WithFiles(attachments);
+                            using HttpClient httpClient = new();
+                            Dictionary<string, Stream> files = new();
+                            foreach (DiscordAttachment attachment in e.Message.Attachments)
+                                files.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.Url));
+                            messageBuilder.AddFiles(attachments);
                         }
 
                         await DiscordObjectService.Instance.GoodGuysChannel.SendMessageAsync(messageBuilder.WithContent(e.Message.Id.ToString()).WithEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
@@ -457,7 +455,7 @@ namespace LathBotFront
                 if (LavalinkService.Instance.Repeats?[sender.Guild] == Repeaters.single)
                 {
                     await sender.PlayAsync(e.Track);
-                    DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+                    DiscordEmbedBuilder embedBuilder = new()
                     {
                         Title = "Now playing:",
                         Description = $"[{e.Track.Title}]({e.Track.Uri})",
@@ -476,7 +474,7 @@ namespace LathBotFront
                 else if (LavalinkService.Instance.Queues?[sender.Guild]?.Count != 0 && LavalinkService.Instance.Queues?[sender.Guild]?.Count != null)
                 {
                     await sender.PlayAsync(LavalinkService.Instance.Queues[sender.Guild].First());
-                    DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+                    DiscordEmbedBuilder embedBuilder = new()
                     {
                         Title = "Now playing:",
                         Description = $"[{LavalinkService.Instance.Queues[sender.Guild].First().Title}]({LavalinkService.Instance.Queues[sender.Guild].First().Uri})",
@@ -501,7 +499,7 @@ namespace LathBotFront
                 else if (LavalinkService.Instance.Repeats[sender.Guild] != Repeaters.off)
                 {
                     await sender.PlayAsync(e.Track);
-                    DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+                    DiscordEmbedBuilder embedBuilder = new()
                     {
                         Title = "Now playing:",
                         Description = $"[{e.Track.Title}]({e.Track.Uri})",

@@ -8,7 +8,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]);
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -123,7 +123,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 1;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -238,7 +238,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 2;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -353,7 +353,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 3;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -468,7 +468,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 4;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -583,7 +583,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 5;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -698,7 +698,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 6;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -813,7 +813,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 7;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -928,7 +928,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 8;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -1043,7 +1043,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 9;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -1158,7 +1158,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 10;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -1273,7 +1273,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 11;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -1388,7 +1388,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 12;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -1503,7 +1503,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) + 12;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -1618,7 +1618,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) + 11;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -1733,7 +1733,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) + 10;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -1848,7 +1848,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) + 9;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -1963,7 +1963,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) + 8;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -2078,7 +2078,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) + 7;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -2193,7 +2193,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) + 6;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -2308,7 +2308,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) + 5;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -2423,7 +2423,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) + 4;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -2538,7 +2538,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) + 3;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -2653,7 +2653,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 2;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",
@@ -2768,7 +2768,7 @@ namespace LathBotBack.Commands.TimeZoneConverter
         {
             string[] timeParts = time.Split(':');
             int hours = int.Parse(timeParts[0]) - 1;
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Brown,
                 Title = "UTC±0/WEZ/GMT/AZODT/IST/EGST/SLT:",

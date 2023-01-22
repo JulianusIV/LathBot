@@ -76,7 +76,7 @@ namespace LathBotBack.Repos
                 DbConnection.Open();
                 using SqlDataReader reader = DbCommand.ExecuteReader();
                 reader.Read();
-                entity = new Mod
+                entity = new()
                 {
                     Id = (int)reader["Id"],
                     DbId = id,

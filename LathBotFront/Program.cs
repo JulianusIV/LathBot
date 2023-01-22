@@ -9,9 +9,8 @@ namespace LathBotFront
         {
 #if DEBUG
             foreach (var line in File.ReadAllLines("settings.env"))
-            {
                 Environment.SetEnvironmentVariable(line[..line.IndexOf('=')], line[(line.IndexOf('=') + 1)..]);
-            }
+
 #endif
             //Startup
             Bot.Instance.RunAsync().GetAwaiter().GetResult();

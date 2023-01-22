@@ -9,15 +9,14 @@ namespace LathBotBack.Services
     {
         #region Singleton
         private static StartupService instance;
-        private static readonly object padlock = new object();
+        private static readonly object padlock = new();
         public static StartupService Instance
         {
             get
             {
                 lock (padlock)
                 {
-                    if (instance == null)
-                        instance = new StartupService();
+                    instance ??= new StartupService();
                     return instance;
                 }
             }
@@ -31,9 +30,7 @@ namespace LathBotBack.Services
             get => Process.GetCurrentProcess().StartTime;
         }
 
-        public override void Init(DiscordClient client)
-        {
-            StartUpCompleted = true;
-        }
+        public override void Init(DiscordClient client) 
+            => StartUpCompleted = true;
     }
 }

@@ -1,20 +1,18 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-
-using LathBotBack.Repos;
+using DSharpPlus.SlashCommands;
 using LathBotBack.Config;
 using LathBotBack.Models;
+using LathBotBack.Repos;
 using LathBotBack.Services;
-using DSharpPlus.SlashCommands;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace WarnModule
 {
@@ -35,12 +33,12 @@ namespace WarnModule
 
         public WarnBuilder(DiscordClient client, DiscordChannel warnChannel, DiscordGuild guild, DiscordMember mod, DiscordMember member, DiscordMessage messageLink = null)
         {
-            this.WarnChannel = warnChannel;
-            this.Guild = guild;
-            this.Mod = mod;
-            this.Member = member;
-            this.MessageLink = messageLink;
-            this.Interactivity = client.GetInteractivity();
+            WarnChannel = warnChannel;
+            Guild = guild;
+            Mod = mod;
+            Member = member;
+            MessageLink = messageLink;
+            Interactivity = client.GetInteractivity();
         }
 
         public async Task<bool> PreExecutionChecks()
@@ -57,7 +55,7 @@ namespace WarnModule
             }
             if (Mod.Roles.Contains(Guild.GetRole(748646909354311751)))
             {
-                DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+                DiscordEmbedBuilder discordEmbed = new()
                 {
                     Color = Mod.Color,
                     Title = $"Trial Plague {Mod.Nickname} just used a moderation command",
@@ -74,7 +72,7 @@ namespace WarnModule
 
         public async Task RequestRule(ContextMenuContext ctx = null)
         {
-            List<DiscordSelectComponentOption> options = new List<DiscordSelectComponentOption>();
+            List<DiscordSelectComponentOption> options = new();
             foreach (var item in RuleService.Rules)
             {
                 if (item.RuleNum == 0)
@@ -90,14 +88,14 @@ namespace WarnModule
                     item.RuleText.Length > 99 ? item.RuleText[..95] + "..." : item.RuleText);
                 options.Add(option);
             }
-            DiscordSelectComponent selectMenu = new DiscordSelectComponent("warnSelect", "Select a Rule!", options);
+            DiscordSelectComponent selectMenu = new("warnSelect", "Select a Rule!", options);
 
             DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
                 .AddComponents(selectMenu)
                 .WithContent("­");
             DiscordMessage message = await WarnChannel.SendMessageAsync(messageBuilder);
 
-            if (!(ctx is null))
+            if (ctx is not null)
             {
                 await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder
                 {
@@ -112,7 +110,7 @@ namespace WarnModule
 
         public async Task<ulong> RequestRuleEphemeral(ContextMenuContext ctx)
         {
-            List<DiscordSelectComponentOption> options = new List<DiscordSelectComponentOption>();
+            List<DiscordSelectComponentOption> options = new();
             foreach (var item in RuleService.Rules)
             {
                 if (item.RuleNum == 0)
@@ -128,7 +126,7 @@ namespace WarnModule
                     item.RuleText.Length > 99 ? item.RuleText[..95] + "..." : item.RuleText);
                 options.Add(option);
             }
-            DiscordSelectComponent selectMenu = new DiscordSelectComponent("warnSelect", "Select a Rule!", options);
+            DiscordSelectComponent selectMenu = new("warnSelect", "Select a Rule!", options);
 
             var message = await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
                 .AddComponents(selectMenu)
@@ -143,13 +141,13 @@ namespace WarnModule
 
         public async Task RequestPoints()
         {
-            DiscordMessageBuilder discordMessage = new DiscordMessageBuilder
+            DiscordMessageBuilder discordMessage = new()
             {
                 Content = $"For this rule you can reduce the users chances by {Rule.MinPoints} - {Rule.MaxPoints}"
             };
             for (int i = 0; i < 3; i++)
             {
-                List<DiscordButtonComponent> buttons = new List<DiscordButtonComponent>();
+                List<DiscordButtonComponent> buttons = new();
                 for (int index = i * 5; index < (i * 5) + 5; index++)
                 {
                     buttons.Add(new DiscordButtonComponent
@@ -170,13 +168,13 @@ namespace WarnModule
 
         public async Task<DiscordInteraction> RequestPointsEphemeral(ContextMenuContext ctx, ulong messageID)
         {
-            DiscordWebhookBuilder webhook = new DiscordWebhookBuilder
+            DiscordWebhookBuilder webhook = new()
             {
                 Content = $"For this rule you can reduce the users chances by {Rule.MinPoints} - {Rule.MaxPoints}"
             };
             for (int i = 0; i < 3; i++)
             {
-                List<DiscordButtonComponent> buttons = new List<DiscordButtonComponent>();
+                List<DiscordButtonComponent> buttons = new();
                 for (int index = i * 5; index < (i * 5) + 5; index++)
                 {
                     buttons.Add(new DiscordButtonComponent
@@ -279,14 +277,14 @@ namespace WarnModule
 
         public async Task<bool> WriteToDatabase()
         {
-            UserRepository repo = new UserRepository(ReadConfig.Config.ConnectionString);
+            UserRepository repo = new(ReadConfig.Config.ConnectionString);
             bool result = repo.GetIdByDcId(Member.Id, out MemberDbId);
             if (!result)
             {
                 await WarnChannel.SendMessageAsync("There was an error getting the user from the Database");
                 return false;
             }
-            WarnRepository warnRepo = new WarnRepository(ReadConfig.Config.ConnectionString);
+            WarnRepository warnRepo = new(ReadConfig.Config.ConnectionString);
             result = warnRepo.GetWarnAmount(MemberDbId, out int WarnNumber);
             if (!result)
             {
@@ -300,7 +298,7 @@ namespace WarnModule
             }
             if (MemberDbId == 0 || ModDbId == 0)
                 return false;
-            Warn warn = new Warn
+            Warn warn = new()
             {
                 User = MemberDbId,
                 Mod = ModDbId,
@@ -322,8 +320,8 @@ namespace WarnModule
 
         public async Task<bool> WriteAuditToDb()
         {
-            AuditRepository auditRepo = new AuditRepository(ReadConfig.Config.ConnectionString);
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            AuditRepository auditRepo = new(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
             bool userResult = urepo.GetIdByDcId(Mod.Id, out int id);
             if (!userResult)
             {
@@ -362,7 +360,7 @@ namespace WarnModule
 
         public async Task SendWarnMessage()
         {
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = CalculateSeverity(PointsDeducted) switch
                 {
@@ -384,7 +382,7 @@ namespace WarnModule
             DiscordChannel warnsChannel = Guild.GetChannel(722186358906421369);
             await warnsChannel.SendMessageAsync(Member.Mention, embed);
 
-            DiscordEmbedBuilder logEmbedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder logEmbedBuilder = new()
             {
                 Color = DiscordColor.Yellow,
                 Title = $"Successfully warned {Member.DisplayName}#{Member.Discriminator} ({Member.Id}).",
@@ -401,7 +399,7 @@ namespace WarnModule
 
         public async Task LogMessage()
         {
-            DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+            DiscordEmbedBuilder discordEmbed = new()
             {
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
@@ -415,16 +413,19 @@ namespace WarnModule
             {
                 var msgBuilder = new DiscordMessageBuilder();
 
-                Dictionary<string, Stream> attachments = new Dictionary<string, Stream>();
-                if (!(MessageLink.Attachments is null) && MessageLink.Attachments.Any())
+                Dictionary<string, Stream> attachments = new();
+                if (MessageLink.Attachments is not null && MessageLink.Attachments.Any())
                 {
                     foreach (var attachment in MessageLink.Attachments)
                     {
-                        attachments.Add(attachment.FileName, WebRequest.Create(attachment.Url).GetResponse().GetResponseStream());
+                        using HttpClient httpClient = new();
+                        await httpClient.GetStreamAsync(attachment.Url);
+
+                        attachments.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.Url));
                         if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(discordEmbed.ImageUrl))
                             discordEmbed.WithImageUrl("attachment://" + attachment.FileName);
                     }
-                    msgBuilder.WithFiles(attachments);
+                    msgBuilder.AddFiles(attachments);
                 }
 
                 await WarnChannel.SendMessageAsync(msgBuilder.WithEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
@@ -449,7 +450,7 @@ namespace WarnModule
 
         public static Task ResetLastPunish(ulong userID)
         {
-            UserRepository repo = new UserRepository(ReadConfig.Config.ConnectionString);
+            UserRepository repo = new(ReadConfig.Config.ConnectionString);
 
             repo.GetIdByDcId(userID, out var dbId);
 

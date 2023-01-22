@@ -30,7 +30,7 @@ namespace LathBotFront.Interactions
                 return;
             }
 
-            WarnBuilder warnBuilder = new WarnBuilder(
+            WarnBuilder warnBuilder = new(
                 ctx.Client,
                 ctx.Guild.GetChannel(764251867135475713),
                 ctx.Guild,
@@ -66,7 +66,7 @@ namespace LathBotFront.Interactions
                 return;
             }
 
-            WarnBuilder warnBuilder = new WarnBuilder(
+            WarnBuilder warnBuilder = new(
                 ctx.Client,
                 ctx.Guild.GetChannel(764251867135475713),
                 ctx.Guild,
@@ -122,7 +122,7 @@ namespace LathBotFront.Interactions
 
             if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
             {
-                DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+                DiscordEmbedBuilder discordEmbed = new()
                 {
                     Color = ctx.Member.Color,
                     Title = $"Trial Plague {ctx.Member.Nickname} just used a moderation command",
@@ -136,9 +136,9 @@ namespace LathBotFront.Interactions
                 await ctx.Guild.GetChannel(722905404354592900).SendMessageAsync(discordEmbed);
             }
 
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
-            MuteRepository mrepo = new MuteRepository(ReadConfig.Config.ConnectionString);
-            AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
+            MuteRepository mrepo = new(ReadConfig.Config.ConnectionString);
+            AuditRepository repo = new(ReadConfig.Config.ConnectionString);
             urepo.GetIdByDcId(member.Id, out int id);
             urepo.GetIdByDcId(ctx.Member.Id, out int modId);
             mrepo.IsUserMuted(id, out bool exists);
@@ -152,7 +152,7 @@ namespace LathBotFront.Interactions
             }
             else
             {
-                Mute mute = new Mute
+                Mute mute = new()
                 {
                     User = id,
                     Mod = modId,
@@ -173,7 +173,7 @@ namespace LathBotFront.Interactions
 
             await WarnBuilder.ResetLastPunish(member.Id);
 
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Gray,
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
@@ -199,7 +199,7 @@ namespace LathBotFront.Interactions
 
             if (ctx.Member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
             {
-                DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+                DiscordEmbedBuilder discordEmbed = new()
                 {
                     Color = ctx.Member.Color,
                     Title = $"Trial Plague {ctx.Member.Nickname} just used a moderation command",
@@ -228,9 +228,9 @@ namespace LathBotFront.Interactions
             await member.RevokeRoleAsync(mutedRole);
             await member.GrantRoleAsync(verificationRole);
 
-            AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
-            MuteRepository mrepo = new MuteRepository(ReadConfig.Config.ConnectionString);
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            AuditRepository repo = new(ReadConfig.Config.ConnectionString);
+            MuteRepository mrepo = new(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
 
             urepo.GetIdByDcId(member.Id, out int userId);
             mrepo.GetMuteByUser(userId, out Mute entity);
@@ -240,7 +240,7 @@ namespace LathBotFront.Interactions
             audit.Unmutes++;
             repo.Update(audit);
 
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.White,
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
@@ -273,8 +273,8 @@ namespace LathBotFront.Interactions
                 return;
             }
 
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
-            MuteRepository repo = new MuteRepository(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
+            MuteRepository repo = new(ReadConfig.Config.ConnectionString);
 
             urepo.GetIdByDcId(member.Id, out int id);
             repo.GetMuteByUser(id, out Mute entity);
@@ -305,8 +305,8 @@ namespace LathBotFront.Interactions
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You are not muted smh."));
                 return;
             }
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
-            MuteRepository repo = new MuteRepository(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
+            MuteRepository repo = new(ReadConfig.Config.ConnectionString);
             urepo.GetIdByDcId(ctx.Member.Id, out int id);
             repo.GetMuteByUser(id, out Mute entity);
             urepo.Read(entity.Mod, out User mod);
@@ -349,14 +349,14 @@ namespace LathBotFront.Interactions
             if (await AreYouSure(ctx.Interaction, user, ctx.Client, "kick"))
                 return;
             await member.RemoveAsync();
-            AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            AuditRepository repo = new(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
             urepo.GetIdByDcId(ctx.Member.Id, out int id);
             repo.Read(id, out Audit audit);
             audit.Kicks++;
             repo.Update(audit);
             await WarnBuilder.ResetLastPunish(user.Id);
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.DarkButNotBlack,
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
@@ -386,7 +386,7 @@ namespace LathBotFront.Interactions
             DiscordMember member = null;
             if (ctx.Guild.Members.ContainsKey(user.Id))
                 member = await ctx.Guild.GetMemberAsync(user.Id);
-            
+
             if (ctx.Member.Hierarchy <= member?.Hierarchy)
             {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("You cant ban someone higher or same rank as you!"));
@@ -404,13 +404,13 @@ namespace LathBotFront.Interactions
                 return;
 
             await ctx.Guild.BanMemberAsync(user.Id, (int)deleteMessageDays, reason);
-            AuditRepository repo = new AuditRepository(ReadConfig.Config.ConnectionString);
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            AuditRepository repo = new(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
             urepo.GetIdByDcId(ctx.Member.Id, out int id);
             repo.Read(id, out Audit audit);
             audit.Bans++;
             repo.Update(audit);
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Black,
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl },
@@ -434,8 +434,8 @@ namespace LathBotFront.Interactions
         {
             await ctx.DeferAsync();
 
-            WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            WarnRepository repo = new(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
             urepo.GetIdByDcId(user.Id, out int id);
             repo.GetWarnByUserAndNum(id, (int)warnNumber, out Warn warn);
             repo.Delete(warn.ID);
@@ -447,12 +447,12 @@ namespace LathBotFront.Interactions
                 item.Number = counter;
                 repo.Update(item);
             }
-            AuditRepository auditRepo = new AuditRepository(ReadConfig.Config.ConnectionString);
+            AuditRepository auditRepo = new(ReadConfig.Config.ConnectionString);
             urepo.GetIdByDcId(ctx.Member.Id, out int userid);
             auditRepo.Read(userid, out Audit audit);
             audit.Pardons++;
             auditRepo.Update(audit);
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Green,
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl },
@@ -470,12 +470,12 @@ namespace LathBotFront.Interactions
             DiscordUser user = null)
         {
             await ctx.DeferAsync();
-            WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            WarnRepository repo = new(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
             urepo.GetIdByDcId(user is null ? ctx.Member.Id : user.Id, out int id);
             repo.GetAllByUser(id, out List<Warn> warns);
             urepo.Read(id, out var entity);
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user is null ? ctx.Member.AvatarUrl : user.AvatarUrl },
                 Title = $"{(user is null ? "You have" : "The user has")} {warns.Count} warnings:",
@@ -553,7 +553,7 @@ namespace LathBotFront.Interactions
                 return;
             }
 
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = DiscordColor.Red,
                 Title = $"Report from user {ctx.User.Username}#{ctx.User.Discriminator} ({ctx.User.Id})",
@@ -583,8 +583,8 @@ namespace LathBotFront.Interactions
         {
             await ctx.DeferAsync();
 
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
-            WarnRepository repo = new WarnRepository(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
+            WarnRepository repo = new(ReadConfig.Config.ConnectionString);
 
             urepo.GetIdByDcId(user.Id, out int userDbId);
             repo.GetWarnByUserAndNum(userDbId, (int)warnNumber, out Warn warn);
@@ -606,7 +606,7 @@ namespace LathBotFront.Interactions
             await WarnBuilder.ResetLastPunish(user.Id);
 
             DiscordMember moderator = await ctx.Guild.GetMemberAsync(mod.DcID);
-            DiscordEmbedBuilder builder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder builder = new()
             {
                 Title = $"Persistet warn {warn.ID}",
                 Description = warn.Reason,
@@ -623,7 +623,7 @@ namespace LathBotFront.Interactions
             builder.AddField("Persistent:", warn.Persistent.ToString());
             await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(builder));
 
-            DiscordEmbedBuilder dmBuilder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder dmBuilder = new()
             {
                 Title = "Persistent warns",
                 Description = "One of your warns has been persistet and will no longer expire. The warn will only ever be removed after manual review by an Admin.",
@@ -644,8 +644,8 @@ namespace LathBotFront.Interactions
 
         private async Task<(bool, DiscordInteraction)> Ensure2FA(BaseContext ctx)
         {
-            UserRepository userrepo = new UserRepository(ReadConfig.Config.ConnectionString);
-            ModRepository repo = new ModRepository(ReadConfig.Config.ConnectionString);
+            UserRepository userrepo = new(ReadConfig.Config.ConnectionString);
+            ModRepository repo = new(ReadConfig.Config.ConnectionString);
             userrepo.GetIdByDcId(ctx.Member.Id, out int dbId);
             repo.GetModById(dbId, out Mod mod);
 
@@ -707,7 +707,7 @@ namespace LathBotFront.Interactions
                     Color = member == null ? new DiscordColor("#FF0000") : member.Color
                 }
                 .AddField("Member you selected:", member == null ? user.ToString() : member.ToString()));
-            List<DiscordComponent> components = new List<DiscordComponent>
+            List<DiscordComponent> components = new()
             {
                 new DiscordButtonComponent(ButtonStyle.Danger, "sure", "Yes I fucking am!"),
                 new DiscordButtonComponent(ButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")

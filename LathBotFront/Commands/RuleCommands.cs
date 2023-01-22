@@ -1,16 +1,13 @@
-﻿using System.Threading.Tasks;
-
-using DSharpPlus.Entities;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
-using LathBotBack;
+using DSharpPlus.Entities;
 using LathBotBack.Services;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
 {
-	public class RuleCommands : BaseCommandModule
+    public class RuleCommands : BaseCommandModule
     {
         [Command("rule")]
         [Aliases("r")]
@@ -22,7 +19,7 @@ namespace LathBotFront.Commands
                 return;
             }
             var rule = RuleService.Rules.First(x => x.RuleNum == ruleNum);
-            DiscordEmbedBuilder builder = new DiscordEmbedBuilder
+            DiscordEmbedBuilder builder = new()
             {
                 Color = new DiscordColor(101, 24, 201),
                 Title = $"Rule {rule.RuleNum} ({rule.ShortDesc}):",

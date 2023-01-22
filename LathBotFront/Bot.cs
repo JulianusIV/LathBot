@@ -23,7 +23,7 @@ namespace LathBotFront
     {
         #region Singleton
         private static Bot instance = null;
-        private static readonly object padlock = new object();
+        private static readonly object padlock = new();
         public static Bot Instance
         {
             get
@@ -55,7 +55,7 @@ namespace LathBotFront
 #else
 			result = varrepo.Read(2, out Variable prefix); //otherwise get default prefix
 #endif
-            DiscordConfiguration config = new DiscordConfiguration
+            DiscordConfiguration config = new()
             {
                 Token = ReadConfig.Config.Token,
                 TokenType = TokenType.Bot,
@@ -115,7 +115,7 @@ namespace LathBotFront
                 AckPaginationButtons = true
             });
 
-            CommandsNextConfiguration commandsConfig = new CommandsNextConfiguration
+            CommandsNextConfiguration commandsConfig = new()
             {
                 StringPrefixes = new string[] { prefix.Value },
                 EnableMentionPrefix = true
@@ -164,13 +164,13 @@ namespace LathBotFront
 
         private async Task<LavalinkNodeConnection> ConnectLavaNodeAsync()
         {
-            ConnectionEndpoint endpoint = new ConnectionEndpoint
+            ConnectionEndpoint endpoint = new()
             {
                 Hostname = "server.local",
                 Port = 2333
             };
 
-            LavalinkConfiguration lavalinkConfig = new LavalinkConfiguration
+            LavalinkConfiguration lavalinkConfig = new()
             {
                 Password = ReadConfig.Config.LavaLinkPass,
                 RestEndpoint = endpoint,

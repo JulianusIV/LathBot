@@ -1,22 +1,18 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
-using Microsoft.Extensions.PlatformAbstractions;
-
-using DSharpPlus.Entities;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
-using LathBotBack.Repos;
+using DSharpPlus.Entities;
 using LathBotBack.Config;
 using LathBotBack.Models;
+using LathBotBack.Repos;
 using LathBotBack.Services;
-using System.Text.RegularExpressions;
+using Microsoft.Extensions.PlatformAbstractions;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using DSharpPlus;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
 {
@@ -26,7 +22,7 @@ namespace LathBotFront.Commands
         [Description("Display some info about the bot")]
         public async Task Info(CommandContext ctx)
         {
-            DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+            DiscordEmbedBuilder discordEmbed = new()
             {
                 Color = new DiscordColor(101, 24, 201),
                 Title = "LathBot#1753",
@@ -48,7 +44,7 @@ namespace LathBotFront.Commands
         public async Task Tos(CommandContext ctx)
         {
             using Stream stream = typeof(InfoCommands).Assembly.GetManifestResourceStream("LathBotFront.Resources.LathBotTOS.txt");
-            using StreamReader reader = new StreamReader(stream);
+            using StreamReader reader = new(stream);
             string result = reader.ReadToEnd();
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
@@ -92,10 +88,10 @@ namespace LathBotFront.Commands
             string part = "";
             int index = 0;
             using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LathBotFront.Resources.LathBotPP.txt");
-            using StreamReader reader = new StreamReader(stream);
+            using StreamReader reader = new(stream);
             string result = reader.ReadToEnd();
 
-            List<string> content = new List<string>();
+            List<string> content = new();
             foreach (char character in result)
             {
                 index++;
@@ -123,7 +119,7 @@ namespace LathBotFront.Commands
         public async Task StaffTimes(CommandContext ctx)
         {
             await ctx.Channel.TriggerTypingAsync();
-            DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder
+            DiscordEmbedBuilder discordEmbed = new()
             {
                 Color = new DiscordColor(64, 255, 0),
                 Title = "Staff timezones",
@@ -131,8 +127,8 @@ namespace LathBotFront.Commands
             };
             DateTime thisTime = DateTime.Now;
 
-            ModRepository repo = new ModRepository(ReadConfig.Config.ConnectionString);
-            UserRepository urepo = new UserRepository(ReadConfig.Config.ConnectionString);
+            ModRepository repo = new(ReadConfig.Config.ConnectionString);
+            UserRepository urepo = new(ReadConfig.Config.ConnectionString);
             bool result = repo.GetAll(out List<Mod> list);
             if (!result)
             {
@@ -146,7 +142,7 @@ namespace LathBotFront.Commands
                 return ctx.Guild.GetMemberAsync(entity.DcID).GetAwaiter().GetResult();
             });
 
-            modList.OrderByDescending(x => x.Key.Hierarchy);
+            modList = modList.OrderByDescending(x => x.Key.Hierarchy).ToDictionary(x => x.Key, x => x.Value);
 
             foreach (var item in modList)
             {
