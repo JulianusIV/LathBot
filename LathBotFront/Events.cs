@@ -382,9 +382,12 @@ namespace LathBotFront
                         if (e.Message.Attachments is not null && e.Message.Attachments.Any())
                         {
                             using HttpClient httpClient = new();
-                            Dictionary<string, Stream> files = new();
                             foreach (DiscordAttachment attachment in e.Message.Attachments)
-                                files.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.Url));
+                            {
+                                attachments.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.Url));
+                                if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(discordEmbed.ImageUrl))
+                                    discordEmbed.WithImageUrl("attachment://" + attachment.FileName);
+                            }
                             messageBuilder.AddFiles(attachments);
                         }
 

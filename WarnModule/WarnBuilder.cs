@@ -419,7 +419,6 @@ namespace WarnModule
                     foreach (var attachment in MessageLink.Attachments)
                     {
                         using HttpClient httpClient = new();
-                        await httpClient.GetStreamAsync(attachment.Url);
 
                         attachments.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.Url));
                         if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(discordEmbed.ImageUrl))
