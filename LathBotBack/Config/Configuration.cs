@@ -8,5 +8,6 @@
 
         public string LavaLinkPass { get; set; }
         public string RijndaelInputKey { get; set; }
+        public string UptimeKumaUrl { get; set; }
     }
 }

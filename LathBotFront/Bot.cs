@@ -16,6 +16,7 @@ using LathBotFront.Interactions;
 using System;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using UptimeKumaHeartbeat;
 
 namespace LathBotFront
 {
@@ -44,6 +45,8 @@ namespace LathBotFront
         public CommandsNextExtension Commands { get; private set; }
 
         public SlashCommandsExtension SlashCommands { get; set; }
+
+        public HeartbeatData HeartbeatData { get; set; }
 
         public async Task RunAsync()
         {
@@ -158,6 +161,10 @@ namespace LathBotFront
                 //Register lava commands
                 lavaNode.PlaybackFinished += Events.PlaybackFinished;
             }
+
+            HeartbeatManager heartbeatManager = new();
+            HeartbeatData = new("", "");
+            await heartbeatManager.StartHeartbeatsAsync(ReadConfig.Config.UptimeKumaUrl, HeartbeatData);
 
             await Task.Delay(-1);
         }
