@@ -147,9 +147,12 @@ namespace LathBotFront.Commands
             if (lastDelete.Attachments is not null && lastDelete.Attachments.Any())
             {
                 using HttpClient httpClient = new();
-                Dictionary<string, Stream> files = new();
-                foreach (DiscordAttachment attachment in ctx.Message.Attachments)
-                    files.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.Url));
+                foreach (DiscordAttachment attachment in lastDelete.Attachments)
+                {
+                    attachments.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.ProxyUrl));
+                    if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(builder.ImageUrl))
+                        builder.WithImageUrl("attachment://" + attachment.FileName);
+                }
                 message.AddFiles(attachments);
             }
 
