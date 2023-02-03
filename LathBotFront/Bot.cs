@@ -173,7 +173,7 @@ namespace LathBotFront
         {
             ConnectionEndpoint endpoint = new()
             {
-                Hostname = "server.local",
+                Hostname = "lathbot_lavalink_1", //compose container name
                 Port = 2333
             };
 
