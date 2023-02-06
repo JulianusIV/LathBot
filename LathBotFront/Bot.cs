@@ -107,6 +107,7 @@ namespace LathBotFront
             //Register timer events
             SystemService.Instance.WarnTimer.Elapsed += Events.TimerTick;
             SystemService.Instance.TakeYourMeds.Elapsed += Events.TakeYourMeds;
+            SystemService.Instance.TakeYourMeds2.Elapsed += Events.TakeYourMeds;
 
             //Register Logger events
             SystemService.Instance.Logger.RaiseLogEvent += Events.OnLog;
