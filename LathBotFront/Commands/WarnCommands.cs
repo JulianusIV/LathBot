@@ -954,7 +954,6 @@ namespace LathBotFront.Commands
             DiscordEmbed embed = embedBuilder.Build();
             List<DiscordMember> senate = new()
             {
-                await Lathland.GetMemberAsync(613366102306717712),//Chewy
                 await Lathland.GetMemberAsync(387325006176059394),//Myself
                 await Lathland.GetMemberAsync(289112287250350080)//Parth
             };
