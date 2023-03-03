@@ -33,7 +33,8 @@ namespace LathBotFront.Commands
             messageBuilder.AddComponents(new List<DiscordComponent>()
             {
                 new DiscordButtonComponent(ButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
-                new DiscordButtonComponent(ButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷"))
+                new DiscordButtonComponent(ButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷")),
+                new DiscordButtonComponent(ButtonStyle.Danger, "roleme_18+", "18+", emoji: new DiscordComponentEmoji("🔞"))
             });
             await ctx.Channel.SendMessageAsync(messageBuilder);
         }
@@ -61,7 +62,8 @@ namespace LathBotFront.Commands
             messageBuilder.AddComponents(new List<DiscordComponent>()
             {
                 new DiscordButtonComponent(ButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
-                new DiscordButtonComponent(ButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷"))
+                new DiscordButtonComponent(ButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷")),
+                new DiscordButtonComponent(ButtonStyle.Danger, "roleme_18+", "18+", emoji: new DiscordComponentEmoji("🔞"))
             });
 
             DiscordMessage infoMessage = await ctx.Channel.GetMessageAsync(1014293811435942040);
