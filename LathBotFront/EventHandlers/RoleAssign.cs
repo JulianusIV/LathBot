@@ -44,21 +44,6 @@ namespace LathBotFront.EventHandlers
             1014280593929928797 //greet
         };
 
-        public static readonly ulong[] ageRequiredRoleIds = new ulong[]
-        {
-            718162129609556121, //debate
-            767039219403063307, //art
-            978954327907532811,  //airships
-            1046124300761043004, //dnd
-            701454853095817316,  //ftd
-            713367380574732319,  //minecraft
-            850029252812210207,  //reassembly
-            701454772900855819,  //stellaris
-            1014261454624542810, //tt
-            766322672321560628,   //wh40k
-            812755886413971499 //vent
-        };
-
         internal static Task ComponentTriggered(DiscordClient _1, ComponentInteractionCreateEventArgs e)
         {
             _ = Task.Run(async () =>
@@ -113,70 +98,6 @@ namespace LathBotFront.EventHandlers
                     builder.AddComponents(new DiscordSelectComponent("roleme_misc_dropdown", "Select your roles", options, false, 0, options.Count));
 
                     await e.Interaction.EditOriginalResponseAsync(builder);
-                }
-                else if (e.Id == "roleme_18+")
-                {
-                    await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
-
-                    var member = await e.Guild.GetMemberAsync(e.User.Id);
-
-                    var message = new DiscordWebhookBuilder();
-                    if (member.Roles.Any(x => x.Id == 1081151306351251521)) //18+ role
-                    {
-                        var anyProtectedRoles = member.Roles.Any(x => ageRequiredRoleIds.Any(y => y == x.Id));
-                        if (anyProtectedRoles)
-                            message.WithContent("You already have the 18+ role, if you want to get rid of it you first have to get rid of the following roles:" + string.Join('\n', member.Roles.Where(x => ageRequiredRoleIds.Any(y => y == x.Id)).Select(x => x.Mention)));
-                        else
-                            message.WithContent("You already have the 18+ role, if you want to get rid of it press the button below.");
-                        message.AddComponents(new List<DiscordComponent>()
-                        {
-                            new DiscordButtonComponent(ButtonStyle.Danger, "roleme_18+_revoke", "Remove my 18+ role", anyProtectedRoles, new DiscordComponentEmoji("🔞"))
-                        });
-                    }
-                    else
-                    {
-                        message.WithContent("All channels tagged as NSFW due to their content (for example guns) are gated behind the 18+ role.\n" +
-                            "BY SELECTING THIS ROLE YOU CONFIRM THAT YOU ARE 18 YEARS OR OLDER.\n" +
-                            "If you select the 18+ Role but confirm that you are under 18 in any chat,\n" +
-                            "unfortunately this will require us to ban you immediately due to breaking Discord TOS.\n" +
-                            "There will be no warnings or chances to argue your case in this situation!");
-                        message.AddComponents(new List<DiscordComponent>()
-                        {
-                            new DiscordButtonComponent(ButtonStyle.Danger, "roleme_18+_confirm", "Yes i am 18+ years old", emoji: new DiscordComponentEmoji("🔞"))
-                        });
-                    }
-
-
-                    await e.Interaction.EditOriginalResponseAsync(message);
-                }
-                else if (e.Id == "roleme_18+_confirm")
-                {
-                    await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
-
-                    var member = await e.Guild.GetMemberAsync(e.User.Id);
-                    if (!member.Roles.Any(x => x.Id == 1081151306351251521))
-                    {
-                        await member.GrantRoleAsync(e.Guild.GetRole(1081151306351251521));
-
-                        await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successfully added the 18+ role for you."));
-                    }
-                    else
-                        await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("You already have that role."));
-                }
-                else if (e.Id == "roleme_18+_revoke")
-                {
-                    await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
-
-                    var member = await e.Guild.GetMemberAsync(e.User.Id);
-
-                    if (member.Roles.Any(x => x.Id == 1081151306351251521))
-                    {
-                        await member.RevokeRoleAsync(e.Guild.GetRole(1081151306351251521));
-
-                        await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successfully removed the 18+ role for you."));
-                    }
-                    else
-                        await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("You dont have that role."));
                 }
                 else if (e.Id == "roleme_games_dropdown")
                 {
