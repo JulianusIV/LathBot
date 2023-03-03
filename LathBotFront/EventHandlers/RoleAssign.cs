@@ -125,7 +125,7 @@ namespace LathBotFront.EventHandlers
                     {
                         var anyProtectedRoles = member.Roles.Any(x => ageRequiredRoleIds.Any(y => y == x.Id));
                         if (anyProtectedRoles)
-                            message.WithContent("You already have the 18+ role, if you want to get rid of it you first have to get rid of the following roles:\n" + string.Join('\n', member.Roles.Where(x => ageRequiredRoleIds.Any(y => y == x.Id)).Select(x => x.Mention)));
+                            message.WithContent("You already have the 18+ role, if you want to get rid of it you first have to get rid of the following roles:" + string.Join('\n', member.Roles.Where(x => ageRequiredRoleIds.Any(y => y == x.Id)).Select(x => x.Mention)));
                         else
                             message.WithContent("You already have the 18+ role, if you want to get rid of it press the button below.");
                         message.AddComponents(new List<DiscordComponent>()
@@ -154,9 +154,9 @@ namespace LathBotFront.EventHandlers
                     await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
 
                     var member = await e.Guild.GetMemberAsync(e.User.Id);
-                    if (!member.Roles.Any(x => x.Id == 1081151306351251521))//18+ role
+                    if (!member.Roles.Any(x => x.Id == 1081151306351251521))
                     {
-                        await member.GrantRoleAsync(e.Guild.GetRole(1081151306351251521));//18+ role
+                        await member.GrantRoleAsync(e.Guild.GetRole(1081151306351251521));
 
                         await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successfully added the 18+ role for you."));
                     }
@@ -169,9 +169,9 @@ namespace LathBotFront.EventHandlers
 
                     var member = await e.Guild.GetMemberAsync(e.User.Id);
 
-                    if (member.Roles.Any(x => x.Id == 1081151306351251521))//18+ role
+                    if (member.Roles.Any(x => x.Id == 1081151306351251521))
                     {
-                        await member.RevokeRoleAsync(e.Guild.GetRole(1081151306351251521));//18+ role
+                        await member.RevokeRoleAsync(e.Guild.GetRole(1081151306351251521));
 
                         await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successfully removed the 18+ role for you."));
                     }
@@ -183,12 +183,6 @@ namespace LathBotFront.EventHandlers
                     await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
 
                     var member = await e.Guild.GetMemberAsync(e.User.Id);
-
-                    if (!member.Roles.Any(x => x.Id == 1081151306351251521))//18+ role
-                    {
-                        await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("I'm sorry, but i cant grant you any of these roles, please confirm you are 18 or older first."));
-                        return;
-                    }
 
                     var currentRoleIds = gamesRoleIds.Where(x => member.Roles.Any(y => y.Id == x));
                     var newRoleIds = new List<ulong>();
@@ -223,11 +217,8 @@ namespace LathBotFront.EventHandlers
 
                     var member = await e.Guild.GetMemberAsync(e.User.Id);
 
-                    var has18role = member.Roles.Any(x => x.Id == 1081151306351251521);//18+ role
-
                     var currentRoleIds = miscRoleIds.Where(x => member.Roles.Any(y => y.Id == x));
                     var newRoleIds = new List<ulong>();
-                    var illegalRoleIds = new List<ulong>();
                     foreach (var selection in e.Values)
                     {
                         ulong roleid = selection switch
@@ -242,10 +233,8 @@ namespace LathBotFront.EventHandlers
                             "greetings" => 1014280593929928797,
                             _ => 0
                         };
-                        if (roleid != 0 && (!ageRequiredRoleIds.Any(x => x == roleid) || has18role))
+                        if (roleid != 0)
                             newRoleIds.Add(roleid);
-                        else if (roleid != 0)
-                            illegalRoleIds.Add(roleid);
                     }
 
                     foreach (var roleid in currentRoleIds.Where(x => !newRoleIds.Contains(x)))
@@ -253,11 +242,7 @@ namespace LathBotFront.EventHandlers
                     foreach (var roleid in newRoleIds.Where(x => !currentRoleIds.Contains(x)))
                         await member.GrantRoleAsync(e.Guild.GetRole(roleid));
 
-                    if (illegalRoleIds.Any())
-                        await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Sorry, but I cannot grant you the roles\n" + string.Join('\n', illegalRoleIds.Select(x => e.Guild.GetRole(x).Mention)) +
-                            "\nPlease confirm you are 18 or older first.\nAll other selected roles have been added."));
-                    else
-                        await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successfully changed your roles!"));
+                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successfully changed your roles!"));
                 }
             });
             return Task.CompletedTask;
