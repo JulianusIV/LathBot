@@ -154,7 +154,7 @@ namespace LathBotFront.Interactions
             }
             mod.TwoFAKeySalt = Guid.NewGuid().ToString("D");
             var twoFAKey = Guid.NewGuid().ToString("D");
-            mod.TwoFAKey = RijndaelManagedEncryption.EncryptRijndael(twoFAKey, mod.TwoFAKeySalt);
+            mod.TwoFAKey = AesEncryption.EncryptStringToBytes(twoFAKey, mod.TwoFAKeySalt);
             repo.Update(mod);
 
             var image = GoogleAuthenticator.GenerateProvisioningImage(ctx.Member.Username, Encoding.UTF8.GetBytes(twoFAKey));
@@ -162,11 +162,11 @@ namespace LathBotFront.Interactions
             var embedBuilder = new DiscordEmbedBuilder()
             {
                 Title = "Add 2FA",
-                Description = "Scan this QR code with your Google Authenticator app, or similar app, that supports that authentication standard.",
+                Description = "Scan this QR code with your Google Authenticator app, or similar app, that supports that authentication standard, or copy the link above to add it to a 2FA app.",
 
                 Color = new DiscordColor(27, 116, 226),
             }.WithImageUrl("attachment://qrcode.png");
-            var webhookBuilder = new DiscordWebhookBuilder().AddEmbed(embedBuilder).AddFile("qrcode.png", stream);
+            var webhookBuilder = new DiscordWebhookBuilder().AddEmbed(embedBuilder).AddFile("qrcode.png", stream).WithContent(GoogleAuthenticator.GenerateProvisiongingString(ctx.Member.Username, Encoding.UTF8.GetBytes(twoFAKey)));
             await ctx.EditResponseAsync(webhookBuilder);
         }
 
@@ -184,7 +184,7 @@ namespace LathBotFront.Interactions
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("2FA not set up!").AsEphemeral());
                 return;
             }
-            var twoFAKey = RijndaelManagedEncryption.DecryptRijndael(mod.TwoFAKey, mod.TwoFAKeySalt);
+            var twoFAKey = AesEncryption.DecryptStringToBytes(mod.TwoFAKey, mod.TwoFAKeySalt);
 
 
             var textInput = new TextInputComponent("Please input your 2FA Code.",

@@ -6,21 +6,21 @@ using System.Text;
 
 namespace LathBotFront._2FA
 {
-    public class RijndaelManagedEncryption
+    public class AesEncryption
     {
-        #region Rijndael Encryption
+        #region Encryption
         /// <summary>
         /// Encrypt the given text and give the byte array back as a BASE64 string
         /// </summary>
         /// <param name="text" />The text to encrypt
         /// <param name="salt" />The pasword salt
         /// <returns>The encrypted text</returns>
-        public static byte[] EncryptRijndael(string text, string salt)
+        public static byte[] EncryptStringToBytes(string text, string salt)
         {
             if (string.IsNullOrEmpty(text))
                 throw new ArgumentNullException(nameof(text));
 
-            using var aesAlg = NewRijndaelManaged(salt);
+            using var aesAlg = NewAes(salt);
             var encrypter = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
             byte[] encrypted;
             using (var msEncrypt = new MemoryStream())
@@ -37,21 +37,21 @@ namespace LathBotFront._2FA
         }
         #endregion
 
-        #region Rijndael Dycryption
+        #region Decryption
         /// <summary>
         /// Decrypts the given text
         /// </summary>
         /// <param name="cipherText" />The encrypted BASE64 text
         /// <param name="salt" />The pasword salt
         /// <returns>The decrypted text</returns>
-        public static string DecryptRijndael(byte[] cipherText, string salt)
+        public static string DecryptStringToBytes(byte[] cipherText, string salt)
         {
             if (cipherText is null || cipherText.Length <= 0)
                 throw new ArgumentNullException(nameof(cipherText));
 
             string text;
 
-            using (var aesAlg = NewRijndaelManaged(salt))
+            using (var aesAlg = NewAes(salt))
             {
                 var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
@@ -64,20 +64,20 @@ namespace LathBotFront._2FA
         }
         #endregion
 
-        #region NewRijndaelManaged
+        #region NewAes
         /// <summary>
         /// Create a new RijndaelManaged class and initialize it
         /// </summary>
         /// <param name="salt" />The pasword salt
         /// <returns></returns>
-        private static RijndaelManaged NewRijndaelManaged(string salt)
+        private static Aes NewAes(string salt)
         {
             if (salt == null)
                 throw new ArgumentNullException(nameof(salt));
             var saltBytes = Encoding.ASCII.GetBytes(salt);
             var key = new Rfc2898DeriveBytes(ReadConfig.Config.RijndaelInputKey, saltBytes);
 
-            var aesAlg = new RijndaelManaged();
+            var aesAlg = Aes.Create();
             aesAlg.Key = key.GetBytes(aesAlg.KeySize / 8);
             aesAlg.IV = key.GetBytes(aesAlg.BlockSize / 8);
 

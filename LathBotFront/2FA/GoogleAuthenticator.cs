@@ -25,9 +25,15 @@ namespace LathBotFront._2FA
         public static byte[] GenerateProvisioningImage(string identifier, byte[] key, int pixelsPerModule = 7)
         {
             var KeyString = Encoder.Base32Encode(key);
-            var ProvisionUrl = string.Format("otpauth://totp/{0}?secret={1}&issuer=Example", identifier, KeyString);
+            var ProvisionUrl = string.Format("otpauth://totp/{0}?secret={1}&issuer=Lathbot", identifier, KeyString);
 
             return new PngByteQRCode(new QRCodeGenerator().CreateQrCode(ProvisionUrl, QRCodeGenerator.ECCLevel.Q)).GetGraphic(pixelsPerModule);
+        }
+
+        public static string GenerateProvisiongingString(string identifier, byte[] key)
+        {
+            var KeyString = Encoder.Base32Encode(key);
+            return string.Format("otpauth://totp/{0}?secret={1}&issuer=Lathbot", identifier, KeyString);
         }
 
         /// <summary>

@@ -400,7 +400,7 @@ namespace LathBotFront.Interactions
             var result = await Ensure2FA(ctx);
             if (!result.Item1)
                 return;
-            if (await AreYouSure(result.Item2, user, ctx.Client, "ban"))
+            if (!await AreYouSure(result.Item2, user, ctx.Client, "ban"))
                 return;
 
             await ctx.Guild.BanMemberAsync(user.Id, (int)deleteMessageDays, reason);
@@ -652,7 +652,7 @@ namespace LathBotFront.Interactions
             if (mod.TwoFAKey is null || mod.TwoFAKey.Length <= 0)
                 return (true, ctx.Interaction);
 
-            var twoFAKey = RijndaelManagedEncryption.DecryptRijndael(mod.TwoFAKey, mod.TwoFAKeySalt);
+            var twoFAKey = AesEncryption.DecryptStringToBytes(mod.TwoFAKey, mod.TwoFAKeySalt);
 
             var textInput = new TextInputComponent("Please input your 2FA Code.",
                 "2famodal",
@@ -671,7 +671,7 @@ namespace LathBotFront.Interactions
 
             var res = await ctx.Client.GetInteractivity().WaitForModalAsync("2famodal");
 
-            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate, new DiscordInteractionResponseBuilder().AsEphemeral());
+            await res.Result.Interaction.DeferAsync(true);
             var reason = res.Result.Values["2famodal"];
 
             if (reason is null)
