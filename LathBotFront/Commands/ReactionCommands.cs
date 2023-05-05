@@ -2,6 +2,7 @@
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using LathBotBack.Services;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,13 @@ namespace LathBotFront.Commands
 {
     class ReactionCommands : BaseCommandModule
     {
+        [Command("_-")]
+        public async Task Face(CommandContext ctx)
+        {
+            await ctx.Member.TimeoutAsync(ctx.Message.Timestamp + TimeSpan.FromMinutes(1));
+            await ctx.RespondAsync("😒");
+        }
+
         [Command("slap")]
         [Description("Slap someone, but be careful who you choose to slap, they might slap harder!\n" +
             "Inspired by a xelA tag originally creatd by @ThaTheoMans#7006.")]

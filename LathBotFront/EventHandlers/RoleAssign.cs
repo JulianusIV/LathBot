@@ -22,11 +22,12 @@ namespace LathBotFront.EventHandlers
 
         private static readonly ulong[] gamesRoleIds = new ulong[]
         {
-            978954327907532811,  //airships
+            //978954327907532811,  //airships
             1046124300761043004, //dnd
             701454853095817316,  //ftd
             713367380574732319,  //minecraft
             850029252812210207,  //reassembly
+            1104070430811226163, //rpg
             701454772900855819,  //stellaris
             1014261454624542810, //tt
             766322672321560628   //wh40k
@@ -58,11 +59,12 @@ namespace LathBotFront.EventHandlers
                     var member = await e.Guild.GetMemberAsync(e.User.Id);
                     var options = new List<DiscordSelectComponentOption>()
                     {
-                        new DiscordSelectComponentOption("Airships: Conquer the Skies", "airships", "Get access to the Airships: Conquer the Skies game channel", member.Roles.Any(x => x.Id == 978954327907532811), new DiscordComponentEmoji("🛩️")),
+                        //new DiscordSelectComponentOption("Airships: Conquer the Skies", "airships", "Get access to the Airships: Conquer the Skies game channel", member.Roles.Any(x => x.Id == 978954327907532811), new DiscordComponentEmoji("🛩️")),
                         new DiscordSelectComponentOption("Dungeons and Dragons", "dnd", "Get access to the Dungeons and Dragons game channel and vc", member.Roles.Any(x => x.Id == 1046124300761043004), new DiscordComponentEmoji("🐉")),
                         new DiscordSelectComponentOption("From the Depths", "ftd", "Get access to the From the Depths game channel", member.Roles.Any(x => x.Id == 701454853095817316), new DiscordComponentEmoji("⛵")),
                         new DiscordSelectComponentOption("Minecraft", "minecraft", "Get access to the Minecraft game channel", member.Roles.Any(x => x.Id == 713367380574732319), new DiscordComponentEmoji("⛏️")),
                         new DiscordSelectComponentOption("Reassembly", "reassembly", "Get access to the Reassembly game channel", member.Roles.Any(x => x.Id == 701454772900855819), new DiscordComponentEmoji("👾")),
+                        new DiscordSelectComponentOption("RPG-Bot", "rgp", "Get access to the Isekaid RPG Bot game channel", member.Roles.Any(x => x.Id == 1104070430811226163), new DiscordComponentEmoji("⚔️")),
                         new DiscordSelectComponentOption("Stellairs", "stellaris", "Get access to the Stellairs game channel", member.Roles.Any(x => x.Id == 701454772900855819), new DiscordComponentEmoji("⭐")),
                         new DiscordSelectComponentOption("Terra Tech", "tt", "Get access to the Terra Tech game channel", member.Roles.Any(x => x.Id == 1014261454624542810), new DiscordComponentEmoji("🤖")),
                         new DiscordSelectComponentOption("Warhammer 40k", "wh40k", "Get access to the Warhammer 40k game channel", member.Roles.Any(x => x.Id == 766322672321560628), new DiscordComponentEmoji("🔨"))
@@ -111,11 +113,12 @@ namespace LathBotFront.EventHandlers
                     {
                         ulong roleid = selection switch
                         {
-                            "airships" => 978954327907532811,
+                            //"airships" => 978954327907532811,
                             "ftd" => 701454853095817316,
                             "dnd" => 1046124300761043004,
                             "minecraft" => 713367380574732319,
                             "reassembly" => 850029252812210207,
+                            "rpg" => 1104070430811226163,
                             "stellaris" => 701454772900855819,
                             "tt" => 1014261454624542810,
                             "wh40k" => 766322672321560628,
