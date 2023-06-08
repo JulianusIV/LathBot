@@ -543,7 +543,7 @@ namespace LathBotFront
 
                 await OnTimerMethods.RemindMutes();
 
-                //await OnTimerMethods.APOD();
+                await OnTimerMethods.APOD();
             }
             catch (Exception ex)
             {
