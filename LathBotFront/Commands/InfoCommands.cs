@@ -30,7 +30,7 @@ namespace LathBotFront.Commands
                     "For more info use -help, -tos, or -privacy",
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = ctx.Client.CurrentUser.AvatarUrl }
             };
-            discordEmbed.AddField("Language", "C# using Visual Studio 2019");
+            discordEmbed.AddField("Language", "C# using Visual Studio 2022");
             discordEmbed.AddField("Library", "DSharpPlus, Version:" + ctx.Client.VersionString);
             discordEmbed.AddField(".NET Core Version: ", PlatformServices.Default.Application.RuntimeFramework.Version.ToString(2));
             discordEmbed.AddField("Repository", "[GitHub](https://github.com/JulianusIV/LathBot)");
