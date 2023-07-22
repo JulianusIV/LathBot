@@ -1,15 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.4.0-nightly-01249" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.4.0-nightly-01249" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.4.0-nightly-01249" />
-    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.4.0-nightly-01249" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="5.0.0-nightly-01663" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-01663" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="5.0.0-nightly-01663" />
+    <PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-01663" />
   </ItemGroup>
 
   <ItemGroup>

@@ -72,7 +72,7 @@ namespace LathBotFront
             Client = new DiscordClient(config);
 
             //Register client events
-            Client.Ready += Events.OnClientReady;
+            Client.SessionCreated += Events.OnClientReady;
             Client.GuildDownloadCompleted += Events.Client_GuildDownloadCompleted;
             Client.MessageCreated += Events.MessageCreated;
             Client.MessageUpdated += Events.MessageUpdated;
@@ -114,7 +114,6 @@ namespace LathBotFront
             {
                 Timeout = TimeSpan.FromMinutes(5),
                 PollBehaviour = PollBehaviour.KeepEmojis,
-                AckPaginationButtons = true
             });
 
             CommandsNextConfiguration commandsConfig = new()

@@ -14,6 +14,7 @@ using LathBotBack.Models;
 using LathBotBack.Repos;
 using LathBotBack.Services;
 using LathBotFront.Interactions.PreExecutionChecks;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,7 +28,7 @@ namespace LathBotFront
 {
     internal class Events
     {
-        internal static Task OnClientReady(DiscordClient sender, ReadyEventArgs _)
+        internal static Task OnClientReady(DiscordClient sender, SessionReadyEventArgs _)
         {
             DiscordActivity activity = new("the camera outside your location.", ActivityType.Streaming)
             {
@@ -425,7 +426,6 @@ namespace LathBotFront
                         LavalinkService.Instance.Queues.Remove(e.Guild);
                     await conn.StopAsync();
                     await conn.DisconnectAsync();
-                    e.Handled = true;
                 }
             });
             return Task.CompletedTask;
