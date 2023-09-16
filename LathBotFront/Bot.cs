@@ -75,6 +75,7 @@ namespace LathBotFront
             Client.SessionCreated += Events.OnClientReady;
             Client.GuildDownloadCompleted += Events.Client_GuildDownloadCompleted;
             Client.MessageCreated += Events.MessageCreated;
+            Client.MessageCreated += Prevention.OnMessageCreated;
             Client.MessageUpdated += Events.MessageUpdated;
             Client.MessageDeleted += Events.MessageDeleted;
             Client.GuildMemberAdded += Events.MemberAdded;
