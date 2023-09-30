@@ -1,5 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Entities.AuditLogs;
 using DSharpPlus.EventArgs;
 using LathBotBack.Services;
 using System;
@@ -20,8 +21,9 @@ namespace LathBotFront
                 if (e.Guild.Id != 699555747591094344)
                     return;
 
-                DiscordAuditLogBanEntry auditLog = (await e.Guild.GetAuditLogsAsync(limit: 5, action_type: AuditLogActionType.Ban))
-                    .First(x => ((DiscordAuditLogBanEntry)x).Target == e.Member)
+                DiscordAuditLogBanEntry auditLog = e.Guild.GetAuditLogsAsync(limit: 5, actionType: AuditLogActionType.Ban)
+                    .ToBlockingEnumerable().
+                    First(x => ((DiscordAuditLogBanEntry)x).Target == e.Member)
                     as DiscordAuditLogBanEntry;
 
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
@@ -42,7 +44,8 @@ namespace LathBotFront
                 if (e.Guild.Id != 699555747591094344)
                     return;
 
-                DiscordAuditLogBanEntry auditLog = (await e.Guild.GetAuditLogsAsync(limit: 5, action_type: AuditLogActionType.Unban))
+                DiscordAuditLogBanEntry auditLog = e.Guild.GetAuditLogsAsync(limit: 5, actionType: AuditLogActionType.Unban)
+                    .ToBlockingEnumerable()
                     .First(x => ((DiscordAuditLogBanEntry)x).Target == e.Member)
                     as DiscordAuditLogBanEntry;
 
