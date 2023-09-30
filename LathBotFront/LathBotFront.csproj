@@ -23,11 +23,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DSharpPlus" Version="5.0.0-nightly-01788" />
-		<PackageReference Include="DSharpPlus.CommandsNext" Version="5.0.0-nightly-01788" />
-		<PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-01788" />
+		<PackageReference Include="DSharpPlus" Version="5.0.0-nightly-01735" />
+		<PackageReference Include="DSharpPlus.CommandsNext" Version="5.0.0-nightly-01735" />
+		<PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-01735" />
 		<PackageReference Include="DSharpPlus.Lavalink" Version="5.0.0-nightly-01735" />
-		<PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-01788" />
+		<PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-01735" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.11.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="5.0.0" />
 		<PackageReference Include="QrCoder" Version="1.4.3" />
