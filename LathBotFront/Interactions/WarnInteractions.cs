@@ -650,7 +650,10 @@ namespace LathBotFront.Interactions
             repo.GetModById(dbId, out Mod mod);
 
             if (mod.TwoFAKey is null || mod.TwoFAKey.Length <= 0)
-                return (true, ctx.Interaction);
+            {
+                await ctx.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Enable your 2FA, dumbass."));
+                return (false, null);
+            }
 
             var twoFAKey = AesEncryption.DecryptStringToBytes(mod.TwoFAKey, mod.TwoFAKeySalt);
 
