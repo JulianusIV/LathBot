@@ -10,7 +10,7 @@
     <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-01735" />
     <PackageReference Include="DSharpPlus.Lavalink" Version="5.0.0-nightly-01735" />
     <PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-01735" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 
 </Project>
