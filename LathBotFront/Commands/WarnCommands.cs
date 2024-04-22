@@ -27,8 +27,8 @@ namespace LathBotFront.Commands
             await ctx.Channel.TriggerTypingAsync();
             if (ctx.User.Id != 387325006176059394)
                 return;
-            IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
-            foreach (DiscordMember member in members)
+            var members = ctx.Guild.GetAllMembersAsync();
+            await foreach (DiscordMember member in members)
             {
                 User user = new()
                 {
@@ -53,7 +53,7 @@ namespace LathBotFront.Commands
             await ctx.Channel.TriggerTypingAsync();
             if (ctx.User.Id != 387325006176059394)
                 return;
-            IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
+            var members = ctx.Guild.GetAllMembersAsync().ToBlockingEnumerable();
             int count = 0;
             UserRepository repo = new(ReadConfig.Config.ConnectionString);
             foreach (DiscordMember member in members)
@@ -89,11 +89,11 @@ namespace LathBotFront.Commands
             if (!res)
             {
                 await ctx.RespondAsync("Error counting entries in database");
-                await ctx.RespondAsync($"Added {count} users, {members.Count} members");
+                await ctx.RespondAsync($"Added {count} users, {members.Count()} members");
             }
             else
             {
-                await ctx.RespondAsync($"Added {count} users, {members.Count} members, {amount} entries");
+                await ctx.RespondAsync($"Added {count} users, {members.Count()} members, {amount} entries");
             }
         }
 
@@ -128,11 +128,11 @@ namespace LathBotFront.Commands
             embedBuilder.AddField("Reason:", reportReason);
 
             DiscordEmbed embed = embedBuilder.Build();
-            List<DiscordMember> senate = new()
-            {
+            List<DiscordMember> senate =
+            [
                 await Lathland.GetMemberAsync(387325006176059394),//Myself
                 await Lathland.GetMemberAsync(289112287250350080)//Parth
-            };
+            ];
             foreach (DiscordMember senator in senate)
             {
                 await senator.SendMessageAsync(embed);
@@ -142,7 +142,7 @@ namespace LathBotFront.Commands
 
         [Command("allwarns")]
         [Description("Display all currently unpardoned warns")]
-        [RequireUserPermissions(Permissions.KickMembers)]
+        [RequireUserPermissions(DiscordPermissions.KickMembers)]
         public async Task AllWarns(CommandContext ctx)
         {
             await ctx.Channel.TriggerTypingAsync();
@@ -157,7 +157,7 @@ namespace LathBotFront.Commands
             int index = 0;
             int indicator = 0;
             UserRepository urepo = new(ReadConfig.Config.ConnectionString);
-            List<Page> pages = new();
+            List<Page> pages = [];
             DiscordEmbedBuilder embedBuilder = new()
             {
                 Title = $"Showing all warnings in the server",
@@ -348,10 +348,8 @@ namespace LathBotFront.Commands
                 member = await ctx.Guild.GetMemberAsync(user.Id);
             }
 
-            DiscordMessageBuilder builder = new()
-            {
-                Content = "Are you fucking sure about that?",
-                Embed = new DiscordEmbedBuilder
+            DiscordMessageBuilder builder = new DiscordMessageBuilder().WithContent("Are you fucking sure about that?")
+                .AddEmbed(new DiscordEmbedBuilder
                 {
                     Title = "Member you selected:",
                     Description = member == null ? user.ToString() : member.ToString(),
@@ -361,12 +359,12 @@ namespace LathBotFront.Commands
                     },
                     Color = member == null ? new DiscordColor("#FF0000") : member.Color
                 }
-            };
-            List<DiscordComponent> components = new()
-            {
-                new DiscordButtonComponent(ButtonStyle.Danger, "sure", "Yes I fucking am!"),
-                new DiscordButtonComponent(ButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
-            };
+            );
+            List<DiscordComponent> components =
+            [
+                new DiscordButtonComponent(DiscordButtonStyle.Danger, "sure", "Yes I fucking am!"),
+                new DiscordButtonComponent(DiscordButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
+            ];
             builder.AddComponents(components);
             DiscordMessage message = await builder.SendAsync(ctx.Channel);
             InteractivityExtension interactivity = ctx.Client.GetInteractivity();

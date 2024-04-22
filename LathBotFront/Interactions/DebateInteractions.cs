@@ -16,7 +16,7 @@ namespace LathBotFront.Interactions
         [EmbedBanned]
         public async Task Embed(InteractionContext ctx)
         {
-            await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
+            await ctx.CreateResponseAsync(DiscordInteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
 
             if (!await _embedCooldown.ExecuteCheckAsync(ctx))
             {
@@ -33,7 +33,7 @@ namespace LathBotFront.Interactions
                 return;
             }
 
-            await ctx.Channel.AddOverwriteAsync(ctx.Member, Permissions.EmbedLinks | Permissions.AttachFiles);
+            await ctx.Channel.AddOverwriteAsync(ctx.Member, DiscordPermissions.EmbedLinks | DiscordPermissions.AttachFiles);
 
             var message = await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
                 .WithContent("Done! You now have permissions to send ONE message containing links and/or files within the next 3 minutes."));

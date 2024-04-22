@@ -1,7 +1,6 @@
 ﻿using DSharpPlus;
 using LathBotBack.Base;
 using LathBotBack.Logging;
-using System;
 using System.Timers;
 
 namespace LathBotBack.Services

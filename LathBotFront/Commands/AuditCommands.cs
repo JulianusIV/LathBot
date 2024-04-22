@@ -1,5 +1,4 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
@@ -38,39 +37,39 @@ namespace LathBotFront.Commands
         }
 
         [Command("audit")]
-        public async Task Audit(CommandContext ctx) 
+        public async Task Audit(CommandContext ctx)
             => await ctx.RespondAsync(DoAudit(ctx, ctx.Member));
 
         [Command("Audit")]
-        public async Task Audit(CommandContext ctx, DiscordMember mod) 
+        public async Task Audit(CommandContext ctx, DiscordMember mod)
             => await ctx.RespondAsync(DoAudit(ctx, mod));
 
         [Command("auditall")]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [RequireUserPermissions(DiscordPermissions.Administrator)]
         public async Task AuditAll(CommandContext ctx)
         {
-            var members = await ctx.Guild.GetAllMembersAsync();
+            var members = ctx.Guild.GetAllMembersAsync().ToBlockingEnumerable();
             var mods = members.Where(x => x
                 .PermissionsIn(ctx.Guild.GetChannel(700350465174405170))
-                .HasPermission(Permissions.KickMembers) && !x.IsBot);
+                .HasPermission(DiscordPermissions.KickMembers) && !x.IsBot);
 
             var pages = new List<Page>();
             foreach (var item in mods)
             {
                 var builder = DoAudit(ctx, item);
-                if (builder.Embed == null)
+                if (!builder.Embeds.Any())
                 {
                     await ctx.RespondAsync(builder);
                     return;
                 }
-                pages.Add(new Page { Embed = builder.Embed });
+                pages.Add(new Page { Embed = builder.Embeds[0] });
             }
             _ = ctx.Channel.SendPaginatedMessageAsync(ctx.Member, pages, PaginationBehaviour.WrapAround, ButtonPaginationBehavior.DeleteMessage);
         }
 
         private DiscordMessageBuilder DoAudit(CommandContext ctx, DiscordMember mod)
         {
-            if (!mod.PermissionsIn(ctx.Guild.GetChannel(700350465174405170)).HasPermission(Permissions.KickMembers))
+            if (!mod.PermissionsIn(ctx.Guild.GetChannel(700350465174405170)).HasPermission(DiscordPermissions.KickMembers))
             {
                 return new DiscordMessageBuilder { Content = "Member is not a mod (anymore)." };
             }
@@ -103,7 +102,7 @@ namespace LathBotFront.Commands
             builder.AddField("Unmute Amount:", audit.Unmutes.ToString());
             builder.AddField("Kick Amount:", audit.Kicks.ToString());
             builder.AddField("Ban Amount:", audit.Bans.ToString());
-            return new DiscordMessageBuilder { Embed = builder.Build() };
+            return new DiscordMessageBuilder().AddEmbed(builder.Build());
         }
     }
 }

@@ -7,10 +7,8 @@ using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
-    public class ModRepository : RepositoryBase
+    public class ModRepository(string connectionString) : RepositoryBase(connectionString)
     {
-        public ModRepository(string connectionString) : base(connectionString) { }
-
         public bool GetAll(out List<Mod> list)
         {
             bool result = false;
@@ -22,7 +20,7 @@ namespace LathBotBack.Repos
                 DbCommand.Parameters.Clear();
                 DbConnection.Open();
                 using SqlDataReader reader = DbCommand.ExecuteReader();
-                list = new List<Mod>();
+                list = [];
                 while (reader.Read())
                 {
                     var mod = new Mod

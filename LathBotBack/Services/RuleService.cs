@@ -27,8 +27,8 @@ namespace LathBotBack.Services
 
         public override void Init(DiscordClient client)
         {
-            Rules = new Rule[14]
-            {
+            Rules =
+            [
                 new Rule(1, "Follow the discord [ToS](https://discord.com/terms) and [community guidelines](https://discord.com/guidelines).", 1, 15, "TOS"),
                 new Rule(2, "Do not ping Lathrix", 1, 3, "PING"),
                 new Rule(3, "Use appropriate channels and follow the channel rules (description/pins).", 1, 5, "CHANNELS"),
@@ -43,7 +43,7 @@ namespace LathBotBack.Services
                 new Rule(12, "Don't share personal information about others", 1, 15, "DOXXING"),
                 new Rule(13, "Holding bias as a staff member is prohibited, or if you are a member who is trying to make staff biased. This will be known as corruption and should be reported to a member of the Senate immediately.", 1, 10, "BIAS"),
                 new Rule(0, "This rule is for anything that goes against basic human decency, and for cases not covered by the rules, that should be warned.", 1, 15, "OTHER")
-            };
+            ];
         }
     }
 }

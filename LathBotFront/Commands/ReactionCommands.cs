@@ -77,7 +77,7 @@ namespace LathBotFront.Commands
         {
             if (ctx.Channel.Id == 718162681554534511 || ctx.Channel.Id == 812755782067290162) //debate and venting
                 return;
-            if (repetition.ToUpper() == "I'M STUPID" || repetition.ToUpper() == "IM STUPID")
+            if (repetition.Equals("I'M STUPID", StringComparison.CurrentCultureIgnoreCase) || repetition.Equals("IM STUPID", StringComparison.CurrentCultureIgnoreCase))
             {
                 await ctx.Channel.SendMessageAsync("Tell us something new...");
             }
@@ -105,13 +105,13 @@ namespace LathBotFront.Commands
             if (member.Id == 192037157416730625)
                 await ctx.RespondAsync("Not gonna ping Lath, but im guessing he would pat back.");
             else if (member.Id == 395566758989135882)//neb
-                await ctx.RespondAsync(new DiscordMessageBuilder().WithSticker(ctx.Guild.Stickers[964256150054899742]));
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithStickers([ctx.Guild.Stickers[964256150054899742]]));
             else if (member.Id == 700373370491109489)//femke
-                await ctx.RespondAsync(new DiscordMessageBuilder().WithSticker(ctx.Guild.Stickers[1013888253272801310]));
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithStickers([ctx.Guild.Stickers[1013888253272801310]]));
             else if (member.Id == 387325006176059394)//julian
                 await ctx.RespondAsync($"Julian!, you just got pat by {ctx.Member.Mention}");
             else if (member.Id == ctx.Client.CurrentUser.Id)
-                await ctx.RespondAsync(new DiscordMessageBuilder().WithSticker(ctx.Guild.Stickers[967807862007029880]));
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithStickers([ctx.Guild.Stickers[967807862007029880]]));
             else
                 await ctx.RespondAsync($"{member.Mention} you just got pat by {ctx.Member.Mention}.");
 
@@ -151,7 +151,7 @@ namespace LathBotFront.Commands
 
             var message = new DiscordMessageBuilder();
 
-            Dictionary<string, Stream> attachments = new();
+            Dictionary<string, Stream> attachments = [];
             if (lastDelete.Attachments is not null && lastDelete.Attachments.Any())
             {
                 using HttpClient httpClient = new();
@@ -164,7 +164,7 @@ namespace LathBotFront.Commands
                 message.AddFiles(attachments);
             }
 
-            await ctx.RespondAsync(message.WithEmbed(builder).WithAllowedMentions(Mentions.None));
+            await ctx.RespondAsync(message.AddEmbed(builder).WithAllowedMentions(Mentions.None));
             foreach (var attachment in attachments)
                 attachment.Value.Close();
         }

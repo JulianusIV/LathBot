@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
 {
-    public class InfoCommands : BaseCommandModule
+    public partial class InfoCommands : BaseCommandModule
     {
         [Command("info")]
         [Description("Display some info about the bot")]
@@ -66,7 +66,7 @@ namespace LathBotFront.Commands
                     desc = result[..result.IndexOf("> ")];
                     result = result[result.IndexOf("> ")..];
                 }
-                var descs = Regex.Split(desc, "\r?\n\r?\n");
+                var descs = NewlineRegex().Split(desc);
 
                 embed.AddField(title, descs[0]);
 
@@ -91,7 +91,7 @@ namespace LathBotFront.Commands
             using StreamReader reader = new(stream);
             string result = reader.ReadToEnd();
 
-            List<string> content = new();
+            List<string> content = [];
             foreach (char character in result)
             {
                 index++;
@@ -161,5 +161,8 @@ namespace LathBotFront.Commands
             }
             await ctx.Channel.SendMessageAsync(discordEmbed);
         }
+
+        [GeneratedRegex("\r?\n\r?\n")]
+        private static partial Regex NewlineRegex();
     }
 }

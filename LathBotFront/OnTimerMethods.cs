@@ -162,7 +162,7 @@ namespace LathBotFront
                     }
                     else if (user.Roles.Contains(DiscordObjectService.Instance.Lathland.GetRole(701446136208293969)))
                     {
-                        if (!(await (await mod.CreateDmChannelAsync()).GetMessagesAsync(5)).Any(x => x.Content.Contains("You will be reminded again tomorrow.") && x.CreationTimestamp > DateTime.Now - TimeSpan.FromHours(24)))
+                        if (!((await mod.CreateDmChannelAsync()).GetMessagesAsync(5).ToBlockingEnumerable()).Any(x => x.Content.Contains("You will be reminded again tomorrow.") && x.CreationTimestamp > DateTime.Now - TimeSpan.FromHours(24)))
                         {
                             await mod.SendMessageAsync($"The user {user.DisplayName}#{user.Discriminator} ({user.Id}) you muted at {item.Timestamp:yyyy-MM-dd hh:mm} for {item.Duration} days, is now muted for {(DateTime.Now - item.Timestamp):dd} days.\n" +
                                 $"You will be reminded again tomorrow.");
@@ -190,8 +190,8 @@ namespace LathBotFront
 
         public static async Task APOD()
         {
-            IReadOnlyList<DiscordMessage> lastmessageList = await DiscordObjectService.Instance.APODChannel.GetMessagesAsync(1);
-            DiscordMessage lastmessage = lastmessageList[0];
+            var lastmessageList = DiscordObjectService.Instance.APODChannel.GetMessagesAsync(1).ToBlockingEnumerable();
+            DiscordMessage lastmessage = lastmessageList.ElementAt(0);
             if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(24))
             {
                 using HttpClient httpClient = new();
@@ -211,11 +211,9 @@ namespace LathBotFront
                     }
                 }.AddField("Links:", json.HdUrl is null ? $"[Source Link]({json.URL})" : $"[Source Link]({json.HdUrl})\n[Low resolution source]({json.URL})");
 
-                DiscordMessageBuilder builder = new()
-                {
-                    Embed = embedBuilder,
-                    Content = DiscordObjectService.Instance.Lathland.GetRole(848307821703200828).Mention
-                };
+                DiscordMessageBuilder builder = new DiscordMessageBuilder()
+                    .AddEmbed(embedBuilder)
+                    .WithContent(DiscordObjectService.Instance.Lathland.GetRole(848307821703200828).Mention);
                 DiscordMessageBuilder builder2 = null;
                 if (json.MediaType != "image")
                     builder2 = new DiscordMessageBuilder().WithContent(json.URL.Replace("embed/", "watch?v=").Replace("?rel=0", ""));

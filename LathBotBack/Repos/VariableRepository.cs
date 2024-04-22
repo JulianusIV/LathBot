@@ -6,10 +6,8 @@ using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
-    public class VariableRepository : RepositoryBase
+    public class VariableRepository(string connectionString) : RepositoryBase(connectionString)
     {
-        public VariableRepository(string connectionString) : base(connectionString) { }
-
         public bool Create(ref Variable entity)
         {
             bool result = false;

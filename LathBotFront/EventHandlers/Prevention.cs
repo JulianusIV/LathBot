@@ -1,15 +1,15 @@
-﻿using DSharpPlus.EventArgs;
-using DSharpPlus;
-using System.Threading.Tasks;
-using System.Linq;
+﻿using DSharpPlus;
+using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LathBotFront.EventHandlers
 {
     public class Prevention
     {
-        private static Queue<(ulong, DateTime)> lastUsers = new Queue<(ulong, DateTime)>();
+        private static readonly Queue<(ulong, DateTime)> lastUsers = new();
         private static DateTime lastMessage = DateTime.MinValue;
 
         public static Task OnMessageCreated(DiscordClient _1, MessageCreateEventArgs e)
@@ -24,7 +24,7 @@ namespace LathBotFront.EventHandlers
                 if (lastUsers.Count == 0)
                 {
                     // get last 10 messages 
-                    var messages = await e.Channel.GetMessagesAsync(10);
+                    var messages = e.Channel.GetMessagesAsync(10).ToBlockingEnumerable();
                     // sort messages by timestamp, if not already
                     foreach (var message in messages.OrderByDescending(x => x.Timestamp))
                         // add messages to queue

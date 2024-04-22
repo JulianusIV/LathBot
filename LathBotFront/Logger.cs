@@ -21,7 +21,7 @@ namespace LathBotFront
                 if (e.Guild.Id != 699555747591094344)
                     return;
 
-                DiscordAuditLogBanEntry auditLog = e.Guild.GetAuditLogsAsync(limit: 5, actionType: AuditLogActionType.Ban)
+                DiscordAuditLogBanEntry auditLog = e.Guild.GetAuditLogsAsync(limit: 5, actionType: DiscordAuditLogActionType.Ban)
                     .ToBlockingEnumerable().
                     First(x => ((DiscordAuditLogBanEntry)x).Target == e.Member)
                     as DiscordAuditLogBanEntry;
@@ -44,7 +44,7 @@ namespace LathBotFront
                 if (e.Guild.Id != 699555747591094344)
                     return;
 
-                DiscordAuditLogBanEntry auditLog = e.Guild.GetAuditLogsAsync(limit: 5, actionType: AuditLogActionType.Unban)
+                DiscordAuditLogBanEntry auditLog = e.Guild.GetAuditLogsAsync(limit: 5, actionType: DiscordAuditLogActionType.Unban)
                     .ToBlockingEnumerable()
                     .First(x => ((DiscordAuditLogBanEntry)x).Target == e.Member)
                     as DiscordAuditLogBanEntry;
@@ -108,7 +108,7 @@ namespace LathBotFront
                         .WithColor(DiscordColor.Red);
                 }
                 if (embed.Description is not null)
-                    await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+                    await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embed).WithAllowedMentions(Mentions.None));
 
             });
             return Task.CompletedTask;
@@ -169,7 +169,7 @@ namespace LathBotFront
                     .AddField("Mentionable", e.RoleBefore.IsMentionable == e.RoleAfter.IsMentionable ? "No change" : $"{e.RoleBefore.IsMentionable} -> {e.RoleAfter.IsMentionable}", true)
                     .WithColor(DiscordColor.Blurple);
 
-                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embed).WithAllowedMentions(Mentions.None));
             });
             return Task.CompletedTask;
         }
@@ -197,7 +197,7 @@ namespace LathBotFront
                     .WithThumbnail(e.Author.AvatarUrl)
                     .WithColor(DiscordColor.Yellow);
 
-                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embed).WithAllowedMentions(Mentions.None));
             });
             return Task.CompletedTask;
         }
@@ -234,7 +234,7 @@ namespace LathBotFront
 
                 var message = new DiscordMessageBuilder();
 
-                Dictionary<string, Stream> attachments = new();
+                Dictionary<string, Stream> attachments = [];
                 if (e.Message.Attachments is not null && e.Message.Attachments.Any())
                 {
                     using HttpClient httpClient = new();
@@ -247,7 +247,7 @@ namespace LathBotFront
                     message.AddFiles(attachments);
                 }
 
-                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(message.WithEmbed(embed).WithAllowedMentions(Mentions.None));
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(message.AddEmbed(embed).WithAllowedMentions(Mentions.None));
                 foreach (var attachment in attachments)
                     attachment.Value.Close();
             });
@@ -324,7 +324,7 @@ namespace LathBotFront
                         .WithColor(DiscordColor.Blurple);
                 }
 
-                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embed).WithAllowedMentions(Mentions.None));
             });
             return Task.CompletedTask;
         }
@@ -348,7 +348,7 @@ namespace LathBotFront
                 embed.AddField("Parent channel:", e.Parent.Mention);
                 embed.AddField("Creator:", $"{creator.Mention} ({creator.Id})");
 
-                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embed).WithAllowedMentions(Mentions.None));
             });
             return Task.CompletedTask;
         }
@@ -369,7 +369,7 @@ namespace LathBotFront
                 embed.AddField("Thread:", e.Thread.Name);
                 embed.AddField("Parent channel:", e.Parent.Mention);
 
-                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embed).WithAllowedMentions(Mentions.None));
             });
             return Task.CompletedTask;
         }

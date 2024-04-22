@@ -7,14 +7,12 @@ using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
-    public class UserRepository : RepositoryBase
+    public class UserRepository(string connectionString) : RepositoryBase(connectionString)
     {
-        public UserRepository(string connectionString) : base(connectionString) { }
-
         public bool GetAll(out List<User> list)
         {
             bool result = false;
-            list = new List<User>();
+            list = [];
 
             try
             {

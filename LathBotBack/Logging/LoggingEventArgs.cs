@@ -2,11 +2,8 @@
 
 namespace LathBotBack.Logging
 {
-    public class LoggingEventArgs : EventArgs
+    public class LoggingEventArgs(string message) : EventArgs
     {
-        public LoggingEventArgs(string message)
-            => Message = message;
-
-        public string Message { get; set; }
+        public string Message { get; set; } = message;
     }
 }

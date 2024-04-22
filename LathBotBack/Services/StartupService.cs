@@ -30,7 +30,7 @@ namespace LathBotBack.Services
             get => Process.GetCurrentProcess().StartTime;
         }
 
-        public override void Init(DiscordClient client) 
+        public override void Init(DiscordClient client)
             => StartUpCompleted = true;
     }
 }

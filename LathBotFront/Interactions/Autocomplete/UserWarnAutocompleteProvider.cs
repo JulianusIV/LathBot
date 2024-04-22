@@ -1,5 +1,4 @@
-﻿using DSharpPlus;
-using DSharpPlus.Entities;
+﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using LathBotBack.Config;
 using LathBotBack.Models;
@@ -16,7 +15,7 @@ namespace LathBotFront.Interactions.Autocomplete
         {
             var repo = new WarnRepository(ReadConfig.Config.ConnectionString);
             var urepo = new UserRepository(ReadConfig.Config.ConnectionString);
-            urepo.GetIdByDcId((ulong)ctx.Options.First(x => x.Type == ApplicationCommandOptionType.User).Value, out int dbId);
+            urepo.GetIdByDcId((ulong)ctx.Options.First(x => x.Type == DiscordApplicationCommandOptionType.User).Value, out int dbId);
             repo.GetAllByUser(dbId, out List<Warn> warns);
 
             var choices = new List<DiscordAutoCompleteChoice>();

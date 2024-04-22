@@ -2,25 +2,22 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Lavalink;
-using DSharpPlus.Lavalink.EventArgs;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.EventArgs;
 using LathBotBack.Base;
 using LathBotBack.Config;
-using LathBotBack.Enums;
 using LathBotBack.Logging;
 using LathBotBack.Models;
 using LathBotBack.Repos;
 using LathBotBack.Services;
 using LathBotFront.Interactions.PreExecutionChecks;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -30,7 +27,7 @@ namespace LathBotFront
     {
         internal static Task OnClientReady(DiscordClient sender, SessionReadyEventArgs _)
         {
-            DiscordActivity activity = new("the camera outside your location.", ActivityType.Streaming)
+            DiscordActivity activity = new("the camera outside your location.", DiscordActivityType.Streaming)
             {
                 StreamUrl = "https://www.twitch.tv/lathland"
             };
@@ -54,7 +51,7 @@ namespace LathBotFront
                     _ = DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync("Error getting all users in database.");
                     return;
                 }
-                IReadOnlyCollection<DiscordMember> allMembers = await DiscordObjectService.Instance.Lathland.GetAllMembersAsync();
+                var allMembers = DiscordObjectService.Instance.Lathland.GetAllMembersAsync().ToBlockingEnumerable();
                 IEnumerable<DiscordMember> toAdd = allMembers.Where(x => !list.Any(y => y.DcID == x.Id));
                 foreach (var item in toAdd)
                 {
@@ -101,7 +98,7 @@ namespace LathBotFront
                     DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
                     await member.GrantRoleAsync(e.Guild.GetRole(767050052257447936));
                     await member.GrantRoleAsync(e.Guild.GetRole(699562710144385095));
-                    await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                         new DiscordInteractionResponseBuilder
                         {
                             Content = "You are now verified and can access the rest of the channels.\n\n" +
@@ -119,7 +116,7 @@ namespace LathBotFront
             {
                 if (e.Exception is SlashExecutionChecksFailedException checkException)
                     if (checkException.FailedChecks.Any(x => x.GetType() == typeof(EmbedBannedAttribute)))
-                        await e.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
+                        await e.Context.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
                             .AsEphemeral()
                             .WithContent("You are banned from using this command"));
 
@@ -154,6 +151,17 @@ namespace LathBotFront
                     return;
                 if (!StartupService.Instance.StartUpCompleted)
                     return;
+                if (e.Message.Poll is not null)
+                {
+                    var mem = await e.Guild.GetMemberAsync(e.Author.Id);
+                    if (!mem.Roles.Any(x => x.Id == 822957506674163792)) // Moderation team
+                    {
+                        await e.Message.DeleteAsync();
+                        var msg = await e.Channel.SendMessageAsync("You dont have the necessary permissions to post polls");
+                        Thread.Sleep(TimeSpan.FromSeconds(5));
+                        await msg.DeleteAsync();
+                    }
+                }
                 if (e.Message.Attachments.Any(x => x.FileName.ToLower().EndsWith(".webm")))
                 {
                     await e.Message.DeleteAsync();
@@ -173,11 +181,11 @@ namespace LathBotFront
                         if (oldThread is not null)
                             await oldThread.ModifyAsync(x =>
                             {
-                                x.AutoArchiveDuration = AutoArchiveDuration.Hour;
+                                x.AutoArchiveDuration = DiscordAutoArchiveDuration.Hour;
                                 x.Locked = true;
                             });
 
-                        var thread = await e.Message.CreateThreadAsync("text-answers", AutoArchiveDuration.Week);
+                        var thread = await e.Message.CreateThreadAsync("text-answers", DiscordAutoArchiveDuration.Week);
                         await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👍"));
                         await e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👎"));
                     }
@@ -188,11 +196,11 @@ namespace LathBotFront
                 }
                 if (((e.Channel.Id == 838088490704568341) ||
                     (e.Channel.Id == 718162681554534511 && !e.Channel.PermissionOverwrites.Any(x => x.Id == e.Author.Id))) &&
-                    !(await e.Guild.GetMemberAsync(e.Author.Id)).Permissions.HasPermission(Permissions.KickMembers))
+                    !(await e.Guild.GetMemberAsync(e.Author.Id)).Permissions.HasPermission(DiscordPermissions.KickMembers))
                 {
                     string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
                     Regex rg = new(pattern);
-                    if (rg.Matches(e.Message.Content).Any())
+                    if (rg.Matches(e.Message.Content).Count != 0)
                     {
                         await e.Message.DeleteAsync($"Autoremove link in #{e.Channel.Name}");
                         await e.Channel.SendMessageAsync("No links allowed in here." + (e.Channel.Id == 718162681554534511 ? "\nUse /embed to get permissions." : ""));
@@ -268,7 +276,7 @@ namespace LathBotFront
                 {
                     string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
                     Regex rg = new(pattern);
-                    if (rg.Matches(e.Message.Content).Any())
+                    if (rg.Matches(e.Message.Content).Count != 0)
                     {
                         await e.Message.DeleteAsync();
                         await e.Channel.SendMessageAsync("No links allowed in here, Not even in edits! >:(");
@@ -358,9 +366,9 @@ namespace LathBotFront
                     var reacts = await e.Message.GetReactionsAsync(DiscordEmoji.FromGuildEmote(sender, 723564837338349578));
                     if (reacts.Count >= GoodGuysService.Instance.GoodGuysReactionCount)
                     {
-                        IReadOnlyList<DiscordMessage> messages = await DiscordObjectService.Instance.GoodGuysChannel.GetMessagesAsync(20);
+                        var messages = DiscordObjectService.Instance.GoodGuysChannel.GetMessagesAsync(20);
 
-                        foreach (DiscordMessage entry in messages)
+                        await foreach (DiscordMessage entry in messages)
                             if (entry.Content.Contains(e.Message.Id.ToString()))
                                 return;
                         DiscordMessage message = await e.Channel.GetMessageAsync(e.Message.Id);
@@ -379,7 +387,7 @@ namespace LathBotFront
 
                         var messageBuilder = new DiscordMessageBuilder();
 
-                        Dictionary<string, Stream> attachments = new();
+                        Dictionary<string, Stream> attachments = [];
                         if (e.Message.Attachments is not null && e.Message.Attachments.Any())
                         {
                             using HttpClient httpClient = new();
@@ -392,40 +400,10 @@ namespace LathBotFront
                             messageBuilder.AddFiles(attachments);
                         }
 
-                        await DiscordObjectService.Instance.GoodGuysChannel.SendMessageAsync(messageBuilder.WithContent(e.Message.Id.ToString()).WithEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
+                        await DiscordObjectService.Instance.GoodGuysChannel.SendMessageAsync(messageBuilder.WithContent(e.Message.Id.ToString()).AddEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
                         foreach (var attachment in attachments)
                             attachment.Value.Close();
                     }
-                }
-            });
-            return Task.CompletedTask;
-        }
-
-        internal static Task VoiceStateUpdated(DiscordClient sender, VoiceStateUpdateEventArgs e)
-        {
-            _ = Task.Run(async () =>
-            {
-                if (!StartupService.Instance.StartUpCompleted)
-                {
-                    return;
-                }
-                if (e.Before == null || e.Guild.GetMemberAsync(sender.CurrentUser.Id).Result.VoiceState == null)
-                    return;
-                if (e.Before.Channel == e.Guild.GetMemberAsync(sender.CurrentUser.Id).Result.VoiceState.Channel)
-                {
-                    foreach (DiscordMember member in e.Guild.GetMemberAsync(sender.CurrentUser.Id).Result.VoiceState.Channel.Users)
-                    {
-                        if (!member.IsBot)
-                        {
-                            return;
-                        }
-                    }
-                    LavalinkNodeConnection node = sender.GetLavalink().ConnectedNodes.Values.First();
-                    LavalinkGuildConnection conn = node.GetGuildConnection(e.Guild);
-                    if (LavalinkService.Instance.Queues != null && LavalinkService.Instance.Queues.ContainsKey(e.Guild))
-                        LavalinkService.Instance.Queues.Remove(e.Guild);
-                    await conn.StopAsync();
-                    await conn.DisconnectAsync();
                 }
             });
             return Task.CompletedTask;
@@ -447,90 +425,6 @@ namespace LathBotFront
             {
                 await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
                 await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
-            });
-            return Task.CompletedTask;
-        }
-
-        internal static Task PlaybackFinished(LavalinkGuildConnection sender, TrackFinishEventArgs e)
-        {
-            _ = Task.Run(async () =>
-            {
-                if (LavalinkService.Instance.Repeats?[sender.Guild] == Repeaters.single)
-                {
-                    await sender.PlayAsync(e.Track);
-                    DiscordEmbedBuilder embedBuilder = new()
-                    {
-                        Title = "Now playing:",
-                        Description = $"[{e.Track.Title}]({e.Track.Uri})",
-                        Color = DiscordColor.Red
-                    };
-                    try
-                    {
-                        await sender.Guild.GetChannel(788102512455450654).SendMessageAsync(embedBuilder.Build());
-                    }
-                    catch (NullReferenceException)
-                    {
-                        await sender.Guild.GetChannel(512370308976607250).SendMessageAsync(embedBuilder.Build());
-                    }
-                    return;
-                }
-                else if (LavalinkService.Instance.Queues?[sender.Guild]?.Count != 0 && LavalinkService.Instance.Queues?[sender.Guild]?.Count != null)
-                {
-                    await sender.PlayAsync(LavalinkService.Instance.Queues[sender.Guild].First());
-                    DiscordEmbedBuilder embedBuilder = new()
-                    {
-                        Title = "Now playing:",
-                        Description = $"[{LavalinkService.Instance.Queues[sender.Guild].First().Title}]({LavalinkService.Instance.Queues[sender.Guild].First().Uri})",
-                        Color = DiscordColor.Red
-                    };
-
-                    LavalinkService.Instance.Queues[sender.Guild].RemoveAt(LavalinkService.Instance.Queues[sender.Guild].IndexOf(LavalinkService.Instance.Queues[sender.Guild].First()));
-                    if (LavalinkService.Instance.Repeats[sender.Guild] == Repeaters.all)
-                    {
-                        LavalinkService.Instance.Queues[sender.Guild].Add(e.Track);
-                    }
-
-                    try
-                    {
-                        await sender.Guild.GetChannel(788102512455450654).SendMessageAsync(embedBuilder.Build());
-                    }
-                    catch (NullReferenceException)
-                    {
-                        await sender.Guild.GetChannel(512370308976607250).SendMessageAsync(embedBuilder.Build());
-                    }
-                }
-                else if (LavalinkService.Instance.Repeats[sender.Guild] != Repeaters.off)
-                {
-                    await sender.PlayAsync(e.Track);
-                    DiscordEmbedBuilder embedBuilder = new()
-                    {
-                        Title = "Now playing:",
-                        Description = $"[{e.Track.Title}]({e.Track.Uri})",
-                        Color = DiscordColor.Red
-                    };
-                    try
-                    {
-                        await sender.Guild.GetChannel(788102512455450654).SendMessageAsync(embedBuilder.Build());
-                    }
-                    catch (NullReferenceException)
-                    {
-                        await sender.Guild.GetChannel(512370308976607250).SendMessageAsync(embedBuilder.Build());
-                    }
-                    return;
-                }
-                else
-                {
-                    await sender.DisconnectAsync();
-                    LavalinkService.Instance.Queues.Remove(sender.Guild);
-                    try
-                    {
-                        await sender.Guild.GetChannel(788102512455450654).SendMessageAsync("Queue ended, leaving VC.");
-                    }
-                    catch (NullReferenceException)
-                    {
-                        await sender.Guild.GetChannel(512370308976607250).SendMessageAsync("Queue ended, leaving VC.");
-                    }
-                }
             });
             return Task.CompletedTask;
         }

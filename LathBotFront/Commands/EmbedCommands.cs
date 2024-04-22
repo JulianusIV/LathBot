@@ -1,5 +1,4 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using LathBotBack.Services;
@@ -25,15 +24,12 @@ namespace LathBotFront.Commands
                     "This will still be available after you successfully verified yourself in <#767049785223020556>"
             };
 
-            var messageBuilder = new DiscordMessageBuilder()
-            {
-                Embed = embedBuilder.Build()
-            };
+            var messageBuilder = new DiscordMessageBuilder().AddEmbed(embedBuilder);
 
             messageBuilder.AddComponents(new List<DiscordComponent>()
             {
-                new DiscordButtonComponent(ButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
-                new DiscordButtonComponent(ButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷"))
+                new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
+                new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷"))
             });
             await ctx.Channel.SendMessageAsync(messageBuilder);
         }
@@ -53,15 +49,12 @@ namespace LathBotFront.Commands
                     "This will still be available after you successfully verified yourself in <#767049785223020556>"
             };
 
-            var messageBuilder = new DiscordMessageBuilder()
-            {
-                Embed = embedBuilder.Build()
-            };
+            var messageBuilder = new DiscordMessageBuilder().AddEmbed(embedBuilder);
 
             messageBuilder.AddComponents(new List<DiscordComponent>()
             {
-                new DiscordButtonComponent(ButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
-                new DiscordButtonComponent(ButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷"))
+                new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
+                new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷"))
             });
 
             DiscordMessage infoMessage = await ctx.Channel.GetMessageAsync(1014293811435942040);
@@ -90,10 +83,7 @@ namespace LathBotFront.Commands
                 ImageUrl = "https://pbs.twimg.com/media/EW-x7e1XkAAQqAw?format=jpg&name=small",
             };
 
-            var messageBuilder = new DiscordMessageBuilder()
-            {
-                Embed = embedBuilder,
-            };
+            var messageBuilder = new DiscordMessageBuilder().AddEmbed(embedBuilder);
 
             foreach (var button in new DiscordComponent[]
             {
@@ -132,10 +122,7 @@ namespace LathBotFront.Commands
                 ImageUrl = "https://pbs.twimg.com/media/EW-x7e1XkAAQqAw?format=jpg&name=small"
             };
 
-            var messageBuilder = new DiscordMessageBuilder()
-            {
-                Embed = embedBuilder,
-            };
+            var messageBuilder = new DiscordMessageBuilder().AddEmbed(embedBuilder);
 
             foreach (var button in new DiscordComponent[]
             {

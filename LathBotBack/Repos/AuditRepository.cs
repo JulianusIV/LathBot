@@ -6,10 +6,8 @@ using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
-    public class AuditRepository : RepositoryBase
+    public class AuditRepository(string connectionString) : RepositoryBase(connectionString)
     {
-        public AuditRepository(string connectionString) : base(connectionString) { }
-
         public bool Create(Audit entity)
         {
             bool result = false;

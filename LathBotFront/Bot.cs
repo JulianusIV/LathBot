@@ -3,8 +3,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.Lavalink;
-using DSharpPlus.Net;
 using DSharpPlus.SlashCommands;
 using LathBotBack.Config;
 using LathBotBack.Models;
@@ -14,7 +12,6 @@ using LathBotFront.Commands;
 using LathBotFront.EventHandlers;
 using LathBotFront.Interactions;
 using System;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 using UptimeKumaHeartbeat;
 
@@ -80,7 +77,6 @@ namespace LathBotFront
             Client.MessageDeleted += Events.MessageDeleted;
             Client.GuildMemberAdded += Events.MemberAdded;
             Client.MessageReactionAdded += Events.ReactionAdded;
-            Client.VoiceStateUpdated += Events.VoiceStateUpdated;
             Client.ClientErrored += Events.ClientErrored;
             Client.ComponentInteractionCreated += Events.ComponentTriggered;
 
@@ -128,7 +124,6 @@ namespace LathBotFront
             Commands.RegisterCommands<AuditCommands>();
             Commands.RegisterCommands<EmbedCommands>();
             Commands.RegisterCommands<InfoCommands>();
-            Commands.RegisterCommands<LavalinkCommands>();
             Commands.RegisterCommands<ReactionCommands>();
             Commands.RegisterCommands<RuleCommands>();
             Commands.RegisterCommands<TechnicalCommands>();
@@ -152,51 +147,11 @@ namespace LathBotFront
 
             await Client.ConnectAsync();
 
-            LavalinkNodeConnection lavaNode = null;
-            lavaNode = await ConnectLavaNodeAsync();
-
-            if (lavaNode != null)
-            {
-                //Register lava commands
-                lavaNode.PlaybackFinished += Events.PlaybackFinished;
-            }
-
             HeartbeatManager heartbeatManager = new();
             HeartbeatData = new("", "");
             await heartbeatManager.StartHeartbeatsAsync(ReadConfig.Config.UptimeKumaUrl, HeartbeatData);
 
             await Task.Delay(-1);
-        }
-
-        private async Task<LavalinkNodeConnection> ConnectLavaNodeAsync()
-        {
-            ConnectionEndpoint endpoint = new()
-            {
-                Hostname = "lathbot_lavalink_1", //compose container name
-                Port = 2333
-            };
-
-            LavalinkConfiguration lavalinkConfig = new()
-            {
-                Password = ReadConfig.Config.LavaLinkPass,
-                RestEndpoint = endpoint,
-                SocketEndpoint = endpoint,
-                SocketAutoReconnect = false
-            };
-
-            LavalinkExtension lavalink = Client.UseLavalink();
-
-            LavalinkNodeConnection res = null;
-            try
-            {
-                res = await lavalink.ConnectAsync(lavalinkConfig);
-            }
-            catch (WebSocketException e)
-            {
-                SystemService.Instance.Logger.Log("Failed to start connection with Lavalink server:\n" + e.Message);
-            }
-
-            return res;
         }
     }
 }

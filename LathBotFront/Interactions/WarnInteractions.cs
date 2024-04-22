@@ -18,13 +18,13 @@ namespace LathBotFront.Interactions
 {
     public class WarnInteractions : ApplicationCommandModule
     {
-        [ContextMenu(ApplicationCommandType.MessageContextMenu, "Warn message")]
-        [SlashCommandPermissions(Permissions.KickMembers)]
+        [ContextMenu(DiscordApplicationCommandType.MessageContextMenu, "Warn message")]
+        [SlashCommandPermissions(DiscordPermissions.KickMembers)]
         public async Task WarnMessage(ContextMenuContext ctx)
         {
             await ctx.DeferAsync(true);
 
-            if (!ctx.Member.Permissions.HasFlag(Permissions.KickMembers))
+            if (!ctx.Member.Permissions.HasFlag(DiscordPermissions.KickMembers))
             {
                 await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("No you dumbass!"));
                 return;
@@ -54,13 +54,13 @@ namespace LathBotFront.Interactions
             await WarnBuilder.ResetLastPunish(ctx.TargetMessage.Author.Id);
         }
 
-        [ContextMenu(ApplicationCommandType.UserContextMenu, "Warn user")]
-        [SlashCommandPermissions(Permissions.KickMembers)]
+        [ContextMenu(DiscordApplicationCommandType.UserContextMenu, "Warn user")]
+        [SlashCommandPermissions(DiscordPermissions.KickMembers)]
         public async Task WarnUser(ContextMenuContext ctx)
         {
             await ctx.DeferAsync(true);
 
-            if (!ctx.Member.Permissions.HasFlag(Permissions.KickMembers))
+            if (!ctx.Member.Permissions.HasFlag(DiscordPermissions.KickMembers))
             {
                 await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("No you dumbass!"));
                 return;
@@ -89,7 +89,7 @@ namespace LathBotFront.Interactions
         }
 
         [SlashCommand("Mute", "Mute a user")]
-        [SlashCommandPermissions(Permissions.KickMembers)]
+        [SlashCommandPermissions(DiscordPermissions.KickMembers)]
         public async Task Mute(InteractionContext ctx,
             [Option("Member", "Who you want to mute")]
             DiscordUser user,
@@ -186,7 +186,7 @@ namespace LathBotFront.Interactions
         }
 
         [SlashCommand("Unmute", "Unmute a muted user")]
-        [SlashCommandPermissions(Permissions.KickMembers)]
+        [SlashCommandPermissions(DiscordPermissions.KickMembers)]
         public async Task Unmute(InteractionContext ctx,
             [Option("Member", "Who you want to unmute")]
             DiscordUser user)
@@ -253,7 +253,7 @@ namespace LathBotFront.Interactions
         }
 
         [SlashCommand("CheckMuted", "Check how long a user is muted for")]
-        [SlashCommandPermissions(Permissions.KickMembers)]
+        [SlashCommandPermissions(DiscordPermissions.KickMembers)]
         public async Task CheckMuted(InteractionContext ctx,
             [Option("User", "The user that you want to check")]
             DiscordUser user)
@@ -329,7 +329,7 @@ namespace LathBotFront.Interactions
         }
 
         [SlashCommand("Kick", "Kick a user")]
-        [SlashCommandPermissions(Permissions.KickMembers)]
+        [SlashCommandPermissions(DiscordPermissions.KickMembers)]
         public async Task Kick(InteractionContext ctx,
             [Option("Member", "Who you want to kick")]
             DiscordUser user)
@@ -369,7 +369,7 @@ namespace LathBotFront.Interactions
         }
 
         [SlashCommand("Ban", "Ban a user")]
-        [SlashCommandPermissions(Permissions.BanMembers)]
+        [SlashCommandPermissions(DiscordPermissions.BanMembers)]
         public async Task Ban(InteractionContext ctx,
             [Option("Member", "Who you want to ban")]
             DiscordUser user,
@@ -380,7 +380,7 @@ namespace LathBotFront.Interactions
         {
             if (user.Id == 192037157416730625)
             {
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("You cant ban Lathrix!"));
+                await ctx.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("You cant ban Lathrix!"));
                 return;
             }
             DiscordMember member = null;
@@ -389,12 +389,12 @@ namespace LathBotFront.Interactions
 
             if (ctx.Member.Hierarchy <= member?.Hierarchy)
             {
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("You cant ban someone higher or same rank as you!"));
+                await ctx.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("You cant ban someone higher or same rank as you!"));
                 return;
             }
             if (string.IsNullOrEmpty(reason))
             {
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Please provide a reason"));
+                await ctx.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Please provide a reason"));
                 return;
             }
             var result = await Ensure2FA(ctx);
@@ -424,7 +424,7 @@ namespace LathBotFront.Interactions
         }
 
         [SlashCommand("Pardon", "Pardon a warn of a user")]
-        [SlashCommandPermissions(Permissions.BanMembers)]
+        [SlashCommandPermissions(DiscordPermissions.BanMembers)]
         public async Task Pardon(InteractionContext ctx,
             [Option("Member", "The member you want to pardon a warn of")]
             DiscordUser user,
@@ -526,25 +526,25 @@ namespace LathBotFront.Interactions
             var member = await ctx.Guild.GetMemberAsync(user.Id);
             if (!member.Roles.Contains(ctx.Guild.GetRole(796234634316873759)) && !member.Roles.Contains(ctx.Guild.GetRole(748646909354311751)))
             {
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                await ctx.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().WithContent("```User is not staff or is part of the Senate.\n" + "If they are part of the Senate try messaging another member of the senate instead!```").AsEphemeral());
                 return;
             }
-            var textInput = new TextInputComponent("Please state a reason for your report.",
+            var textInput = new DiscordTextInputComponent("Please state a reason for your report.",
                 "report_reason",
                 required: true,
-                style: TextInputStyle.Paragraph);
+                style: DiscordTextInputStyle.Paragraph);
 
             var responseBuilder = new DiscordInteractionResponseBuilder()
                 .WithCustomId("report_reason")
                 .WithTitle("Reason")
                 .AddComponents(textInput);
 
-            await ctx.CreateResponseAsync(InteractionResponseType.Modal, responseBuilder);
+            await ctx.CreateResponseAsync(DiscordInteractionResponseType.Modal, responseBuilder);
 
             var res = await ctx.Client.GetInteractivity().WaitForModalAsync("report_reason");
 
-            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate, new DiscordInteractionResponseBuilder().AsEphemeral());
+            await res.Result.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate, new DiscordInteractionResponseBuilder().AsEphemeral());
             var reason = res.Result.Values["report_reason"];
 
             if (reason is null)
@@ -565,7 +565,7 @@ namespace LathBotFront.Interactions
             embedBuilder.AddField("Reason:", reason);
 
             DiscordEmbed embed = embedBuilder.Build();
-            var senate = (await ctx.Guild.GetAllMembersAsync()).Where(x => x.Roles.Any(y => y.Id == 784852719449276467));
+            var senate = (ctx.Guild.GetAllMembersAsync().ToBlockingEnumerable()).Where(x => x.Roles.Any(y => y.Id == 784852719449276467));
             foreach (DiscordMember senator in senate)
                 await senator.SendMessageAsync(embed);
 
@@ -573,7 +573,7 @@ namespace LathBotFront.Interactions
         }
 
         [SlashCommand("Persist", "Persist a warn of a user")]
-        [SlashCommandPermissions(Permissions.Administrator)]
+        [SlashCommandPermissions(DiscordPermissions.Administrator)]
         public async Task Persist(InteractionContext ctx,
             [Option("Member", "The member you want to persist a warn of")]
             DiscordUser user,
@@ -657,7 +657,7 @@ namespace LathBotFront.Interactions
 
             var twoFAKey = AesEncryption.DecryptStringToBytes(mod.TwoFAKey, mod.TwoFAKeySalt);
 
-            var textInput = new TextInputComponent("Please input your 2FA Code.",
+            var textInput = new DiscordTextInputComponent("Please input your 2FA Code.",
                 "2famodal",
                 placeholder: "000000",
                 required: true,
@@ -670,7 +670,7 @@ namespace LathBotFront.Interactions
                 .WithTitle("2FA")
                 .AddComponents(textInput);
 
-            await ctx.CreateResponseAsync(InteractionResponseType.Modal, responseBuilder);
+            await ctx.CreateResponseAsync(DiscordInteractionResponseType.Modal, responseBuilder);
 
             var res = await ctx.Client.GetInteractivity().WaitForModalAsync("2famodal");
 
@@ -710,11 +710,11 @@ namespace LathBotFront.Interactions
                     Color = member == null ? new DiscordColor("#FF0000") : member.Color
                 }
                 .AddField("Member you selected:", member == null ? user.ToString() : member.ToString()));
-            List<DiscordComponent> components = new()
-            {
-                new DiscordButtonComponent(ButtonStyle.Danger, "sure", "Yes I fucking am!"),
-                new DiscordButtonComponent(ButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
-            };
+            List<DiscordComponent> components =
+            [
+                new DiscordButtonComponent(DiscordButtonStyle.Danger, "sure", "Yes I fucking am!"),
+                new DiscordButtonComponent(DiscordButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
+            ];
             builder.AddComponents(components);
             DiscordMessage message = await ctx.EditOriginalResponseAsync(builder);
             InteractivityExtension interactivity = client.GetInteractivity();

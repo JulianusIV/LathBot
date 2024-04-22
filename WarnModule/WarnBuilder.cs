@@ -16,30 +16,20 @@ using System.Threading.Tasks;
 
 namespace WarnModule
 {
-    public class WarnBuilder
+    public class WarnBuilder(DiscordClient client, DiscordChannel warnChannel, DiscordGuild guild, DiscordMember mod, DiscordMember member, DiscordMessage messageLink = null)
     {
-        public DiscordChannel WarnChannel { get; set; }
-        public DiscordGuild Guild { get; set; }
-        public DiscordMember Mod { get; set; }
-        public DiscordMember Member { get; set; }
-        public DiscordMessage MessageLink { get; set; }
-        public InteractivityExtension Interactivity { get; set; }
+        public DiscordChannel WarnChannel { get; set; } = warnChannel;
+        public DiscordGuild Guild { get; set; } = guild;
+        public DiscordMember Mod { get; set; } = mod;
+        public DiscordMember Member { get; set; } = member;
+        public DiscordMessage MessageLink { get; set; } = messageLink;
+        public InteractivityExtension Interactivity { get; set; } = client.GetInteractivity();
         public Rule Rule { get; set; }
         public int PointsDeducted { get; set; }
         public string Reason { get; set; }
 
         private int MemberDbId;
         private int PointsLeft;
-
-        public WarnBuilder(DiscordClient client, DiscordChannel warnChannel, DiscordGuild guild, DiscordMember mod, DiscordMember member, DiscordMessage messageLink = null)
-        {
-            WarnChannel = warnChannel;
-            Guild = guild;
-            Mod = mod;
-            Member = member;
-            MessageLink = messageLink;
-            Interactivity = client.GetInteractivity();
-        }
 
         public async Task<bool> PreExecutionChecks()
         {
@@ -72,7 +62,7 @@ namespace WarnModule
 
         public async Task RequestRule(ContextMenuContext ctx = null)
         {
-            List<DiscordSelectComponentOption> options = new();
+            List<DiscordSelectComponentOption> options = [];
             foreach (var item in RuleService.Rules)
             {
                 if (item.RuleNum == 0)
@@ -110,7 +100,7 @@ namespace WarnModule
 
         public async Task<ulong> RequestRuleEphemeral(ContextMenuContext ctx)
         {
-            List<DiscordSelectComponentOption> options = new();
+            List<DiscordSelectComponentOption> options = [];
             foreach (var item in RuleService.Rules)
             {
                 if (item.RuleNum == 0)
@@ -135,7 +125,7 @@ namespace WarnModule
 
             var reaction = await Interactivity.WaitForSelectAsync(message, Mod, "warnSelect", TimeSpan.FromMinutes(2));
             Rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
-            await reaction.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+            await reaction.Result.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
             return message.Id;
         }
 
@@ -147,12 +137,12 @@ namespace WarnModule
             };
             for (int i = 0; i < 3; i++)
             {
-                List<DiscordButtonComponent> buttons = new();
+                List<DiscordButtonComponent> buttons = [];
                 for (int index = i * 5; index < (i * 5) + 5; index++)
                 {
                     buttons.Add(new DiscordButtonComponent
                     (
-                        ButtonStyle.Primary,
+                        DiscordButtonStyle.Primary,
                         (index + 1).ToString(),
                         (index + 1).ToString(),
                         (index + 1) < Rule.MinPoints || (index + 1) > Rule.MaxPoints)
@@ -174,12 +164,12 @@ namespace WarnModule
             };
             for (int i = 0; i < 3; i++)
             {
-                List<DiscordButtonComponent> buttons = new();
+                List<DiscordButtonComponent> buttons = [];
                 for (int index = i * 5; index < (i * 5) + 5; index++)
                 {
                     buttons.Add(new DiscordButtonComponent
                     (
-                        ButtonStyle.Primary,
+                        DiscordButtonStyle.Primary,
                         (index + 1).ToString(),
                         (index + 1).ToString(),
                         (index + 1) < Rule.MinPoints || (index + 1) > Rule.MaxPoints)
@@ -230,7 +220,7 @@ namespace WarnModule
             {
                 DiscordMessage reasonMessage = await WarnChannel.SendMessageAsync("If needed please state a reason, write ``NONE`` if you dont want to specify.");
                 InteractivityResult<DiscordMessage> reasonResult = await Interactivity.WaitForMessageAsync(x => x.Channel == WarnChannel && x.Author == Mod);
-                if (reasonResult.Result.Content.Trim().ToUpper() == "NONE")
+                if (reasonResult.Result.Content.Trim().Equals("NONE", StringComparison.CurrentCultureIgnoreCase))
                 {
                     await reasonMessage.DeleteAsync();
                     Reason = "/";
@@ -254,11 +244,11 @@ namespace WarnModule
 
         public async Task RequestReasonEphemeral(ContextMenuContext ctx, DiscordInteraction interaction)
         {
-            var textInput = new TextInputComponent("If needed state a reason.",
+            var textInput = new DiscordTextInputComponent("If needed state a reason.",
                 "reason",
                 "NONE",
                 required: true,
-                style: TextInputStyle.Paragraph,
+                style: DiscordTextInputStyle.Paragraph,
                 max_length: 250);
 
             var responseBuilder = new DiscordInteractionResponseBuilder()
@@ -266,13 +256,13 @@ namespace WarnModule
                 .WithTitle("Reason")
                 .AddComponents(textInput);
 
-            await interaction.CreateResponseAsync(InteractionResponseType.Modal, responseBuilder);
+            await interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, responseBuilder);
 
             var res = await ctx.Client.GetInteractivity().WaitForModalAsync("reason");
 
-            await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+            await res.Result.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
             Reason = res.Result.Values["reason"] ?? "/";
-            Reason = Reason.ToUpper() == "NONE" ? "/" : Reason;
+            Reason = Reason.Equals("NONE", StringComparison.CurrentCultureIgnoreCase) ? "/" : Reason;
         }
 
         public async Task<bool> WriteToDatabase()
@@ -413,7 +403,7 @@ namespace WarnModule
             {
                 var msgBuilder = new DiscordMessageBuilder();
 
-                Dictionary<string, Stream> attachments = new();
+                Dictionary<string, Stream> attachments = [];
                 if (MessageLink.Attachments is not null && MessageLink.Attachments.Any())
                 {
                     foreach (var attachment in MessageLink.Attachments)
@@ -427,7 +417,7 @@ namespace WarnModule
                     msgBuilder.AddFiles(attachments);
                 }
 
-                await WarnChannel.SendMessageAsync(msgBuilder.WithEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
+                await WarnChannel.SendMessageAsync(msgBuilder.AddEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
                 foreach (var attachment in attachments)
                     attachment.Value.Close();
             }

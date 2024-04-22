@@ -7,18 +7,11 @@ using System.Threading.Tasks;
 
 namespace LathBotFront.Interactions.PreExecutionChecks
 {
-    public class CooldownSlash
+    public class CooldownSlash(double resetAfter, int maxUses = 1)
     {
-        public int MaxUses { get; }
-        public TimeSpan Reset { get; }
-        public ConcurrentDictionary<string, CoolDownBucket> Buckets { get; }
-
-        public CooldownSlash(double resetAfter, int maxUses = 1)
-        {
-            MaxUses = maxUses;
-            Reset = TimeSpan.FromSeconds(resetAfter);
-            Buckets = new ConcurrentDictionary<string, CoolDownBucket>();
-        }
+        public int MaxUses { get; } = maxUses;
+        public TimeSpan Reset { get; } = TimeSpan.FromSeconds(resetAfter);
+        public ConcurrentDictionary<string, CoolDownBucket> Buckets { get; } = new ConcurrentDictionary<string, CoolDownBucket>();
 
         public CoolDownBucket GetBucket(InteractionContext ctx)
         {
@@ -54,28 +47,18 @@ namespace LathBotFront.Interactions.PreExecutionChecks
         }
     }
 
-    public class CoolDownBucket
+    public class CoolDownBucket(int maxUses, TimeSpan resetAfter, ulong userId = 0)
     {
-        public ulong UserId { get; }
+        public ulong UserId { get; } = userId;
         public string BucketId { get; }
         public int RemainingUses
             => Volatile.Read(ref _remainingUses);
-        public int MaxUses { get; }
-        public DateTimeOffset ResetsAt { get; set; }
-        public TimeSpan Reset { get; set; }
-        public SemaphoreSlim UsageSemaphore { get; set; }
+        public int MaxUses { get; } = maxUses;
+        public DateTimeOffset ResetsAt { get; set; } = DateTimeOffset.UtcNow + resetAfter;
+        public TimeSpan Reset { get; set; } = resetAfter;
+        public SemaphoreSlim UsageSemaphore { get; set; } = new SemaphoreSlim(1, 1);
 
-        private int _remainingUses;
-
-        public CoolDownBucket(int maxUses, TimeSpan resetAfter, ulong userId = 0)
-        {
-            _remainingUses = maxUses;
-            MaxUses = maxUses;
-            ResetsAt = DateTimeOffset.UtcNow + resetAfter;
-            Reset = resetAfter;
-            UserId = userId;
-            UsageSemaphore = new SemaphoreSlim(1, 1);
-        }
+        private int _remainingUses = maxUses;
 
         internal async Task<bool> DecrementUseAsync()
         {

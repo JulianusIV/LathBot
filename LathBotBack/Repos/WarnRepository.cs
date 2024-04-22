@@ -7,14 +7,12 @@ using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
-    public class WarnRepository : RepositoryBase
+    public class WarnRepository(string connectionString) : RepositoryBase(connectionString)
     {
-        public WarnRepository(string connectionString) : base(connectionString) { }
-
         public bool GetAll(out List<Warn> list)
         {
             bool result = false;
-            list = new List<Warn>();
+            list = [];
 
             try
             {
@@ -58,7 +56,7 @@ namespace LathBotBack.Repos
         public bool GetAllByUser(int UserDbId, out List<Warn> list)
         {
             bool result = false;
-            list = new List<Warn>();
+            list = [];
 
             try
             {

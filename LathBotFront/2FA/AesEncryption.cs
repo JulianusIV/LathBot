@@ -72,11 +72,11 @@ namespace LathBotFront._2FA
         /// <returns></returns>
         private static Aes NewAes(string salt)
         {
-            if (salt == null)
-                throw new ArgumentNullException(nameof(salt));
+            ArgumentNullException.ThrowIfNull(salt, nameof(salt));
             var saltBytes = Encoding.ASCII.GetBytes(salt);
+#pragma warning disable SYSLIB0041
             var key = new Rfc2898DeriveBytes(ReadConfig.Config.RijndaelInputKey, saltBytes);
-
+#pragma warning restore SYSLIB0041
             var aesAlg = Aes.Create();
             aesAlg.Key = key.GetBytes(aesAlg.KeySize / 8);
             aesAlg.IV = key.GetBytes(aesAlg.BlockSize / 8);

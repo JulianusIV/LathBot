@@ -10,15 +10,14 @@ namespace LathBotBack.Services
     {
         #region Singleton
         private static DiscordObjectService instance;
-        private static readonly object padlock = new object();
+        private static readonly object padlock = new();
         public static DiscordObjectService Instance
         {
             get
             {
                 lock (padlock)
                 {
-                    if (instance == null)
-                        instance = new DiscordObjectService();
+                    instance ??= new DiscordObjectService();
                     return instance;
                 }
             }
@@ -41,7 +40,7 @@ namespace LathBotBack.Services
         public Dictionary<ulong, DiscordMessage> LastDeletes { get; set; }
         public Dictionary<ulong, DiscordMessage> LastEdits { get; set; }
 
-        public readonly DiscordEmbedBuilder LathQuestionsEmbed = new DiscordEmbedBuilder
+        public readonly DiscordEmbedBuilder LathQuestionsEmbed = new()
         {
             Title = "To make sure Lathrix does not get the same question multiple times please look at the pins.",
             Description = "This channel is not to be used to request things from Lathrix.\n" +
@@ -50,7 +49,7 @@ namespace LathBotBack.Services
                     "Failure to follow these rules may result in a punishment.",
             Color = new DiscordColor(101, 24, 201)
         };
-        public readonly DiscordEmbedBuilder StaffQuestionsEmbed = new DiscordEmbedBuilder
+        public readonly DiscordEmbedBuilder StaffQuestionsEmbed = new()
         {
             Title = "This channel is for asking questions, that the staff will answer.",
             Description = "To make sure they do not get the same question multiple times please look at the pins.\n" +
@@ -102,8 +101,8 @@ namespace LathBotBack.Services
             else
                 LathQuestions = QuestionsChannel.SendMessageAsync(LathQuestionsEmbed).GetAwaiter().GetResult();
 
-            LastEdits = new Dictionary<ulong, DiscordMessage>();
-            LastDeletes = new Dictionary<ulong, DiscordMessage>();
+            LastEdits = [];
+            LastDeletes = [];
         }
     }
 }
