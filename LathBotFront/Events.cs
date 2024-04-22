@@ -151,17 +151,6 @@ namespace LathBotFront
                     return;
                 if (!StartupService.Instance.StartUpCompleted)
                     return;
-                if (e.Message.Poll is not null)
-                {
-                    var mem = await e.Guild.GetMemberAsync(e.Author.Id);
-                    if (!mem.Roles.Any(x => x.Id == 822957506674163792)) // Moderation team
-                    {
-                        await e.Message.DeleteAsync();
-                        var msg = await e.Channel.SendMessageAsync("You dont have the necessary permissions to post polls");
-                        Thread.Sleep(TimeSpan.FromSeconds(5));
-                        await msg.DeleteAsync();
-                    }
-                }
                 if (e.Message.Attachments.Any(x => x.FileName.ToLower().EndsWith(".webm")))
                 {
                     await e.Message.DeleteAsync();
