@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime;
 using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
@@ -65,7 +66,7 @@ namespace LathBotFront.Commands
             {
                 await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* you wanna get yelled at? *slap*");
             }
-            else if (target.IsCurrent) //user who send command
+            else if (target.Id == ctx.Member.Id) //user who send command
             {
                 await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention} Stop hitting your self, Stop hitting your self, Stop hitting your self.");
             }
@@ -74,7 +75,6 @@ namespace LathBotFront.Commands
                 await ctx.Channel.SendMessageAsync($"God dammit {target.Mention}, *slap* you've made a mistake again! *slap*");
             }
         }
-
         [Command("repeat")]
         [Description("Let the Bot repeat something.")]
         public async Task Repeat(CommandContext ctx, [Description("What the bot should repeat.")][RemainingText] string repetition)
