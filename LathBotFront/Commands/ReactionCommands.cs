@@ -65,6 +65,10 @@ namespace LathBotFront.Commands
             {
                 await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* you wanna get yelled at? *slap*");
             }
+            else if (target.IsCurrent) //user who send command
+            {
+                await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention} Stop hitting your self, Stop hitting your self, Stop hitting your self.");
+            }
             else
             {
                 await ctx.Channel.SendMessageAsync($"God dammit {target.Mention}, *slap* you've made a mistake again! *slap*");
@@ -131,7 +135,7 @@ namespace LathBotFront.Commands
                 SystemService.Instance.Logger.Log($"Error while trying to get last deleted message in {ctx.Channel.Id}");
                 return;
             }
-            if ((lastDelete.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastDelete.Author.IsBot || lastDelete.Content.Contains("submit"))
+            if ((lastDelete.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastDelete.Author.IsBot || lastDelete.Content.Contains("submit")) // Julian 
             {
                 await ctx.RespondAsync("No");
                 return;
@@ -186,7 +190,7 @@ namespace LathBotFront.Commands
                 SystemService.Instance.Logger.Log($"Error while trying to get last edited message in {ctx.Channel.Id}");
                 return;
             }
-            if ((lastEdit.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastEdit.Author.IsBot)
+            if ((lastEdit.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastEdit.Author.IsBot) //Julian, again...
             {
                 await ctx.RespondAsync("No");
                 return;
