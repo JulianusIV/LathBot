@@ -42,7 +42,7 @@ namespace LathBotFront.Interactions
                 return;
             }
 
-            var messages = ctx.Channel.GetMessagesAsync((int)amount).ToBlockingEnumerable().Reverse();
+            var messages = ctx.Channel.GetMessagesAsync((int)amount).ToBlockingEnumerable();
 
             await channel.SendMessageAsync($"Copying over offtopic messages from {ctx.Channel.Mention}");
             var webhook = await channel.CreateWebhookAsync($"offtopic-move-{Guid.NewGuid()}");

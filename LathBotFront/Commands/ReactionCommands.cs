@@ -79,7 +79,6 @@ namespace LathBotFront.Commands
                 await ctx.Channel.SendMessageAsync($"God dammit {target.Mention}, *slap* you've made a mistake again! *slap*");
             }
         }
-
         [Command("repeat")]
         [Description("Let the Bot repeat something.")]
         public async Task Repeat(CommandContext ctx, [Description("What the bot should repeat.")][RemainingText] string repetition)
