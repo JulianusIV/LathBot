@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime;
 using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
@@ -103,7 +102,7 @@ namespace LathBotFront.Commands
         [Description("Parth!")]
         public async Task Parth(CommandContext ctx)
         {
-            await ctx.Channel.SendMessageAsync("Boss man! (even tho the whole senate technically are all equal but i am keeping this for the laughs, also he is the actual owner)");
+            await ctx.Channel.SendMessageAsync("Boss man! (even tho the whole senate technically are all equal but i am keeping this for the laughs)");
         }
 
         [Command("pat")]
@@ -120,8 +119,6 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync($"Julian!, you just got pat by {ctx.Member.Mention}");
             else if (member.Id == 312936081819697154)//Ryguy6001
                 await ctx.RespondAsync($"Ryguy doesn't like getting patted.");
-            else if (member.Id == 671485545288826900)//Tophat
-                await ctx.RespondAsync($"Tophat does not enjoy this, please stop.");//Tophat also requested this for himself.
             else if (member.Id == ctx.Client.CurrentUser.Id)
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithStickers([ctx.Guild.Stickers[967807862007029880]]));
             else
