@@ -1,4 +1,4 @@
-﻿using DSharpPlus.CommandsNext;
+﻿﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using LathBotBack.Services;
@@ -41,12 +41,16 @@ namespace LathBotFront.Commands
             {
                 await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* why would you slap a god? *slap*");
             }
-            else if (target.Id == 241445303960600576) //Theo, Lucky
+            else if (target.Id == 241445303960600576) //Theo
             {
                 if (ctx.Member.Id == 387325006176059394)
                     await ctx.Channel.SendMessageAsync($"You might think you are immune to slaps {target.Mention}, *slap* but {ctx.Member.Mention} is immune to counter slapping! *slap*");
                 else
                     await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* you dont slap the creator of slapping");
+            }
+            else if (target.Id == 671485545288826900) //Tophat
+            {
+                await ctx.Channel.SendMessageAsync($"Do you want to be turned into a Servitor?"); //Tophat requested this for himself.
             }
             else if (target.Id == 280850661485314049)
             {
@@ -66,7 +70,7 @@ namespace LathBotFront.Commands
             {
                 await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* you wanna get yelled at? *slap*");
             }
-            else if (target.Id == ctx.Member.Id) //user who send command
+            else if (target.Id == ctx.Member.Id) //user who sent command
             {
                 await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention} Stop hitting your self, Stop hitting your self, Stop hitting your self.");
             }
@@ -99,7 +103,7 @@ namespace LathBotFront.Commands
         [Description("Parth!")]
         public async Task Parth(CommandContext ctx)
         {
-            await ctx.Channel.SendMessageAsync("Boss man! (even tho the whole senate technically are all equal but i am keeping this for the laughs)");
+            await ctx.Channel.SendMessageAsync("Boss man! (even tho the whole senate technically are all equal but i am keeping this for the laughs, also he is the actual owner)");
         }
 
         [Command("pat")]
@@ -114,6 +118,10 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithStickers([ctx.Guild.Stickers[1013888253272801310]]));
             else if (member.Id == 387325006176059394)//julian
                 await ctx.RespondAsync($"Julian!, you just got pat by {ctx.Member.Mention}");
+            else if (member.Id == 312936081819697154)//Ryguy6001
+                await ctx.RespondAsync($"Ryguy doesn't like getting patted.");
+            else if (member.Id == 671485545288826900)//Tophat
+                await ctx.RespondAsync($"Tophat does not enjoy this, please stop.");//Tophat also requested this for himself.
             else if (member.Id == ctx.Client.CurrentUser.Id)
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithStickers([ctx.Guild.Stickers[967807862007029880]]));
             else
@@ -135,7 +143,7 @@ namespace LathBotFront.Commands
                 SystemService.Instance.Logger.Log($"Error while trying to get last deleted message in {ctx.Channel.Id}");
                 return;
             }
-            if ((lastDelete.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastDelete.Author.IsBot || lastDelete.Content.Contains("submit")) // Julian 
+            if ((lastDelete.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastDelete.Author.IsBot || lastDelete.Content.Contains("submit")) // Julian once again
             {
                 await ctx.RespondAsync("No");
                 return;
@@ -190,7 +198,7 @@ namespace LathBotFront.Commands
                 SystemService.Instance.Logger.Log($"Error while trying to get last edited message in {ctx.Channel.Id}");
                 return;
             }
-            if ((lastEdit.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastEdit.Author.IsBot) //Julian, again...
+            if ((lastEdit.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastEdit.Author.IsBot) //Oh hey, is that a new ID? no it is Julian...
             {
                 await ctx.RespondAsync("No");
                 return;
