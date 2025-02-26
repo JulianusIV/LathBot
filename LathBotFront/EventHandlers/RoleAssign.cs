@@ -22,7 +22,6 @@ namespace LathBotFront.EventHandlers
 
         private static readonly ulong[] gamesRoleIds =
         [
-            //978954327907532811,  //airships
             1046124300761043004, //dnd
             701454853095817316,  //ftd
             713367380574732319,  //minecraft
@@ -31,6 +30,25 @@ namespace LathBotFront.EventHandlers
             701454772900855819,  //stellaris
             1014261454624542810, //tt
             766322672321560628   //wh40k
+        ];
+
+        private static readonly ulong[] colorRoleIds =
+        [
+            759782089830301706, //purple
+            759439195478949928, //light blue
+            964262185561899038, //betta blue
+            822500283208564746, //pastel pink
+            783133133053886484, //green
+            772955935550210058, //blue
+            772915100574941294, //classic lathrixian pink
+            759439186687557662, //blood red
+            759786932888404039, //gray
+            772957722924154900, //gold
+            783062295647485952, //brown
+            784859772838608916, //silver
+            788177276155068466, //orange
+            898738889601208340, //darker grey
+            759439706634584064 //ugly green
         ];
 
         public static readonly ulong[] miscRoleIds =
@@ -59,7 +77,6 @@ namespace LathBotFront.EventHandlers
                     var member = await e.Guild.GetMemberAsync(e.User.Id);
                     var options = new List<DiscordSelectComponentOption>()
                     {
-                        //new("Airships: Conquer the Skies", "airships", "Get access to the Airships: Conquer the Skies game channel", member.Roles.Any(x => x.Id == 978954327907532811), new DiscordComponentEmoji("🛩️")),
                         new("Dungeons and Dragons", "dnd", "Get access to the Dungeons and Dragons game channel and vc", member.Roles.Any(x => x.Id == 1046124300761043004), new DiscordComponentEmoji("🐉")),
                         new("From the Depths", "ftd", "Get access to the From the Depths game channel", member.Roles.Any(x => x.Id == 701454853095817316), new DiscordComponentEmoji("⛵")),
                         new("Minecraft", "minecraft", "Get access to the Minecraft game channel", member.Roles.Any(x => x.Id == 713367380574732319), new DiscordComponentEmoji("⛏️")),
@@ -71,6 +88,36 @@ namespace LathBotFront.EventHandlers
                     };
 
                     builder.AddComponents(new DiscordSelectComponent("roleme_games_dropdown", "Select your roles", options, false, 0, options.Count));
+
+                    await e.Interaction.EditOriginalResponseAsync(builder);
+                }
+                else if (e.Id == "roleme_color")
+                {
+                    await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
+
+                    var builder = new DiscordWebhookBuilder()
+                        .WithContent("Select your color roles");
+                    var member = await e.Guild.GetMemberAsync(e.User.Id);
+                    var options = new List<DiscordSelectComponentOption>()
+                    {
+                        new("Purple", "purple", "Get the Purple color role", member.Roles.Any(x => x.Id == 759782089830301706), new DiscordComponentEmoji("🟣")),
+                        new("Light Blue", "light_blue", "Get the Light Blue color role", member.Roles.Any(x => x.Id == 759439195478949928), new DiscordComponentEmoji("🔵")),
+                        new("Betta Blue", "betta_blue", "Get the Betta Blue color role", member.Roles.Any(x => x.Id == 964262185561899038), new DiscordComponentEmoji("🔵")),
+                        new("Pastel Pink", "pastel_pink", "Get the Pastel Pink color role", member.Roles.Any(x => x.Id == 822500283208564746), new DiscordComponentEmoji("🩷")),
+                        new("Green", "green", "Get the Green color role", member.Roles.Any(x => x.Id == 783133133053886484), new DiscordComponentEmoji("🟢")),
+                        new("Blue", "blue", "Get the Blue color role", member.Roles.Any(x => x.Id == 772955935550210058), new DiscordComponentEmoji("🔵")),
+                        new("Classic Lathrixian Pink", "classic_lathrixian_pink", "Get the Classic Lathrixian Pink color role", member.Roles.Any(x => x.Id == 772915100574941294), new DiscordComponentEmoji("🧓")),
+                        new("Blood Red", "blood_red", "Get the Blood Red color role", member.Roles.Any(x => x.Id == 759439186687557662), new DiscordComponentEmoji("🔴")),
+                        new("Gray", "gray", "Get the Gray color role", member.Roles.Any(x => x.Id == 759786932888404039), new DiscordComponentEmoji("🩶")),
+                        new("Gold", "gold", "Get the Gold color role", member.Roles.Any(x => x.Id == 772957722924154900), new DiscordComponentEmoji("🟡")),
+                        new("Brown", "brown", "Get the Brown color role", member.Roles.Any(x => x.Id == 783062295647485952), new DiscordComponentEmoji("💩")),
+                        new("Silver", "silver", "Get the Silver color role", member.Roles.Any(x => x.Id == 784859772838608916), new DiscordComponentEmoji("🩶")),
+                        new("Orange", "orange", "Get the Orange color role", member.Roles.Any(x => x.Id == 788177276155068466), new DiscordComponentEmoji("🟠")),
+                        new("Darker Grey", "darker_grey", "Get the Darker Grey color role", member.Roles.Any(x => x.Id == 898738889601208340), new DiscordComponentEmoji("🩶")),
+                        new("Ugly Green", "ugly_green", "Get the Ugly Green color role", member.Roles.Any(x => x.Id == 759439706634584064), new DiscordComponentEmoji("🟢"))
+                    };
+
+                    builder.AddComponents(new DiscordSelectComponent("roleme_color_dropdown", "Select your roles", options, false, 0, options.Count));
 
                     await e.Interaction.EditOriginalResponseAsync(builder);
                 }
@@ -113,7 +160,6 @@ namespace LathBotFront.EventHandlers
                     {
                         ulong roleid = selection switch
                         {
-                            //"airships" => 978954327907532811,
                             "ftd" => 701454853095817316,
                             "dnd" => 1046124300761043004,
                             "minecraft" => 713367380574732319,
@@ -122,6 +168,46 @@ namespace LathBotFront.EventHandlers
                             "stellaris" => 701454772900855819,
                             "tt" => 1014261454624542810,
                             "wh40k" => 766322672321560628,
+                            _ => 0
+                        };
+                        if (roleid != 0)
+                            newRoleIds.Add(roleid);
+                    }
+
+                    foreach (var roleid in currentRoleIds.Where(x => !newRoleIds.Contains(x)))
+                        await member.RevokeRoleAsync(e.Guild.GetRole(roleid));
+                    foreach (var roleid in newRoleIds.Where(x => !currentRoleIds.Contains(x)))
+                        await member.GrantRoleAsync(e.Guild.GetRole(roleid));
+
+                    await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successfully changed your roles!"));
+                }
+                else if (e.Id == "roleme_color_dropdown")
+                {
+                    await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
+
+                    var member = await e.Guild.GetMemberAsync(e.User.Id);
+
+                    var currentRoleIds = colorRoleIds.Where(x => member.Roles.Any(y => y.Id == x));
+                    var newRoleIds = new List<ulong>();
+                    foreach (var selection in e.Values)
+                    {
+                        ulong roleid = selection switch
+                        {
+                            "purple" => 759782089830301706,
+                            "light_blue" => 759439195478949928,
+                            "betta_blue" => 964262185561899038,
+                            "pastel_pink" => 822500283208564746,
+                            "green" => 783133133053886484,
+                            "blue" => 772955935550210058,
+                            "classic_lathrixian_pink" => 772915100574941294,
+                            "blood_red" => 759439186687557662,
+                            "gray" => 759786932888404039,
+                            "gold" => 772957722924154900,
+                            "brown" => 783062295647485952,
+                            "silver" => 784859772838608916,
+                            "orange" => 788177276155068466,
+                            "darker_grey" => 898738889601208340,
+                            "ugly_green" => 759439706634584064,
                             _ => 0
                         };
                         if (roleid != 0)
