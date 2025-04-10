@@ -63,7 +63,7 @@ namespace LathBotFront.EventHandlers
             1014280593929928797 //greet
         ];
 
-        internal static Task ComponentTriggered(DiscordClient _1, ComponentInteractionCreateEventArgs e)
+        internal static Task ComponentTriggered(DiscordClient _1, ComponentInteractionCreatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -175,9 +175,9 @@ namespace LathBotFront.EventHandlers
                     }
 
                     foreach (var roleid in currentRoleIds.Where(x => !newRoleIds.Contains(x)))
-                        await member.RevokeRoleAsync(e.Guild.GetRole(roleid));
+                        await member.RevokeRoleAsync(await e.Guild.GetRoleAsync(roleid));
                     foreach (var roleid in newRoleIds.Where(x => !currentRoleIds.Contains(x)))
-                        await member.GrantRoleAsync(e.Guild.GetRole(roleid));
+                        await member.GrantRoleAsync(await e.Guild.GetRoleAsync(roleid));
 
                     await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successfully changed your roles!"));
                 }
@@ -215,9 +215,9 @@ namespace LathBotFront.EventHandlers
                     }
 
                     foreach (var roleid in currentRoleIds.Where(x => !newRoleIds.Contains(x)))
-                        await member.RevokeRoleAsync(e.Guild.GetRole(roleid));
+                        await member.RevokeRoleAsync(await e.Guild.GetRoleAsync(roleid));
                     foreach (var roleid in newRoleIds.Where(x => !currentRoleIds.Contains(x)))
-                        await member.GrantRoleAsync(e.Guild.GetRole(roleid));
+                        await member.GrantRoleAsync(await e.Guild.GetRoleAsync(roleid));
 
                     await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successfully changed your roles!"));
                 }
@@ -248,9 +248,9 @@ namespace LathBotFront.EventHandlers
                     }
 
                     foreach (var roleid in currentRoleIds.Where(x => !newRoleIds.Contains(x)))
-                        await member.RevokeRoleAsync(e.Guild.GetRole(roleid));
+                        await member.RevokeRoleAsync(await e.Guild.GetRoleAsync(roleid));
                     foreach (var roleid in newRoleIds.Where(x => !currentRoleIds.Contains(x)))
-                        await member.GrantRoleAsync(e.Guild.GetRole(roleid));
+                        await member.GrantRoleAsync(await e.Guild.GetRoleAsync(roleid));
 
                     await e.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Successfully changed your roles!"));
                 }

@@ -1,82 +1,67 @@
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.ArgumentModifiers;
+using DSharpPlus.Commands.Processors.TextCommands;
+using DSharpPlus.Commands.Trees.Metadata;
 using DSharpPlus.Entities;
 using LathBotBack.Services;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime;
 using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
 {
-    class ReactionCommands : BaseCommandModule
+    class ReactionCommands
     {
         [Command("_-")]
+        [AllowedProcessors<TextCommandProcessor>]
         public async Task Face(CommandContext ctx)
-        {
-            await ctx.Member.TimeoutAsync(ctx.Message.Timestamp + TimeSpan.FromMinutes(1));
-            await ctx.RespondAsync("😒");
-        }
+            => await ctx.RespondAsync("😒");
 
         [Command("slap")]
-        [Description("Slap someone, but be careful who you choose to slap, they might slap harder!\n" +
-            "Inspired by a xelA tag originally creatd by @ThaTheoMans#7006.")]
+        [Description("Slap someone, but be careful who you choose to slap, they might slap harder!")]
         public async Task Slap(CommandContext ctx, [Description("Who you want to slap.")] DiscordMember target)
         {
             if (target.Id == 708083256439996497) //LathBot
             {
                 if (ctx.Member.Id != 387325006176059394) //myself
-                    await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* you can't slap me! *slap*");
+                    await ctx.RespondAsync($"God dammit {ctx.Member.Mention}, *slap* you can't slap me! *slap*");
                 else
-                    await ctx.Channel.SendMessageAsync($"God dammit, *slaps myself* I've made a mistake again! *slaps myself*");
+                    await ctx.RespondAsync($"God dammit, *slaps myself* I've made a mistake again! *slaps myself*");
             }
             else if (target.Id == 387325006176059394) //myself
             {
-                await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* you can't slap my creator or imma slap you! *slap*");
+                await ctx.RespondAsync($"God dammit {ctx.Member.Mention}, *slap* you can't slap my creator or imma slap you! *slap*");
             }
             else if (target.Id == 192037157416730625) //Lathrix
             {
-                await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* why would you slap a god? *slap*");
+                await ctx.RespondAsync($"God dammit {ctx.Member.Mention}, *slap* why would you slap a god? *slap*");
             }
             else if (target.Id == 241445303960600576) //Theo
             {
                 if (ctx.Member.Id == 387325006176059394)
-                    await ctx.Channel.SendMessageAsync($"You might think you are immune to slaps {target.Mention}, *slap* but {ctx.Member.Mention} is immune to counter slapping! *slap*");
+                    await ctx.RespondAsync($"You might think you are immune to slaps {target.Mention}, *slap* but {ctx.Member.Mention} is immune to counter slapping! *slap*");
                 else
-                    await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* you dont slap the creator of slapping");
+                    await ctx.RespondAsync($"God dammit {ctx.Member.Mention}, *slap* you dont slap the creator of slapping");
             }
             else if (target.Id == 671485545288826900) //Tophat
             {
-                await ctx.Channel.SendMessageAsync($"Do you want to be turned into a Servitor?"); //Tophat requested this for himself.
-            }
-            else if (target.Id == 280850661485314049)
-            {
-                if (ctx.Member.Id == 387325006176059394)
-                    await ctx.Channel.SendMessageAsync($"You might think you are immune to slaps {target.Mention}, *slap* but {ctx.Member.Mention} is immune to counter slapping! *slap*");
-                else
-                    await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* do you want to be nuzzled by a catboy?! *slap* ÒwÓ");
-            }
-            else if (target.Id == 700373370491109489) //Femke
-            {
-                if (ctx.Member.Id == 387325006176059394)
-                    await ctx.Channel.SendMessageAsync($"You might think you are immune to slaps {target.Mention}, *slap* but {ctx.Member.Mention} is immune to counter slapping! *slap*");
-                else
-                    await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* you wanna get ~~mini~~modded? *slap*");
+                await ctx.RespondAsync($"Do you want to be turned into a Servitor?");
             }
             else if (target.Id == 289112287250350080) //Parth
             {
-                await ctx.Channel.SendMessageAsync($"God dammit {ctx.Member.Mention}, *slap* you wanna get yelled at? *slap*");
+                await ctx.RespondAsync($"God dammit {ctx.Member.Mention}, *slap* you wanna get yelled at? *slap*");
             }
             else if (target.Id == ctx.Member.Id) //user who sent command
             {
-                await ctx.Channel.SendMessageAsync($"{ctx.Member.Mention} Stop hitting your self, Stop hitting your self, Stop hitting your self.");
+                await ctx.RespondAsync($"{ctx.Member.Mention} Stop hitting your self, Stop hitting your self, Stop hitting your self.");
             }
             else
             {
-                await ctx.Channel.SendMessageAsync($"God dammit {target.Mention}, *slap* you've made a mistake again! *slap*");
+                await ctx.RespondAsync($"God dammit {target.Mention}, *slap* you've made a mistake again! *slap*");
             }
         }
         [Command("repeat")]
@@ -87,7 +72,7 @@ namespace LathBotFront.Commands
                 return;
             if (repetition.Equals("I'M STUPID", StringComparison.CurrentCultureIgnoreCase) || repetition.Equals("IM STUPID", StringComparison.CurrentCultureIgnoreCase))
             {
-                await ctx.Channel.SendMessageAsync("Tell us something new...");
+                await ctx.RespondAsync("Tell us something new...");
             }
             else
             {
@@ -95,7 +80,7 @@ namespace LathBotFront.Commands
                 {
                     Content = repetition,
                 };
-                await ctx.Channel.SendMessageAsync(builder);
+                await ctx.RespondAsync(builder);
             }
         }
 
@@ -103,7 +88,7 @@ namespace LathBotFront.Commands
         [Description("Parth!")]
         public async Task Parth(CommandContext ctx)
         {
-            await ctx.Channel.SendMessageAsync("Boss man! (even tho the whole senate technically are all equal but i am keeping this for the laughs)");
+            await ctx.RespondAsync("Boss man! (even tho the whole senate technically are all equal but i am keeping this for the laughs)");
         }
 
         [Command("pat")]
@@ -178,7 +163,7 @@ namespace LathBotFront.Commands
         }
 
         [Command("snipeedit")]
-        [Aliases("se")]
+        [TextAlias("se")]
         [Description("Snipe an edited message")]
         public async Task SnipeEdit(CommandContext ctx)
         {
@@ -211,7 +196,7 @@ namespace LathBotFront.Commands
                 Timestamp = lastEdit.Timestamp,
                 Color = DiscordColor.Blurple,
             };
-            await ctx.Channel.SendMessageAsync(builder);
+            await ctx.RespondAsync(builder);
         }
     }
 }

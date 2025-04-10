@@ -18,14 +18,14 @@
 
         public Audit(int modId)
         {
-            Mod = modId;
-            Warns = 0;
-            Pardons = 0;
-            Mutes = 0;
-            Unmutes = 0;
-            Kicks = 0;
-            Bans = 0;
-            Timeouts = 0;
+            this.Mod = modId;
+            this.Warns = 0;
+            this.Pardons = 0;
+            this.Mutes = 0;
+            this.Unmutes = 0;
+            this.Kicks = 0;
+            this.Bans = 0;
+            this.Timeouts = 0;
         }
     }
 }

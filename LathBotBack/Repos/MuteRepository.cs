@@ -1,9 +1,9 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
@@ -16,10 +16,10 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT * FROM Mutes;";
-                DbCommand.Parameters.Clear();
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT * FROM Mutes;";
+                this.DbCommand.Parameters.Clear();
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     list.Add(new Mute
@@ -31,7 +31,7 @@ namespace LathBotBack.Repos
                         Duration = (int)reader["MuteDuration"],
                     });
                 }
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -41,9 +41,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -58,12 +58,12 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT COUNT(UserDbId) FROM Mutes WHERE UserDbId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", userId);
-                DbConnection.Open();
-                exists = (int)DbCommand.ExecuteScalar() > 0;
-                DbConnection.Close();
+                this.DbCommand.CommandText = "SELECT COUNT(UserDbId) FROM Mutes WHERE UserDbId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", userId);
+                this.DbConnection.Open();
+                exists = (int)this.DbCommand.ExecuteScalar() > 0;
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -73,9 +73,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -90,11 +90,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT * FROM Mutes WHERE UserDbId = @user;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("user", userId);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT * FROM Mutes WHERE UserDbId = @user;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("user", userId);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Mute
                 {
@@ -104,7 +104,7 @@ namespace LathBotBack.Repos
                     Timestamp = (DateTime)reader["MuteTimestamp"],
                     Duration = (int)reader["MuteDuration"],
                 };
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -114,9 +114,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -129,17 +129,17 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "INSERT INTO Mutes (UserDbId, ModDbId, MuteTimestamp, MuteDuration) OUTPUT INSERTED.Id VALUES (@user, @mod, @time, @duration);";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("user", entity.User);
-                DbCommand.Parameters.AddWithValue("mod", entity.Mod);
-                DbCommand.Parameters.AddWithValue("time", entity.Timestamp);
-                DbCommand.Parameters.AddWithValue("duration", entity.Duration);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "INSERT INTO Mutes (UserDbId, ModDbId, MuteTimestamp, MuteDuration) OUTPUT INSERTED.Id VALUES (@user, @mod, @time, @duration);";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("user", entity.User);
+                this.DbCommand.Parameters.AddWithValue("mod", entity.Mod);
+                this.DbCommand.Parameters.AddWithValue("time", entity.Timestamp);
+                this.DbCommand.Parameters.AddWithValue("duration", entity.Duration);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity.Id = (int)reader["Id"];
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -149,9 +149,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -165,11 +165,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT * FROM Mutes WHERE Id = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT * FROM Mutes WHERE Id = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Mute
                 {
@@ -179,7 +179,7 @@ namespace LathBotBack.Repos
                     Timestamp = (DateTime)reader["MuteTimestamp"],
                     Duration = (int)reader["MuteDuration"],
                 };
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -189,9 +189,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -204,16 +204,16 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "UPDATE Mutes SET UserDbId = @user, ModDbId = @mod, MuteTimestamp = @time, MuteDuration = @duration WHERE Id = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("user", entity.User);
-                DbCommand.Parameters.AddWithValue("mod", entity.Mod);
-                DbCommand.Parameters.AddWithValue("time", entity.Timestamp);
-                DbCommand.Parameters.AddWithValue("duration", entity.Duration);
-                DbCommand.Parameters.AddWithValue("id", entity.Id);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "UPDATE Mutes SET UserDbId = @user, ModDbId = @mod, MuteTimestamp = @time, MuteDuration = @duration WHERE Id = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("user", entity.User);
+                this.DbCommand.Parameters.AddWithValue("mod", entity.Mod);
+                this.DbCommand.Parameters.AddWithValue("time", entity.Timestamp);
+                this.DbCommand.Parameters.AddWithValue("duration", entity.Duration);
+                this.DbCommand.Parameters.AddWithValue("id", entity.Id);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -223,9 +223,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -238,12 +238,12 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "DELETE FROM Mutes WHERE Id = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "DELETE FROM Mutes WHERE Id = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -253,9 +253,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 

@@ -1,9 +1,9 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
@@ -16,10 +16,10 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT * FROM Mods;";
-                DbCommand.Parameters.Clear();
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT * FROM Mods;";
+                this.DbCommand.Parameters.Clear();
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 list = [];
                 while (reader.Read())
                 {
@@ -42,7 +42,7 @@ namespace LathBotBack.Repos
 
                     list.Add(mod);
                 }
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -52,9 +52,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -68,11 +68,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT * FROM Mods WHERE ModDbId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT * FROM Mods WHERE ModDbId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new()
                 {
@@ -91,7 +91,7 @@ namespace LathBotBack.Repos
                 else
                     entity.TwoFAKeySalt = (string)reader["TwoFAKeySalt"];
 
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -101,9 +101,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -116,15 +116,15 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "INSERT INTO Mods (ModDbId, Timezone) OUTPUT INSERTED.Id VALUES (@dbid, @tz);";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
-                DbCommand.Parameters.AddWithValue("tz", entity.Timezone);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "INSERT INTO Mods (ModDbId, Timezone) OUTPUT INSERTED.Id VALUES (@dbid, @tz);";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
+                this.DbCommand.Parameters.AddWithValue("tz", entity.Timezone);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity.Id = (int)reader["Id"];
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -134,9 +134,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -150,11 +150,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT * FROM Mods WHERE Id = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT * FROM Mods WHERE Id = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Mod
                 {
@@ -173,7 +173,7 @@ namespace LathBotBack.Repos
                 else
                     entity.TwoFAKeySalt = (string)reader["TwoFAKeySalt"];
 
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -183,9 +183,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -198,17 +198,17 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "UPDATE Mods SET ModDbId = @dbid, Timezone = @tz, TwoFAKey = @twofa, TwoFAKeySalt = @twofasalt WHERE Id = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
-                DbCommand.Parameters.AddWithValue("tz", entity.Timezone);
-                var param = DbCommand.Parameters.AddWithValue("twofa", entity.TwoFAKey);
+                this.DbCommand.CommandText = "UPDATE Mods SET ModDbId = @dbid, Timezone = @tz, TwoFAKey = @twofa, TwoFAKeySalt = @twofasalt WHERE Id = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
+                this.DbCommand.Parameters.AddWithValue("tz", entity.Timezone);
+                var param = this.DbCommand.Parameters.AddWithValue("twofa", entity.TwoFAKey);
                 param.DbType = System.Data.DbType.Binary;
-                DbCommand.Parameters.AddWithValue("twofasalt", entity.TwoFAKeySalt);
-                DbCommand.Parameters.AddWithValue("id", entity.Id);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.Parameters.AddWithValue("twofasalt", entity.TwoFAKeySalt);
+                this.DbCommand.Parameters.AddWithValue("id", entity.Id);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -218,9 +218,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -233,12 +233,12 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "DELETE FROM Mods WHERE Id = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "DELETE FROM Mods WHERE Id = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -248,9 +248,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 

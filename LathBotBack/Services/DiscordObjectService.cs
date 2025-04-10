@@ -3,6 +3,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using LathBotBack.Base;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace LathBotBack.Services
 {
@@ -10,7 +11,7 @@ namespace LathBotBack.Services
     {
         #region Singleton
         private static DiscordObjectService instance;
-        private static readonly object padlock = new();
+        private static readonly Lock padlock = new();
         public static DiscordObjectService Instance
         {
             get
@@ -60,49 +61,49 @@ namespace LathBotBack.Services
             Color = new DiscordColor(27, 116, 226)
         };
 
-        public override void Init(DiscordClient client)
+        public override async void Init(DiscordClient client)
         {
-            Lathland = client.GetGuildAsync(699555747591094344).GetAwaiter().GetResult();
+            this.Lathland = client.GetGuildAsync(699555747591094344).GetAwaiter().GetResult();
 
-            QuestionsChannel = Lathland.GetChannel(721082217119612969);
-            StaffChannel = Lathland.GetChannel(724313826786410508);
-            GoodGuysChannel = Lathland.GetChannel(795654190143766578);
-            ErrorLogChannel = Lathland.GetChannel(787423655566376970);
-            TimerChannel = Lathland.GetChannel(771830187171250217);
-            WarnsChannel = Lathland.GetChannel(722186358906421369);
-            APODChannel = Lathland.GetChannel(848240982880550932);
-            StaffChannel = Lathland.GetChannel(724313826786410508);
-            LogsChannel = Lathland.GetChannel(700009728151126036);
-            QuestionsChannel = Lathland.GetChannel(721082217119612969);
+            this.QuestionsChannel = await this.Lathland.GetChannelAsync(721082217119612969);
+            this.StaffChannel = await this.Lathland.GetChannelAsync(724313826786410508);
+            this.GoodGuysChannel = await this.Lathland.GetChannelAsync(795654190143766578);
+            this.ErrorLogChannel = await this.Lathland.GetChannelAsync(787423655566376970);
+            this.TimerChannel = await this.Lathland.GetChannelAsync(771830187171250217);
+            this.WarnsChannel = await this.Lathland.GetChannelAsync(722186358906421369);
+            this.APODChannel = await this.Lathland.GetChannelAsync(848240982880550932);
+            this.StaffChannel = await this.Lathland.GetChannelAsync(724313826786410508);
+            this.LogsChannel = await this.Lathland.GetChannelAsync(700009728151126036);
+            this.QuestionsChannel = await this.Lathland.GetChannelAsync(721082217119612969);
 
             DiscordMessage lastStaffMessage = null;
             try
             {
-                lastStaffMessage = StaffChannel.GetMessageAsync((ulong)StaffChannel.LastMessageId).GetAwaiter().GetResult();
+                lastStaffMessage = this.StaffChannel.GetMessageAsync((ulong)this.StaffChannel.LastMessageId).GetAwaiter().GetResult();
             }
             catch (NotFoundException)
             {
             }
             if (lastStaffMessage?.Author.Id == 708083256439996497)
-                StaffQuestions = lastStaffMessage;
+                this.StaffQuestions = lastStaffMessage;
             else
-                StaffQuestions = StaffChannel.SendMessageAsync(StaffQuestionsEmbed.Build()).GetAwaiter().GetResult();
+                this.StaffQuestions = this.StaffChannel.SendMessageAsync(this.StaffQuestionsEmbed.Build()).GetAwaiter().GetResult();
 
             DiscordMessage lastLathQuestion = null;
             try
             {
-                lastLathQuestion = QuestionsChannel.GetMessageAsync((ulong)QuestionsChannel.LastMessageId).GetAwaiter().GetResult();
+                lastLathQuestion = this.QuestionsChannel.GetMessageAsync((ulong)this.QuestionsChannel.LastMessageId).GetAwaiter().GetResult();
             }
             catch (NotFoundException)
             {
             }
             if (lastLathQuestion?.Author.Id == 708083256439996497)
-                LathQuestions = lastLathQuestion;
+                this.LathQuestions = lastLathQuestion;
             else
-                LathQuestions = QuestionsChannel.SendMessageAsync(LathQuestionsEmbed).GetAwaiter().GetResult();
+                this.LathQuestions = this.QuestionsChannel.SendMessageAsync(this.LathQuestionsEmbed).GetAwaiter().GetResult();
 
-            LastEdits = [];
-            LastDeletes = [];
+            this.LastEdits = [];
+            this.LastDeletes = [];
         }
     }
 }

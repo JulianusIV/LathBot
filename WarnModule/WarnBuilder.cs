@@ -1,8 +1,8 @@
 ﻿using DSharpPlus;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.SlashCommands;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
@@ -23,7 +23,6 @@ namespace WarnModule
         public DiscordMember Mod { get; set; } = mod;
         public DiscordMember Member { get; set; } = member;
         public DiscordMessage MessageLink { get; set; } = messageLink;
-        public InteractivityExtension Interactivity { get; set; } = client.GetInteractivity();
         public Rule Rule { get; set; }
         public int PointsDeducted { get; set; }
         public string Reason { get; set; }
@@ -33,34 +32,34 @@ namespace WarnModule
 
         public async Task<bool> PreExecutionChecks()
         {
-            if (Member.Id == 192037157416730625)
+            if (this.Member.Id == 192037157416730625)
             {
-                await WarnChannel.SendMessageAsync("You cant warn Lathrix!");
+                await this.WarnChannel.SendMessageAsync("You cant warn Lathrix!");
                 return false;
             }
-            if (await Guild.GetMemberAsync(Member.Id) == null)
+            if (await this.Guild.GetMemberAsync(this.Member.Id) == null)
             {
-                await WarnChannel.SendMessageAsync($"User {Member.DisplayName} is not on this server anymore, you can't warn them!");
+                await this.WarnChannel.SendMessageAsync($"User {this.Member.DisplayName} is not on this server anymore, you can't warn them!");
                 return false;
             }
-            if (Mod.Roles.Contains(Guild.GetRole(748646909354311751)))
+            if (this.Mod.Roles.Contains(await this.Guild.GetRoleAsync(748646909354311751)))
             {
                 DiscordEmbedBuilder discordEmbed = new()
                 {
-                    Color = Mod.Color,
-                    Title = $"Trial Plague {Mod.Nickname} just used a moderation command",
+                    Color = this.Mod.Color,
+                    Title = $"Trial Plague {this.Mod.Nickname} just used a moderation command",
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        IconUrl = Mod.AvatarUrl,
-                        Text = $"{Mod.Username}#{Mod.Discriminator} ({Mod.Id})"
+                        IconUrl = this.Mod.AvatarUrl,
+                        Text = $"{this.Mod.Username}#{this.Mod.Discriminator} ({this.Mod.Id})"
                     }
                 };
-                await Guild.GetChannel(722905404354592900).SendMessageAsync(discordEmbed.Build());
+                await (await this.Guild.GetChannelAsync(722905404354592900)).SendMessageAsync(discordEmbed.Build());
             }
             return true;
         }
 
-        public async Task RequestRule(ContextMenuContext ctx = null)
+        public async Task RequestRule(SlashCommandContext ctx = null)
         {
             List<DiscordSelectComponentOption> options = [];
             foreach (var item in RuleService.Rules)
@@ -83,22 +82,17 @@ namespace WarnModule
             DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
                 .AddComponents(selectMenu)
                 .WithContent("­");
-            DiscordMessage message = await WarnChannel.SendMessageAsync(messageBuilder);
+            DiscordMessage message = await this.WarnChannel.SendMessageAsync(messageBuilder);
 
             if (ctx is not null)
-            {
-                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder
-                {
-                    Content = message.JumpLink.ToString()
-                });
-            }
+                await ctx.FollowupAsync(message.JumpLink.ToString(), true);
 
-            var reaction = await Interactivity.WaitForSelectAsync(message, Mod, "warnSelect", TimeSpan.FromMinutes(2));
-            Rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
+            var reaction = await message.WaitForSelectAsync(this.Mod, "warnSelect", TimeSpan.FromMinutes(2));
+            this.Rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
             await message.DeleteAsync();
         }
 
-        public async Task<ulong> RequestRuleEphemeral(ContextMenuContext ctx)
+        public async Task<ulong> RequestRuleEphemeral(SlashCommandContext ctx)
         {
             List<DiscordSelectComponentOption> options = [];
             foreach (var item in RuleService.Rules)
@@ -118,13 +112,13 @@ namespace WarnModule
             }
             DiscordSelectComponent selectMenu = new("warnSelect", "Select a Rule!", options);
 
-            var message = await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
+            var message = await ctx.FollowupAsync(new DiscordFollowupMessageBuilder()
                 .AddComponents(selectMenu)
                 .WithContent("­")
-                .AsEphemeral(true));
+                .AsEphemeral());
 
-            var reaction = await Interactivity.WaitForSelectAsync(message, Mod, "warnSelect", TimeSpan.FromMinutes(2));
-            Rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
+            var reaction = await message.WaitForSelectAsync(this.Mod, "warnSelect", TimeSpan.FromMinutes(2));
+            this.Rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
             await reaction.Result.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
             return message.Id;
         }
@@ -133,7 +127,7 @@ namespace WarnModule
         {
             DiscordMessageBuilder discordMessage = new()
             {
-                Content = $"For this rule you can reduce the users chances by {Rule.MinPoints} - {Rule.MaxPoints}"
+                Content = $"For this rule you can reduce the users chances by {this.Rule.MinPoints} - {this.Rule.MaxPoints}"
             };
             for (int i = 0; i < 3; i++)
             {
@@ -145,22 +139,22 @@ namespace WarnModule
                         DiscordButtonStyle.Primary,
                         (index + 1).ToString(),
                         (index + 1).ToString(),
-                        (index + 1) < Rule.MinPoints || (index + 1) > Rule.MaxPoints)
+                        (index + 1) < this.Rule.MinPoints || (index + 1) > this.Rule.MaxPoints)
                     );
                 }
                 discordMessage.AddComponents(buttons);
             }
-            DiscordMessage pointsMessage = await WarnChannel.SendMessageAsync(discordMessage);
-            var interactpointsMessage = await Interactivity.WaitForButtonAsync(pointsMessage, Mod, TimeSpan.FromMinutes(2));
-            PointsDeducted = int.Parse(interactpointsMessage.Result.Id);
+            DiscordMessage pointsMessage = await this.WarnChannel.SendMessageAsync(discordMessage);
+            var interactpointsMessage = await pointsMessage.WaitForButtonAsync(this.Mod, TimeSpan.FromMinutes(2));
+            this.PointsDeducted = int.Parse(interactpointsMessage.Result.Id);
             await pointsMessage.DeleteAsync();
         }
 
-        public async Task<DiscordInteraction> RequestPointsEphemeral(ContextMenuContext ctx, ulong messageID)
+        public async Task<DiscordInteraction> RequestPointsEphemeral(SlashCommandContext ctx, ulong messageID)
         {
             DiscordWebhookBuilder webhook = new()
             {
-                Content = $"For this rule you can reduce the users chances by {Rule.MinPoints} - {Rule.MaxPoints}"
+                Content = $"For this rule you can reduce the users chances by {this.Rule.MinPoints} - {this.Rule.MaxPoints}"
             };
             for (int i = 0; i < 3; i++)
             {
@@ -172,14 +166,14 @@ namespace WarnModule
                         DiscordButtonStyle.Primary,
                         (index + 1).ToString(),
                         (index + 1).ToString(),
-                        (index + 1) < Rule.MinPoints || (index + 1) > Rule.MaxPoints)
+                        (index + 1) < this.Rule.MinPoints || (index + 1) > this.Rule.MaxPoints)
                     );
                 }
                 webhook.AddComponents(buttons);
             }
             DiscordMessage pointsMessage = await ctx.EditFollowupAsync(messageID, webhook);
-            var interactpointsMessage = await Interactivity.WaitForButtonAsync(pointsMessage, Mod, TimeSpan.FromMinutes(2));
-            PointsDeducted = int.Parse(interactpointsMessage.Result.Id);
+            var interactpointsMessage = await pointsMessage.WaitForButtonAsync(this.Mod, TimeSpan.FromMinutes(2));
+            this.PointsDeducted = int.Parse(interactpointsMessage.Result.Id);
 
             foreach (var item in webhook.Components)
                 foreach (DiscordButtonComponent button in item.Components.Cast<DiscordButtonComponent>())
@@ -215,34 +209,34 @@ namespace WarnModule
         public async Task RequestReason()
         {
             bool tryagain = true;
-            Reason = "/";
+            this.Reason = "/";
             while (tryagain)
             {
-                DiscordMessage reasonMessage = await WarnChannel.SendMessageAsync("If needed please state a reason, write ``NONE`` if you dont want to specify.");
-                InteractivityResult<DiscordMessage> reasonResult = await Interactivity.WaitForMessageAsync(x => x.Channel == WarnChannel && x.Author == Mod);
+                DiscordMessage reasonMessage = await this.WarnChannel.SendMessageAsync("If needed please state a reason, write ``NONE`` if you dont want to specify.");
+                InteractivityResult<DiscordMessage> reasonResult = await this.WarnChannel.GetNextMessageAsync(this.Mod);
                 if (reasonResult.Result.Content.Trim().Equals("NONE", StringComparison.CurrentCultureIgnoreCase))
                 {
                     await reasonMessage.DeleteAsync();
-                    Reason = "/";
+                    this.Reason = "/";
                     tryagain = false;
                 }
                 else if (reasonResult.Result.Content.Length >= 250)
                 {
-                    DiscordMessage buffoon = await WarnChannel.SendMessageAsync("Max reason length is 250 characters!");
+                    DiscordMessage buffoon = await this.WarnChannel.SendMessageAsync("Max reason length is 250 characters!");
                     await reasonMessage.DeleteAsync();
                     await Task.Delay(3000);
                     await buffoon.DeleteAsync();
                 }
                 else
                 {
-                    Reason = reasonResult.Result.Content;
+                    this.Reason = reasonResult.Result.Content;
                     await reasonMessage.DeleteAsync();
                     tryagain = false;
                 }
             }
         }
 
-        public async Task RequestReasonEphemeral(ContextMenuContext ctx, DiscordInteraction interaction)
+        public async Task RequestReasonEphemeral(SlashCommandContext ctx, DiscordInteraction interaction)
         {
             var textInput = new DiscordTextInputComponent("If needed state a reason.",
                 "reason",
@@ -257,44 +251,44 @@ namespace WarnModule
                 .AddComponents(textInput);
 
             await interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, responseBuilder);
-
-            var res = await ctx.Client.GetInteractivity().WaitForModalAsync("reason");
+            InteractivityExtension interactivity = (InteractivityExtension)client.ServiceProvider.GetService(typeof(InteractivityExtension));
+            var res = await interactivity.WaitForModalAsync("reason");
 
             await res.Result.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
-            Reason = res.Result.Values["reason"] ?? "/";
-            Reason = Reason.Equals("NONE", StringComparison.CurrentCultureIgnoreCase) ? "/" : Reason;
+            this.Reason = res.Result.Values["reason"] ?? "/";
+            this.Reason = this.Reason.Equals("NONE", StringComparison.CurrentCultureIgnoreCase) ? "/" : this.Reason;
         }
 
         public async Task<bool> WriteToDatabase()
         {
             UserRepository repo = new(ReadConfig.Config.ConnectionString);
-            bool result = repo.GetIdByDcId(Member.Id, out MemberDbId);
+            bool result = repo.GetIdByDcId(this.Member.Id, out this.MemberDbId);
             if (!result)
             {
-                await WarnChannel.SendMessageAsync("There was an error getting the user from the Database");
+                await this.WarnChannel.SendMessageAsync("There was an error getting the user from the Database");
                 return false;
             }
             WarnRepository warnRepo = new(ReadConfig.Config.ConnectionString);
-            result = warnRepo.GetWarnAmount(MemberDbId, out int WarnNumber);
+            result = warnRepo.GetWarnAmount(this.MemberDbId, out int WarnNumber);
             if (!result)
             {
-                await WarnChannel.SendMessageAsync("There was an error getting the previous warns from the Database");
+                await this.WarnChannel.SendMessageAsync("There was an error getting the previous warns from the Database");
                 return false;
             }
-            result = repo.GetIdByDcId(Mod.Id, out int ModDbId);
+            result = repo.GetIdByDcId(this.Mod.Id, out int ModDbId);
             if (!result)
             {
-                await WarnChannel.SendMessageAsync("There was an error getting the moderator from the database");
+                await this.WarnChannel.SendMessageAsync("There was an error getting the moderator from the database");
             }
-            if (MemberDbId == 0 || ModDbId == 0)
+            if (this.MemberDbId == 0 || ModDbId == 0)
                 return false;
             Warn warn = new()
             {
-                User = MemberDbId,
+                User = this.MemberDbId,
                 Mod = ModDbId,
-                Reason = Rule.RuleNum == 0 ? Reason : $"Rule {Rule.RuleNum}, {Reason}",
+                Reason = this.Rule.RuleNum == 0 ? this.Reason : $"Rule {this.Rule.RuleNum}, {this.Reason}",
                 Number = WarnNumber + 1,
-                Level = PointsDeducted,
+                Level = this.PointsDeducted,
                 Time = DateTime.Now,
                 Persistent = false
 
@@ -302,7 +296,7 @@ namespace WarnModule
             result = warnRepo.Create(ref warn);
             if (!result)
             {
-                await WarnChannel.SendMessageAsync("There was an error creating the database entry");
+                await this.WarnChannel.SendMessageAsync("There was an error creating the database entry");
                 return false;
             }
             return true;
@@ -312,10 +306,10 @@ namespace WarnModule
         {
             AuditRepository auditRepo = new(ReadConfig.Config.ConnectionString);
             UserRepository urepo = new(ReadConfig.Config.ConnectionString);
-            bool userResult = urepo.GetIdByDcId(Mod.Id, out int id);
+            bool userResult = urepo.GetIdByDcId(this.Mod.Id, out int id);
             if (!userResult)
             {
-                await WarnChannel.SendMessageAsync("There was a problem reading a User");
+                await this.WarnChannel.SendMessageAsync("There was a problem reading a User");
                 return false;
             }
             else
@@ -323,7 +317,7 @@ namespace WarnModule
                 bool auditResult = auditRepo.Read(id, out Audit audit);
                 if (!auditResult)
                 {
-                    await WarnChannel.SendMessageAsync("There was a problem reading an Audit");
+                    await this.WarnChannel.SendMessageAsync("There was a problem reading an Audit");
                     return false;
                 }
                 else
@@ -332,7 +326,7 @@ namespace WarnModule
                     bool updateResult = auditRepo.Update(audit);
                     if (!updateResult)
                     {
-                        await WarnChannel.SendMessageAsync("There was a problem reading to the Audit table");
+                        await this.WarnChannel.SendMessageAsync("There was a problem reading to the Audit table");
                         return false;
                     }
                 }
@@ -342,9 +336,9 @@ namespace WarnModule
 
         public async Task ReadRemainingPoints()
         {
-            if (!new WarnRepository(ReadConfig.Config.ConnectionString).GetRemainingPoints(MemberDbId, out PointsLeft))
+            if (!new WarnRepository(ReadConfig.Config.ConnectionString).GetRemainingPoints(this.MemberDbId, out this.PointsLeft))
             {
-                await WarnChannel.SendMessageAsync("There was an error reading the remaining points");
+                await this.WarnChannel.SendMessageAsync("There was an error reading the remaining points");
             }
         }
 
@@ -352,39 +346,39 @@ namespace WarnModule
         {
             DiscordEmbedBuilder embedBuilder = new()
             {
-                Color = CalculateSeverity(PointsDeducted) switch
+                Color = CalculateSeverity(this.PointsDeducted) switch
                 {
                     1 => DiscordColor.Yellow,
                     2 => DiscordColor.Orange,
                     3 => DiscordColor.Red,
                     _ => DiscordColor.Black,
                 },
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = Member.AvatarUrl },
-                Title = $"{Member.DisplayName}#{Member.Discriminator} ({Member.Id}) has been warned for Rule {Rule.RuleNum}:",
-                Description = $"{Rule.RuleText}\n" +
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Height = 8, Width = 8, Url = this.Member.AvatarUrl },
+                Title = $"{this.Member.DisplayName}#{this.Member.Discriminator} ({this.Member.Id}) has been warned for Rule {this.Rule.RuleNum}:",
+                Description = $"{this.Rule.RuleText}\n" +
                         "\n" +
-                        $"{Reason}",
-                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = Mod.AvatarUrl, Text = $"{Mod.DisplayName}" }
+                        $"{this.Reason}",
+                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = this.Mod.AvatarUrl, Text = $"{this.Mod.DisplayName}" }
             };
-            embedBuilder.AddField($"{PointsLeft} points remaining", "Please keep any talk of this to DM's");
+            embedBuilder.AddField($"{this.PointsLeft} points remaining", "Please keep any talk of this to DM's");
             DiscordEmbed embed = embedBuilder.Build();
 
-            DiscordChannel warnsChannel = Guild.GetChannel(722186358906421369);
-            await warnsChannel.SendMessageAsync(Member.Mention, embed);
+            DiscordChannel warnsChannel = await this.Guild.GetChannelAsync(722186358906421369);
+            await warnsChannel.SendMessageAsync(this.Member.Mention, embed);
 
             DiscordEmbedBuilder logEmbedBuilder = new()
             {
                 Color = DiscordColor.Yellow,
-                Title = $"Successfully warned {Member.DisplayName}#{Member.Discriminator} ({Member.Id}).",
-                Description = $"Rule {Rule.RuleNum}:\n" +
+                Title = $"Successfully warned {this.Member.DisplayName}#{this.Member.Discriminator} ({this.Member.Id}).",
+                Description = $"Rule {this.Rule.RuleNum}:\n" +
                             "\n" +
-                            $"{Reason}\n" +
+                            $"{this.Reason}\n" +
                             "\n" +
-                            $"User has {PointsLeft} points left.",
-                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = Mod.AvatarUrl, Text = $"{Mod.DisplayName}" }
+                            $"User has {this.PointsLeft} points left.",
+                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = this.Mod.AvatarUrl, Text = $"{this.Mod.DisplayName}" }
             };
             DiscordEmbed logEmbed = logEmbedBuilder.Build();
-            await WarnChannel.SendMessageAsync(logEmbed);
+            await this.WarnChannel.SendMessageAsync(logEmbed);
         }
 
         public async Task LogMessage()
@@ -393,20 +387,20 @@ namespace WarnModule
             {
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
-                    IconUrl = MessageLink.Author.AvatarUrl,
-                    Name = MessageLink.Author.Username
+                    IconUrl = this.MessageLink.Author.AvatarUrl,
+                    Name = this.MessageLink.Author.Username
                 },
-                Description = MessageLink.Content,
-                Color = (await Guild.GetMemberAsync(MessageLink.Author.Id)).Color
+                Description = this.MessageLink.Content,
+                Color = (await this.Guild.GetMemberAsync(this.MessageLink.Author.Id)).Color
             };
-            if (MessageLink.Attachments.Count != 0)
+            if (this.MessageLink.Attachments.Count != 0)
             {
                 var msgBuilder = new DiscordMessageBuilder();
 
                 Dictionary<string, Stream> attachments = [];
-                if (MessageLink.Attachments is not null && MessageLink.Attachments.Any())
+                if (this.MessageLink.Attachments is not null && this.MessageLink.Attachments.Any())
                 {
-                    foreach (var attachment in MessageLink.Attachments)
+                    foreach (var attachment in this.MessageLink.Attachments)
                     {
                         using HttpClient httpClient = new();
 
@@ -417,23 +411,23 @@ namespace WarnModule
                     msgBuilder.AddFiles(attachments);
                 }
 
-                await WarnChannel.SendMessageAsync(msgBuilder.AddEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
+                await this.WarnChannel.SendMessageAsync(msgBuilder.AddEmbed(discordEmbed).WithAllowedMentions(Mentions.None));
                 foreach (var attachment in attachments)
                     attachment.Value.Close();
             }
             else
             {
-                await WarnChannel.SendMessageAsync(discordEmbed);
+                await this.WarnChannel.SendMessageAsync(discordEmbed);
             }
-            await MessageLink.DeleteAsync();
+            await this.MessageLink.DeleteAsync();
         }
 
         public async Task SendPunishMessage()
         {
-            if (PointsLeft < 11)
+            if (this.PointsLeft < 11)
             {
-                await WarnChannel.SendMessageAsync($"{Mod.Mention} User has {PointsLeft} points left.\n" +
-                    $"By common practice the user should be muted{(PointsLeft < 6 ? ", kicked" : "")}{(PointsLeft < 1 ? ", or banned" : "")}.");
+                await this.WarnChannel.SendMessageAsync($"{this.Mod.Mention} User has {this.PointsLeft} points left.\n" +
+                    $"By common practice the user should be muted{(this.PointsLeft < 6 ? ", kicked" : "")}{(this.PointsLeft < 1 ? ", or banned" : "")}.");
             }
         }
 

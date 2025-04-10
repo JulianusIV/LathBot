@@ -1,17 +1,20 @@
 ﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.TextCommands;
+using DSharpPlus.Commands.Processors.TextCommands.Parsing;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.SlashCommands;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
 using LathBotBack.Services;
-using LathBotFront.Commands;
 using LathBotFront.EventHandlers;
-using LathBotFront.Interactions;
+using LathBotFront.Interactions.PreExecutionChecks;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using UptimeKumaHeartbeat;
 
@@ -21,7 +24,7 @@ namespace LathBotFront
     {
         #region Singleton
         private static Bot instance = null;
-        private static readonly object padlock = new();
+        private static readonly Lock padlock = new();
         public static Bot Instance
         {
             get
@@ -39,10 +42,6 @@ namespace LathBotFront
 
         public InteractivityExtension Interactivity { get; private set; }
 
-        public CommandsNextExtension Commands { get; private set; }
-
-        public SlashCommandsExtension SlashCommands { get; set; }
-
         public HeartbeatData HeartbeatData { get; set; }
 
         public async Task RunAsync()
@@ -55,51 +54,58 @@ namespace LathBotFront
 #else
 			result = varrepo.Read(2, out Variable prefix); //otherwise get default prefix
 #endif
-            DiscordConfiguration config = new()
-            {
-                Token = ReadConfig.Config.Token,
-                TokenType = TokenType.Bot,
-                AutoReconnect = true,
+
+            this.Client = DiscordClientBuilder.CreateDefault(ReadConfig.Config.Token, DiscordIntents.All)
 #if DEBUG
-                MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Debug,
+                .SetLogLevel(LogLevel.Debug)
 #endif
-                Intents = DiscordIntents.All
-            };
-
-            Client = new DiscordClient(config);
-
-            //Register client events
-            Client.SessionCreated += Events.OnClientReady;
-            Client.GuildDownloadCompleted += Events.Client_GuildDownloadCompleted;
-            Client.MessageCreated += Events.MessageCreated;
-            Client.MessageCreated += Prevention.OnMessageCreated;
-            Client.MessageUpdated += Events.MessageUpdated;
-            Client.MessageDeleted += Events.MessageDeleted;
-            Client.GuildMemberAdded += Events.MemberAdded;
-            Client.MessageReactionAdded += Events.ReactionAdded;
-            Client.ClientErrored += Events.ClientErrored;
-            Client.ComponentInteractionCreated += Events.ComponentTriggered;
-
-            //register handlers in event handler folder
-            Client.ComponentInteractionCreated += RoleAssign.ComponentTriggered;
-
+                .ConfigureEventHandlers(b =>
+                    b.HandleSessionCreated(Events.OnClientReady)
+                    .HandleGuildDownloadCompleted(Events.Client_GuildDownloadCompleted)
+                    .HandleMessageCreated(Events.MessageCreated)
+                    .HandleMessageCreated(Prevention.OnMessageCreated)
+                    .HandleMessageUpdated(Events.MessageUpdated)
+                    .HandleMessageDeleted(Events.MessageDeleted)
+                    .HandleGuildMemberAdded(Events.MemberAdded)
+                    .HandleMessageReactionAdded(Events.ReactionAdded)
+                    .HandleComponentInteractionCreated(Events.ComponentTriggered)
+                    .HandleComponentInteractionCreated(RoleAssign.ComponentTriggered)
 #if !DEBUG
-            //Register client events for logging
-            Client.GuildBanAdded += Logger.BanAdded;
-            Client.GuildBanRemoved += Logger.BanRemoved;
-            Client.GuildMemberUpdated += Logger.MemberUpdated;
-            Client.ChannelUpdated += Logger.ChannelUpdated;
-            Client.GuildRoleUpdated += Logger.RoleUpdated;
-            Client.MessageUpdated += Logger.MessageEdited;
-            Client.MessageDeleted += Logger.MessageDeleted;
-            Client.MessagesBulkDeleted += Logger.BulkMessagesDeleted;
-            Client.VoiceStateUpdated += Logger.VoiceUpdate;
-            Client.ThreadCreated += Logger.ThreadCreated;
-            Client.ThreadDeleted += Logger.ThreadDeleted;
-            //Library broken as fuck here, so not yet enabled
-            //Client.ThreadUpdated += Logger.ThreadUpdated;  
+                    .HandleGuildBanAdded(Logger.BanAdded)
+                    .HandleGuildBanRemoved(Logger.BanRemoved)
+                    .HandleGuildMemberUpdated(Logger.MemberUpdated)
+                    .HandleChannelUpdated(Logger.ChannelUpdated)
+                    .HandleGuildRoleUpdated(Logger.RoleUpdated)
+                    .HandleMessageUpdated(Logger.MessageEdited)
+                    .HandleMessageDeleted(Logger.MessageDeleted)
+                    .HandleMessagesBulkDeleted(Logger.BulkMessagesDeleted)
+                    .HandleVoiceStateUpdated(Logger.VoiceUpdate)
+                    .HandleThreadCreated(Logger.ThreadCreated)
+                    .HandleThreadDeleted(Logger.ThreadDeleted)
+                    .HandleThreadUpdated(Logger.ThreadUpdated)
 #endif
-
+                )
+                .UseInteractivity(new InteractivityConfiguration
+                {
+                    Timeout = TimeSpan.FromMinutes(5),
+                    PollBehaviour = PollBehaviour.KeepEmojis
+                })
+                .UseCommands((IServiceProvider serviceProvider, CommandsExtension extension) =>
+                {
+                    extension.AddCommands(Assembly.GetExecutingAssembly());
+                    TextCommandProcessor textCommandProcessor = new(new()
+                    {
+                        PrefixResolver = new DefaultPrefixResolver(true, prefix.Value).ResolvePrefixAsync
+                    });
+                    extension.AddProcessor(textCommandProcessor);
+                    extension.CommandErrored += Events.SlashCommandErrored;
+                    extension.AddCheck<EmbedBannedCheck>();
+                }, new CommandsConfiguration
+                {
+                    RegisterDefaultCommandProcessors = true,
+                    UseDefaultCommandErrorHandler = false
+                })
+                .Build();
 
             //Register timer events
             SystemService.Instance.WarnTimer.Elapsed += Events.TimerTick;
@@ -107,49 +113,11 @@ namespace LathBotFront
             //Register Logger events
             SystemService.Instance.Logger.RaiseLogEvent += Events.OnLog;
 
-            Client.UseInteractivity(new InteractivityConfiguration
-            {
-                Timeout = TimeSpan.FromMinutes(5),
-                PollBehaviour = PollBehaviour.KeepEmojis,
-            });
-
-            CommandsNextConfiguration commandsConfig = new()
-            {
-                StringPrefixes = new string[] { prefix.Value },
-                EnableMentionPrefix = true
-            };
-            Commands = Client.UseCommandsNext(commandsConfig);
-
-            //Register commands
-            Commands.RegisterCommands<AuditCommands>();
-            Commands.RegisterCommands<EmbedCommands>();
-            Commands.RegisterCommands<InfoCommands>();
-            Commands.RegisterCommands<ReactionCommands>();
-            Commands.RegisterCommands<RuleCommands>();
-            Commands.RegisterCommands<TechnicalCommands>();
-            Commands.RegisterCommands<WarnCommands>();
-            //Commands.RegisterCommands<EventCommands>();
-
-            //Register command events
-            Commands.CommandErrored += Events.CommandErrored;
-
-            SlashCommands = Client.UseSlashCommands();
-
-            //Register interactions
-            SlashCommands.RegisterCommands<WarnInteractions>(699555747591094344);
-            SlashCommands.RegisterCommands<ModerationInteractions>(699555747591094344);
-            SlashCommands.RegisterCommands<DebateInteractions>(699555747591094344);
-
-            //Register interaction events
-            SlashCommands.ContextMenuErrored += Events.ContextMenuErrored;
-            SlashCommands.AutocompleteErrored += Events.AutoCompleteErrored;
-            SlashCommands.SlashCommandErrored += Events.SlashCommandErrored;
-
-            await Client.ConnectAsync();
+            await this.Client.ConnectAsync();
 
             HeartbeatManager heartbeatManager = new();
-            HeartbeatData = new("", "");
-            await heartbeatManager.StartHeartbeatsAsync(ReadConfig.Config.UptimeKumaUrl, HeartbeatData);
+            this.HeartbeatData = new("", "");
+            await heartbeatManager.StartHeartbeatsAsync(ReadConfig.Config.UptimeKumaUrl, this.HeartbeatData);
 
             await Task.Delay(-1);
         }

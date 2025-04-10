@@ -1,9 +1,9 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
@@ -16,10 +16,10 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT * FROM Warns;";
-                DbCommand.Parameters.Clear();
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT * FROM Warns;";
+                this.DbCommand.Parameters.Clear();
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     list.Add(new Warn
@@ -35,7 +35,7 @@ namespace LathBotBack.Repos
                         ExpirationTime = (int?)(reader["ExpirationTime"] is DBNull ? null : reader["ExpirationTime"])
                     });
                 }
-                DbConnection.Close();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -44,9 +44,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -60,11 +60,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT * FROM Warns WHERE UserDbId = @id ORDER BY WarnNumber ASC;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", UserDbId);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT * FROM Warns WHERE UserDbId = @id ORDER BY WarnNumber ASC;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", UserDbId);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     list.Add(new Warn
@@ -80,7 +80,7 @@ namespace LathBotBack.Repos
                         ExpirationTime = (int?)(reader["ExpirationTime"] is DBNull ? null : reader["ExpirationTime"])
                     });
                 }
-                DbConnection.Close();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -89,9 +89,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -105,12 +105,12 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT * FROM Warns WHERE UserDbId = @id AND WarnNumber = @num;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", UserDbId);
-                DbCommand.Parameters.AddWithValue("num", WarnNum);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT * FROM Warns WHERE UserDbId = @id AND WarnNumber = @num;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", UserDbId);
+                this.DbCommand.Parameters.AddWithValue("num", WarnNum);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Warn
                 {
@@ -124,7 +124,7 @@ namespace LathBotBack.Repos
                     User = (int)reader["UserDbId"],
                     ExpirationTime = (int?)(reader["ExpirationTime"] is DBNull ? null : reader["ExpirationTime"])
                 };
-                DbConnection.Close();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -133,9 +133,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -149,11 +149,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT WarnLevel FROM Warns WHERE UserDbId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", UserDbId);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT WarnLevel FROM Warns WHERE UserDbId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", UserDbId);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     amount -= (int)reader["WarnLevel"];
@@ -167,9 +167,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -183,12 +183,12 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT COUNT(UserDbId) FROM Warns WHERE UserDbId = @userid;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("userid", id);
-                DbConnection.Open();
-                amount = (int)DbCommand.ExecuteScalar();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "SELECT COUNT(UserDbId) FROM Warns WHERE UserDbId = @userid;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("userid", id);
+                this.DbConnection.Open();
+                amount = (int)this.DbCommand.ExecuteScalar();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -197,9 +197,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -212,20 +212,20 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = $"INSERT INTO Warns (UserDbId, ModeratorDbId, Reason, WarnNumber, WarnLevel, WarnTime, Persistent) OUTPUT INSERTED.WarnId VALUES (@userid, @modid, @reason, @warnnum, @warnlevel, @warntime, @persistent);";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("userid", entity.User);
-                DbCommand.Parameters.AddWithValue("modid", entity.Mod);
-                DbCommand.Parameters.AddWithValue("reason", entity.Reason);
-                DbCommand.Parameters.AddWithValue("warnnum", entity.Number);
-                DbCommand.Parameters.AddWithValue("warnlevel", entity.Level);
-                DbCommand.Parameters.AddWithValue("warntime", entity.Time);
-                DbCommand.Parameters.AddWithValue("persistent", entity.Persistent);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = $"INSERT INTO Warns (UserDbId, ModeratorDbId, Reason, WarnNumber, WarnLevel, WarnTime, Persistent) OUTPUT INSERTED.WarnId VALUES (@userid, @modid, @reason, @warnnum, @warnlevel, @warntime, @persistent);";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("userid", entity.User);
+                this.DbCommand.Parameters.AddWithValue("modid", entity.Mod);
+                this.DbCommand.Parameters.AddWithValue("reason", entity.Reason);
+                this.DbCommand.Parameters.AddWithValue("warnnum", entity.Number);
+                this.DbCommand.Parameters.AddWithValue("warnlevel", entity.Level);
+                this.DbCommand.Parameters.AddWithValue("warntime", entity.Time);
+                this.DbCommand.Parameters.AddWithValue("persistent", entity.Persistent);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity.ID = (int)reader["WarnId"];
-                DbConnection.Close();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -234,9 +234,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -250,11 +250,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT * FROM Warns WHERE WarnId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT * FROM Warns WHERE WarnId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Warn
                 {
@@ -268,7 +268,7 @@ namespace LathBotBack.Repos
                     Persistent = (bool)reader["Persistent"],
                     ExpirationTime = (int?)(reader["ExpirationTime"] is DBNull ? null : reader["ExpirationTime"])
                 };
-                DbConnection.Close();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -277,9 +277,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -292,23 +292,23 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "UPDATE Warns SET UserDbId = @user, ModeratorDbId = @mod, Reason = @reason, WarnNumber = @num, WarnLevel = @level, WarnTime = @time, Persistent = @persistent, ExpirationTime = @expirationTime WHERE WarnId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("user", entity.User);
-                DbCommand.Parameters.AddWithValue("mod", entity.Mod);
-                DbCommand.Parameters.AddWithValue("reason", entity.Reason);
-                DbCommand.Parameters.AddWithValue("num", entity.Number);
-                DbCommand.Parameters.AddWithValue("level", entity.Level);
-                DbCommand.Parameters.AddWithValue("time", entity.Time);
-                DbCommand.Parameters.AddWithValue("persistent", entity.Persistent);
+                this.DbCommand.CommandText = "UPDATE Warns SET UserDbId = @user, ModeratorDbId = @mod, Reason = @reason, WarnNumber = @num, WarnLevel = @level, WarnTime = @time, Persistent = @persistent, ExpirationTime = @expirationTime WHERE WarnId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("user", entity.User);
+                this.DbCommand.Parameters.AddWithValue("mod", entity.Mod);
+                this.DbCommand.Parameters.AddWithValue("reason", entity.Reason);
+                this.DbCommand.Parameters.AddWithValue("num", entity.Number);
+                this.DbCommand.Parameters.AddWithValue("level", entity.Level);
+                this.DbCommand.Parameters.AddWithValue("time", entity.Time);
+                this.DbCommand.Parameters.AddWithValue("persistent", entity.Persistent);
                 if (entity.ExpirationTime is null)
-                    DbCommand.Parameters.AddWithValue("expirationTime", DBNull.Value);
+                    this.DbCommand.Parameters.AddWithValue("expirationTime", DBNull.Value);
                 else
-                    DbCommand.Parameters.AddWithValue("expirationTime", entity.ExpirationTime);
-                DbCommand.Parameters.AddWithValue("id", entity.ID);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                    this.DbCommand.Parameters.AddWithValue("expirationTime", entity.ExpirationTime);
+                this.DbCommand.Parameters.AddWithValue("id", entity.ID);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -317,9 +317,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -332,12 +332,12 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "DELETE FROM Warns WHERE WarnId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "DELETE FROM Warns WHERE WarnId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -346,9 +346,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 

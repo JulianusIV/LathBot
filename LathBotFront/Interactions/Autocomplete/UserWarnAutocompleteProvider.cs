@@ -1,5 +1,6 @@
-﻿using DSharpPlus.Entities;
-using DSharpPlus.SlashCommands;
+﻿using DSharpPlus.Commands.Processors.SlashCommands;
+using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
+using DSharpPlus.Entities;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
@@ -9,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace LathBotFront.Interactions.Autocomplete
 {
-    public class UserWarnAutocompleteProvider : IAutocompleteProvider
+    public class UserWarnAutocompleteProvider : IAutoCompleteProvider
     {
-        public Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
+        public ValueTask<IEnumerable<DiscordAutoCompleteChoice>> AutoCompleteAsync(AutoCompleteContext ctx)
         {
             var repo = new WarnRepository(ReadConfig.Config.ConnectionString);
             var urepo = new UserRepository(ReadConfig.Config.ConnectionString);
@@ -23,11 +24,11 @@ namespace LathBotFront.Interactions.Autocomplete
             {
                 choices.Add(new DiscordAutoCompleteChoice($"Warn {warn.Number}: " + (warn.Reason.Length > 40 ? string.Concat(warn.Reason.Take(37)) + "..." : warn.Reason), warn.Number));
             }
-            return Task.FromResult(choices.Where(x =>
+            return ValueTask.FromResult(choices.Where(x =>
             {
                 try
                 {
-                    return (bool)ctx.OptionValue?.ToString().Contains(x.Value.ToString());
+                    return ctx.UserInput.Contains(x.Value.ToString());
                 }
                 catch
                 {

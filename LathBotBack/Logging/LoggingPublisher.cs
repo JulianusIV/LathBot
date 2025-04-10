@@ -10,6 +10,6 @@ namespace LathBotBack.Logging
             => RaiseLogEvent?.Invoke(this, e);
 
         public void Log(string message)
-            => OnRaiseLogEvent(new LoggingEventArgs(message));
+            => this.OnRaiseLogEvent(new LoggingEventArgs(message));
     }
 }

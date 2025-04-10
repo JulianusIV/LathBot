@@ -14,7 +14,7 @@ namespace LathBotFront
 {
     public class Logger
     {
-        internal static Task BanAdded(DiscordClient _1, GuildBanAddEventArgs e)
+        internal static Task BanAdded(DiscordClient _1, GuildBanAddedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -37,7 +37,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task BanRemoved(DiscordClient _1, GuildBanRemoveEventArgs e)
+        internal static Task BanRemoved(DiscordClient _1, GuildBanRemovedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -61,7 +61,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task MemberUpdated(DiscordClient _1, GuildMemberUpdateEventArgs e)
+        internal static Task MemberUpdated(DiscordClient _1, GuildMemberUpdatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -114,7 +114,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task ChannelUpdated(DiscordClient _1, ChannelUpdateEventArgs e)
+        internal static Task ChannelUpdated(DiscordClient _1, ChannelUpdatedEventArgs e)
         {
             //TODO Permissions
 
@@ -146,7 +146,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task RoleUpdated(DiscordClient _1, GuildRoleUpdateEventArgs e)
+        internal static Task RoleUpdated(DiscordClient _1, GuildRoleUpdatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -165,7 +165,8 @@ namespace LathBotFront
                     .AddField("Name", e.RoleBefore.Name == e.RoleAfter.Name ? "No change" : $"{e.RoleBefore.Name} -> {e.RoleAfter.Name}", true)
                     .AddField("Hoist", e.RoleBefore.IsHoisted == e.RoleAfter.IsHoisted ? "No change" : $"{e.RoleBefore.IsHoisted} -> {e.RoleAfter.IsHoisted}", true)
                     .AddField("Color", e.RoleBefore.Color.Value == e.RoleAfter.Color.Value ? "No change" : $"{e.RoleBefore.Color} -> {e.RoleAfter.Color}", true)
-                    .AddField("Permissions", e.RoleBefore.Permissions == e.RoleAfter.Permissions ? "No change" : $"{(int)e.RoleBefore.Permissions} -> {(int)e.RoleAfter.Permissions}", true)
+                    .AddField("Permissions", e.RoleBefore.Permissions == e.RoleAfter.Permissions ? "No change" :
+                        $"{e.RoleBefore.Permissions.EnumeratePermissions().Aggregate(0, (acc, next) => acc & (int)next)} -> {e.RoleAfter.Permissions.EnumeratePermissions().Aggregate(0, (acc, next) => acc & (int)next)}", true)
                     .AddField("Mentionable", e.RoleBefore.IsMentionable == e.RoleAfter.IsMentionable ? "No change" : $"{e.RoleBefore.IsMentionable} -> {e.RoleAfter.IsMentionable}", true)
                     .WithColor(DiscordColor.Blurple);
 
@@ -174,7 +175,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task MessageEdited(DiscordClient _1, MessageUpdateEventArgs e)
+        internal static Task MessageEdited(DiscordClient _1, MessageUpdatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -202,7 +203,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task MessageDeleted(DiscordClient _1, MessageDeleteEventArgs e)
+        internal static Task MessageDeleted(DiscordClient _1, MessageDeletedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -254,7 +255,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task BulkMessagesDeleted(DiscordClient _1, MessageBulkDeleteEventArgs e)
+        internal static Task BulkMessagesDeleted(DiscordClient _1, MessagesBulkDeletedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -293,7 +294,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task VoiceUpdate(DiscordClient _1, VoiceStateUpdateEventArgs e)
+        internal static Task VoiceUpdate(DiscordClient _1, VoiceStateUpdatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -329,7 +330,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task ThreadCreated(DiscordClient _1, ThreadCreateEventArgs e)
+        internal static Task ThreadCreated(DiscordClient _1, ThreadCreatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -353,7 +354,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task ThreadDeleted(DiscordClient _1, ThreadDeleteEventArgs e)
+        internal static Task ThreadDeleted(DiscordClient _1, ThreadDeletedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -375,38 +376,37 @@ namespace LathBotFront
         }
 
 
-        //Library broken as fuck here, so not yet enabled
-        //internal static Task ThreadUpdated(DiscordClient _1, ThreadUpdateEventArgs e)
-        //{
-        //    _ = Task.Run(async () =>
-        //    {
-        //        if (e.Guild.Id != 699555747591094344)
-        //            return;
-        //        if (e.Parent.Id == 722905404354592900) //senate
-        //            return;
+        internal static Task ThreadUpdated(DiscordClient _1, ThreadUpdatedEventArgs e)
+        {
+            _ = Task.Run(async () =>
+            {
+                if (e.Guild.Id != 699555747591094344)
+                    return;
+                if (e.Parent.Id == 722905404354592900) //senate
+                    return;
 
-        //        if (e.ThreadBefore.Name == e.ThreadAfter.Name
-        //            && e.ThreadBefore.ThreadMetadata.AutoArchiveDuration == e.ThreadAfter.ThreadMetadata.AutoArchiveDuration
-        //            && e.ThreadBefore.ThreadMetadata.IsArchived == e.ThreadAfter.ThreadMetadata.IsArchived
-        //            && e.ThreadBefore.ThreadMetadata.IsLocked == e.ThreadAfter.ThreadMetadata.IsLocked
-        //            && e.ThreadBefore.PerUserRateLimit == e.ThreadAfter.PerUserRateLimit)
-        //            return;
-        //        DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
-        //            .WithTimestamp(DateTime.Now)
-        //            .WithColor(DiscordColor.Blurple)
-        //            .WithDescription($":information_source: The thread {e.ThreadAfter.Mention} ({e.ThreadAfter.Id}) was just updated")
-        //            .AddField("Name", e.ThreadBefore.Name == e.ThreadAfter.Name ? "No change" : $"{e.ThreadBefore.Name} -> {e.ThreadAfter.Name}", true)
-        //            .AddField("Auto Archive Duration ", e.ThreadBefore.ThreadMetadata.AutoArchiveDuration == e.ThreadAfter.ThreadMetadata.AutoArchiveDuration ?
-        //                "No change" : 
-        //                $"{TimeSpan.FromMinutes((int)e.ThreadBefore.ThreadMetadata.AutoArchiveDuration)} -> {TimeSpan.FromMinutes((int)e.ThreadAfter.ThreadMetadata.AutoArchiveDuration)}", true)
-        //            .AddField("Closed", e.ThreadBefore.ThreadMetadata.IsArchived == e.ThreadAfter.ThreadMetadata.IsArchived ? "No change" : $"{e.ThreadBefore.ThreadMetadata.IsArchived} -> {e.ThreadAfter.ThreadMetadata.IsArchived}", true)
-        //            .AddField("Locked", e.ThreadBefore.ThreadMetadata.IsLocked == e.ThreadAfter.ThreadMetadata.IsLocked ? "No change" : $"{e.ThreadBefore.ThreadMetadata.IsLocked} -> {e.ThreadAfter.ThreadMetadata.IsLocked}", true)
-        //            .AddField("Slowmode (seconds)", e.ThreadBefore.PerUserRateLimit == e.ThreadAfter.PerUserRateLimit ? "No change" : $"{e.ThreadBefore.PerUserRateLimit} -> {e.ThreadAfter.PerUserRateLimit}", true)
-        //            .WithFooter("Currently the slowmode will always show as changed, because of what is most likely a library bug that i cant do much about.");
+                if (e.ThreadBefore.Name == e.ThreadAfter.Name
+                    && e.ThreadBefore.ThreadMetadata.AutoArchiveDuration == e.ThreadAfter.ThreadMetadata.AutoArchiveDuration
+                    && e.ThreadBefore.ThreadMetadata.IsArchived == e.ThreadAfter.ThreadMetadata.IsArchived
+                    && e.ThreadBefore.ThreadMetadata.IsLocked == e.ThreadAfter.ThreadMetadata.IsLocked
+                    && e.ThreadBefore.PerUserRateLimit == e.ThreadAfter.PerUserRateLimit)
+                    return;
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                    .WithTimestamp(DateTime.Now)
+                    .WithColor(DiscordColor.Blurple)
+                    .WithDescription($":information_source: The thread {e.ThreadAfter.Mention} ({e.ThreadAfter.Id}) was just updated")
+                    .AddField("Name", e.ThreadBefore.Name == e.ThreadAfter.Name ? "No change" : $"{e.ThreadBefore.Name} -> {e.ThreadAfter.Name}", true)
+                    .AddField("Auto Archive Duration ", e.ThreadBefore.ThreadMetadata.AutoArchiveDuration == e.ThreadAfter.ThreadMetadata.AutoArchiveDuration ?
+                        "No change" :
+                        $"{TimeSpan.FromMinutes((int)e.ThreadBefore.ThreadMetadata.AutoArchiveDuration)} -> {TimeSpan.FromMinutes((int)e.ThreadAfter.ThreadMetadata.AutoArchiveDuration)}", true)
+                    .AddField("Closed", e.ThreadBefore.ThreadMetadata.IsArchived == e.ThreadAfter.ThreadMetadata.IsArchived ? "No change" : $"{e.ThreadBefore.ThreadMetadata.IsArchived} -> {e.ThreadAfter.ThreadMetadata.IsArchived}", true)
+                    .AddField("Locked", e.ThreadBefore.ThreadMetadata.IsLocked == e.ThreadAfter.ThreadMetadata.IsLocked ? "No change" : $"{e.ThreadBefore.ThreadMetadata.IsLocked} -> {e.ThreadAfter.ThreadMetadata.IsLocked}", true)
+                    .AddField("Slowmode (seconds)", e.ThreadBefore.PerUserRateLimit == e.ThreadAfter.PerUserRateLimit ? "No change" : $"{e.ThreadBefore.PerUserRateLimit} -> {e.ThreadAfter.PerUserRateLimit}", true)
+                    .WithFooter("Currently the slowmode will always show as changed, because of what is most likely a library bug that i cant do much about.");
 
-        //        await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().WithEmbed(embed).WithAllowedMentions(Mentions.None));
-        //    });
-        //    return Task.CompletedTask;
-        //}
+                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embed).WithAllowedMentions(Mentions.None));
+            });
+            return Task.CompletedTask;
+        }
     }
 }

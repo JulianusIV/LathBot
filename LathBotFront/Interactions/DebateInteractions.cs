@@ -1,51 +1,49 @@
 ﻿using DSharpPlus;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.SlashCommands;
 using LathBotFront.Interactions.PreExecutionChecks;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace LathBotFront.Interactions
 {
-    public class DebateInteractions : ApplicationCommandModule
+    public class DebateInteractions
     {
         private static readonly CooldownSlash _embedCooldown = new(300);
 
-        [SlashCommand("embed", "Request permissions to embed links/attach files in Debate chat")]
+        [Command("embed")]
+        [Description("Request permissions to embed links/attach files in Debate chat")]
         [EmbedBanned]
-        public async Task Embed(InteractionContext ctx)
+        public async Task Embed(SlashCommandContext ctx)
         {
-            await ctx.CreateResponseAsync(DiscordInteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
+            await ctx.DeferResponseAsync(true);
 
             if (!await _embedCooldown.ExecuteCheckAsync(ctx))
             {
                 var bucket = _embedCooldown.GetBucket(ctx);
-                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
-                    .WithContent($"This command is currently on cooldown! Available again {Formatter.Timestamp(bucket.ResetsAt)}."));
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithContent($"This command is currently on cooldown! Available again {Formatter.Timestamp(bucket.ResetsAt)}."));
                 return;
             }
 
             if (ctx.Channel.Id != 718162681554534511)
             {
-                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
-                    .WithContent("This command is only available in <#718162681554534511>."));
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("This command is only available in <#718162681554534511>."));
                 return;
             }
 
-            await ctx.Channel.AddOverwriteAsync(ctx.Member, DiscordPermissions.EmbedLinks | DiscordPermissions.AttachFiles);
+            await ctx.Channel.AddOverwriteAsync(ctx.Member, DiscordPermission.EmbedLinks | DiscordPermission.AttachFiles);
 
-            var message = await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
-                .WithContent("Done! You now have permissions to send ONE message containing links and/or files within the next 3 minutes."));
+            await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("Done! You now have permissions to send ONE message containing links and/or files within the next 3 minutes."));
 
-            var interactivity = ctx.Client.GetInteractivity();
-            var res = await interactivity.WaitForMessageAsync(x => x.Author.Id == ctx.Member.Id, TimeSpan.FromMinutes(3));
+            var res = await ctx.Channel.GetNextMessageAsync(ctx.Member, TimeSpan.FromMinutes(3));
 
             await ctx.Channel.DeleteOverwriteAsync(ctx.Member);
 
             if (res.TimedOut)
-                await ctx.EditFollowupAsync(message.Id, new DiscordWebhookBuilder()
-                    .WithContent("Permissions have been revoked again due to timeout."));
+                await ctx.EditResponseAsync(new DiscordMessageBuilder().WithContent("Permissions have been revoked again due to timeout."));
         }
     }
 }

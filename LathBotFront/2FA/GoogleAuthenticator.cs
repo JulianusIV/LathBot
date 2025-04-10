@@ -97,7 +97,7 @@ namespace LathBotFront._2FA
                 {
                     var Symbol = value[i];
 
-                    if (UrlEncodeAlphabet.IndexOf(Symbol) != -1)
+                    if (UrlEncodeAlphabet.Contains(Symbol))
                     {
                         Builder.Append(Symbol);
                     }

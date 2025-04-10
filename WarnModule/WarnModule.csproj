@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02211" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="5.0.0-nightly-02211" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02211" />
-    <PackageReference Include="DSharpPlus.SlashCommands" Version="5.0.0-nightly-02211" />
+    <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02480" />
+    <PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02480" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02480" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,7 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+﻿using DSharpPlus.Commands;
+using DSharpPlus.Commands.ArgumentModifiers;
+using DSharpPlus.Commands.ContextChecks;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
@@ -8,23 +9,24 @@ using DSharpPlus.Interactivity.Extensions;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using WarnModule;
 
 namespace LathBotFront.Commands
 {
-    public class WarnCommands : BaseCommandModule
+    public class WarnCommands
     {
         [Command("initdb")]
         [Description("Fill empty Database with users")]
-        [RequireRoles(RoleCheckMode.Any, "Bot Management")]
+        [RequirePermissions(DiscordPermission.Administrator)]
         public async Task InitDB(CommandContext ctx)
         {
-            await ctx.Channel.TriggerTypingAsync();
+            await ctx.DeferResponseAsync();
             if (ctx.User.Id != 387325006176059394)
                 return;
             var members = ctx.Guild.GetAllMembersAsync();
@@ -47,10 +49,9 @@ namespace LathBotFront.Commands
 
         [Command("updatedb")]
         [Description("Fill remaining users in database")]
-        [RequireRoles(RoleCheckMode.Any, "Bot Management")]
         public async Task UpdateDB(CommandContext ctx)
         {
-            await ctx.Channel.TriggerTypingAsync();
+            await ctx.DeferResponseAsync();
             if (ctx.User.Id != 387325006176059394)
                 return;
             var members = ctx.Guild.GetAllMembersAsync().ToBlockingEnumerable();
@@ -63,7 +64,7 @@ namespace LathBotFront.Commands
                 if (!success)
                 {
                     DiscordMember mem = await ctx.Guild.GetMemberAsync(member.Id);
-                    _ = ctx.RespondAsync($"Error checking user {member.Nickname}#{member.Discriminator} ({member.Id})!");
+                    await ctx.RespondAsync($"Error checking user {member.Nickname}#{member.Discriminator} ({member.Id})!");
                 }
                 else if (!exists)
                 {
@@ -75,12 +76,12 @@ namespace LathBotFront.Commands
                     if (!result)
                     {
                         DiscordMember mem = await ctx.Guild.GetMemberAsync(member.Id);
-                        _ = ctx.RespondAsync($"Error creating user {member.Nickname}#{member.Discriminator} ({member.Id})!");
+                        await ctx.RespondAsync($"Error creating user {member.Nickname}#{member.Discriminator} ({member.Id})!");
                     }
                     else
                     {
                         DiscordMember mem = await ctx.Guild.GetMemberAsync(member.Id);
-                        _ = ctx.RespondAsync($"Added user {member.DisplayName}#{mem.Discriminator} ({mem.Id})");
+                        await ctx.RespondAsync($"Added user {member.DisplayName}#{mem.Discriminator} ({mem.Id})");
                         count++;
                     }
                 }
@@ -97,55 +98,14 @@ namespace LathBotFront.Commands
             }
         }
 
-        [Command("report")]
-        [Description("Report a staff member to the senate. (Please don't abuse this system)")]
-        public async Task Report(CommandContext ctx, [Description("The Id of the staff member you want to report.")] ulong ID)
-        {
-            await ctx.Channel.TriggerTypingAsync();
-            DiscordGuild Lathland = await ctx.Client.GetGuildAsync(699555747591094344);
-            DiscordMember member = await Lathland.GetMemberAsync(ID);
-            if (!member.Roles.Contains(Lathland.GetRole(796234634316873759)) && !member.Roles.Contains(Lathland.GetRole(748646909354311751)))
-            {
-                await ctx.Channel.SendMessageAsync("```User is not staff or is part of the Senate.\n" + "If they are part of the Senate try messaging Chewybaca and/or another member of the senate```");
-                return;
-            }
-            InteractivityExtension interactivity = ctx.Client.GetInteractivity();
-            DiscordMessage message = await ctx.Channel.SendMessageAsync("```Please state a reason for your report!\n" +
-                "If you don't say anything for 5 minutes i will have to ignore you.\n" +
-                "Please don't abuse this system.```");
-            InteractivityResult<DiscordMessage> result = await interactivity.WaitForMessageAsync(x => x.Channel == ctx.Channel && x.Author == ctx.User);
-            await message.DeleteAsync();
-            string reportReason = result.Result.Content;
-            DiscordEmbedBuilder embedBuilder = new()
-            {
-                Color = DiscordColor.Red,
-                Title = $"Report from user {ctx.User.Username}#{ctx.User.Discriminator} ({ctx.User.Id})",
-                Description = $"Reported user: {member.Username}#{member.Discriminator} ({member.Id})",
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = member.AvatarUrl },
-                Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.User.AvatarUrl, Text = ctx.User.Username }
-            };
-
-            embedBuilder.AddField("Reason:", reportReason);
-
-            DiscordEmbed embed = embedBuilder.Build();
-            List<DiscordMember> senate =
-            [
-                await Lathland.GetMemberAsync(387325006176059394),//Myself
-                await Lathland.GetMemberAsync(289112287250350080)//Parth
-            ];
-            foreach (DiscordMember senator in senate)
-            {
-                await senator.SendMessageAsync(embed);
-            }
-            await ctx.Channel.SendMessageAsync("Report successfully sent, The senate will get back to you, until then please be patient.");
-        }
-
         [Command("allwarns")]
         [Description("Display all currently unpardoned warns")]
-        [RequireUserPermissions(DiscordPermissions.KickMembers)]
+        [RequirePermissions(DiscordPermission.KickMembers)]
         public async Task AllWarns(CommandContext ctx)
         {
-            await ctx.Channel.TriggerTypingAsync();
+            if (ctx is SlashCommandContext slashContext)
+                await slashContext.RespondAsync("Working on it...", true);
+
             WarnRepository repo = new(ReadConfig.Config.ConnectionString);
             bool result = repo.GetAll(out List<Warn> warns);
             if (!result)
@@ -291,16 +251,17 @@ namespace LathBotFront.Commands
         }
 
         [Command("sql")]
-        [Description("send a SQL Query to the database")]
-        [RequireRoles(RoleCheckMode.Any, "Bot Management")]
+        [Description("Send a SQL Query to the database")]
+        [RequirePermissions(DiscordPermission.Administrator)]
         public async Task SqlQuery(CommandContext ctx, [Description("Query")][RemainingText] string command)
         {
+            await ctx.DeferResponseAsync();
+
             SqlConnection connection = new(ReadConfig.Config.ConnectionString);
             try
             {
                 if (ctx.Member.Id != 387325006176059394)
                     return;
-                await ctx.TriggerTypingAsync();
                 command = command.Trim();
                 SqlCommand cmd = new(command, connection);
                 string resultString = "";
@@ -311,7 +272,7 @@ namespace LathBotFront.Commands
                     for (int index = 0; index < reader.FieldCount; index++)
                         resultString += reader.GetSqlValue(index).ToString() + " ";
                     resultString = resultString.Trim();
-                    if (resultString.Length >= 900)
+                    if (resultString.Length >= 1900)
                     {
                         await ctx.Channel.SendMessageAsync("```d\n" + resultString + "\n```");
                         await ctx.Channel.TriggerTypingAsync();
@@ -322,10 +283,9 @@ namespace LathBotFront.Commands
                 }
                 reader.Close();
                 connection.Close();
-                if (string.IsNullOrEmpty(resultString))
-                    await ctx.Channel.SendMessageAsync("```\nQuery done!\n```");
-                else
+                if (!string.IsNullOrEmpty(resultString))
                     await ctx.Channel.SendMessageAsync("```c\n" + resultString + "\n```");
+                await ctx.RespondAsync("Query Done!");
             }
             catch (Exception e)
             {
@@ -338,71 +298,6 @@ namespace LathBotFront.Commands
                     connection.Close();
                 }
             }
-        }
-
-        private async Task<bool> AreYouSure(CommandContext ctx, DiscordUser user, string operation)
-        {
-            DiscordMember member = null;
-            if (ctx.Guild.Members.ContainsKey(user.Id))
-            {
-                member = await ctx.Guild.GetMemberAsync(user.Id);
-            }
-
-            DiscordMessageBuilder builder = new DiscordMessageBuilder().WithContent("Are you fucking sure about that?")
-                .AddEmbed(new DiscordEmbedBuilder
-                {
-                    Title = "Member you selected:",
-                    Description = member == null ? user.ToString() : member.ToString(),
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
-                    {
-                        Url = user.AvatarUrl
-                    },
-                    Color = member == null ? new DiscordColor("#FF0000") : member.Color
-                }
-            );
-            List<DiscordComponent> components =
-            [
-                new DiscordButtonComponent(DiscordButtonStyle.Danger, "sure", "Yes I fucking am!"),
-                new DiscordButtonComponent(DiscordButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
-            ];
-            builder.AddComponents(components);
-            DiscordMessage message = await builder.SendAsync(ctx.Channel);
-            InteractivityExtension interactivity = ctx.Client.GetInteractivity();
-            var interactivityResult = await interactivity.WaitForButtonAsync(message, ctx.User, TimeSpan.FromMinutes(1));
-
-            await message.DeleteAsync();
-            if (interactivityResult.Result.Id == "abort")
-            {
-                await ctx.RespondAsync($"Okay i will not {operation} the user.");
-                return true;
-            }
-            return false;
-        }
-
-        private async Task WarnAsync(CommandContext ctx, DiscordMember member, DiscordMessage messageLink = null)
-        {
-            var warnBuilder = new WarnBuilder(ctx.Client,
-                ctx.Channel,
-                ctx.Guild,
-                ctx.Member,
-                member,
-                messageLink);
-            if (!await warnBuilder.PreExecutionChecks())
-                return;
-
-            await warnBuilder.RequestRule();
-            await warnBuilder.RequestPoints();
-            await warnBuilder.RequestReason();
-            if (!await warnBuilder.WriteToDatabase())
-                return;
-            if (!await warnBuilder.WriteAuditToDb())
-                return;
-            await warnBuilder.ReadRemainingPoints();
-            await warnBuilder.SendWarnMessage();
-            if (messageLink is not null)
-                await warnBuilder.LogMessage();
-            await warnBuilder.SendPunishMessage();
-            await WarnBuilder.ResetLastPunish(member.Id);
         }
     }
 }

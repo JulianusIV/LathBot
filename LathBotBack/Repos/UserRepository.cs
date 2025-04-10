@@ -1,9 +1,9 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
@@ -16,10 +16,10 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT UserDcId, UserDbId, EmbedBanned, LastPunish FROM Users;";
-                DbCommand.Parameters.Clear();
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT UserDcId, UserDbId, EmbedBanned, LastPunish FROM Users;";
+                this.DbCommand.Parameters.Clear();
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     long temp = reader.GetInt64(0);
@@ -35,7 +35,7 @@ namespace LathBotBack.Repos
 
                     list.Add(user);
                 }
-                DbConnection.Close();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -44,9 +44,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -60,11 +60,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT COUNT(UserDcId) FROM Users;";
-                DbCommand.Parameters.Clear();
-                DbConnection.Open();
-                amount = (int)DbCommand.ExecuteScalar();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "SELECT COUNT(UserDcId) FROM Users;";
+                this.DbCommand.Parameters.Clear();
+                this.DbConnection.Open();
+                amount = (int)this.DbCommand.ExecuteScalar();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -73,9 +73,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -89,12 +89,12 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT COUNT(UserDcId) FROM Users WHERE UserDcId = @dcid;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("dcid", (long)dcid);
-                DbConnection.Open();
-                exists = (int)DbCommand.ExecuteScalar() > 0;
-                DbConnection.Close();
+                this.DbCommand.CommandText = "SELECT COUNT(UserDcId) FROM Users WHERE UserDcId = @dcid;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("dcid", (long)dcid);
+                this.DbConnection.Open();
+                exists = (int)this.DbCommand.ExecuteScalar() > 0;
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -103,9 +103,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -119,14 +119,14 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT UserDbId FROM Users WHERE UserDcId = @dcid;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("dcid", (long)DcId);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT UserDbId FROM Users WHERE UserDcId = @dcid;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("dcid", (long)DcId);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 id = (int)reader["UserDbId"];
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -136,9 +136,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -151,13 +151,13 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "UPDATE Users SET LastPunish = @LastPunish WHERE UserDbId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("LastPunish", timeStamp);
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "UPDATE Users SET LastPunish = @LastPunish WHERE UserDbId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("LastPunish", timeStamp);
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -167,9 +167,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -182,19 +182,19 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "INSERT INTO Users (UserDcId, EmbedBanned, LastPunish) OUTPUT INSERTED.UserDbId VALUES (@DcId, @EmbedBanned, @LastPunish);";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
-                DbCommand.Parameters.AddWithValue("EmbedBanned", entity.EmbedBanned);
+                this.DbCommand.CommandText = "INSERT INTO Users (UserDcId, EmbedBanned, LastPunish) OUTPUT INSERTED.UserDbId VALUES (@DcId, @EmbedBanned, @LastPunish);";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
+                this.DbCommand.Parameters.AddWithValue("EmbedBanned", entity.EmbedBanned);
                 if (entity.LastPunish is null)
-                    DbCommand.Parameters.AddWithValue("LastPunish", DBNull.Value);
+                    this.DbCommand.Parameters.AddWithValue("LastPunish", DBNull.Value);
                 else
-                    DbCommand.Parameters.AddWithValue("LastPunish", entity.LastPunish);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                    this.DbCommand.Parameters.AddWithValue("LastPunish", entity.LastPunish);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity.ID = (int)reader["UserDbId"];
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -204,9 +204,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -220,11 +220,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT UserDcId, EmbedBanned, LastPunish FROM Users WHERE UserDbId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT UserDcId, EmbedBanned, LastPunish FROM Users WHERE UserDbId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 long temp = reader.GetInt64(0);
                 entity = new User
@@ -237,7 +237,7 @@ namespace LathBotBack.Repos
                     entity.LastPunish = null;
                 else entity.LastPunish = reader.GetDateTime(2);
 
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -247,9 +247,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -262,18 +262,18 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "UPDATE Users SET UserDcId = @DcId, EmbedBanned = @EmbedBanned, LastPunish = @LastPunish WHERE UserDbId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
-                DbCommand.Parameters.AddWithValue("EmbedBanned", entity.EmbedBanned);
+                this.DbCommand.CommandText = "UPDATE Users SET UserDcId = @DcId, EmbedBanned = @EmbedBanned, LastPunish = @LastPunish WHERE UserDbId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("DcId", (long)entity.DcID);
+                this.DbCommand.Parameters.AddWithValue("EmbedBanned", entity.EmbedBanned);
                 if (entity.LastPunish is null)
-                    DbCommand.Parameters.AddWithValue("LastPunish", DBNull.Value);
+                    this.DbCommand.Parameters.AddWithValue("LastPunish", DBNull.Value);
                 else
-                    DbCommand.Parameters.AddWithValue("LastPunish", entity.LastPunish);
-                DbCommand.Parameters.AddWithValue("id", entity.ID);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                    this.DbCommand.Parameters.AddWithValue("LastPunish", entity.LastPunish);
+                this.DbCommand.Parameters.AddWithValue("id", entity.ID);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -283,9 +283,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -298,12 +298,12 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "DELETE FROM Users WHERE UserDbId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "DELETE FROM Users WHERE UserDbId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -313,9 +313,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 

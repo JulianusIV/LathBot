@@ -1,5 +1,4 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+﻿using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using LathBotBack.Config;
 using LathBotBack.Models;
@@ -8,6 +7,7 @@ using LathBotBack.Services;
 using Microsoft.Extensions.PlatformAbstractions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
 {
-    public partial class InfoCommands : BaseCommandModule
+    public partial class InfoCommands
     {
         [Command("info")]
         [Description("Display some info about the bot")]
@@ -36,13 +36,15 @@ namespace LathBotFront.Commands
             discordEmbed.AddField("Repository", "[GitHub](https://github.com/JulianusIV/LathBot)");
             TimeSpan uptime = DateTime.Now - StartupService.Instance.StartTime;
             discordEmbed.AddField("Uptime", $"Bot has been running since {uptime}");
-            await ctx.Channel.SendMessageAsync(discordEmbed.Build());
+            await ctx.RespondAsync(discordEmbed.Build());
         }
 
         [Command("tos")]
         [Description("The bot's TOS")]
         public async Task Tos(CommandContext ctx)
         {
+            await ctx.DeferResponseAsync();
+
             using Stream stream = typeof(InfoCommands).Assembly.GetManifestResourceStream("LathBotFront.Resources.LathBotTOS.txt");
             using StreamReader reader = new(stream);
             string result = reader.ReadToEnd();
@@ -85,6 +87,8 @@ namespace LathBotFront.Commands
         [Description("The bot's privacy policy")]
         public async Task Privacy(CommandContext ctx)
         {
+            await ctx.DeferResponseAsync();
+
             string part = "";
             int index = 0;
             using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LathBotFront.Resources.LathBotPP.txt");
@@ -118,7 +122,8 @@ namespace LathBotFront.Commands
         [Description("Display timezones and current time of staff members")]
         public async Task StaffTimes(CommandContext ctx)
         {
-            await ctx.Channel.TriggerTypingAsync();
+            await ctx.DeferResponseAsync();
+
             DiscordEmbedBuilder discordEmbed = new()
             {
                 Color = new DiscordColor(64, 255, 0),
@@ -159,7 +164,7 @@ namespace LathBotFront.Commands
                     continue;
                 }
             }
-            await ctx.Channel.SendMessageAsync(discordEmbed);
+            await ctx.RespondAsync(discordEmbed);
         }
 
         [GeneratedRegex("\r?\n\r?\n")]

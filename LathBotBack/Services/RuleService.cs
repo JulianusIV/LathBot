@@ -2,6 +2,7 @@
 
 using LathBotBack.Base;
 using LathBotBack.Models;
+using System.Threading;
 
 namespace LathBotBack.Services
 {
@@ -9,7 +10,7 @@ namespace LathBotBack.Services
     {
         #region Singleton
         private static RuleService instance;
-        private static readonly object padlock = new();
+        private static readonly Lock padlock = new();
         public static RuleService Instance
         {
             get

@@ -3,6 +3,7 @@ using LathBotBack.Base;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
+using System.Threading;
 
 namespace LathBotBack.Services
 {
@@ -10,7 +11,7 @@ namespace LathBotBack.Services
     {
         #region Singleton
         private static GoodGuysService instance;
-        private static readonly object padlock = new();
+        private static readonly Lock padlock = new();
         public static GoodGuysService Instance
         {
             get
@@ -34,11 +35,11 @@ namespace LathBotBack.Services
                 {
                     return int.Parse(entity.Value);
                 }
-                return _goodGuysReactionCount;
+                return this._goodGuysReactionCount;
             }
             set
             {
-                _goodGuysReactionCount = value;
+                this._goodGuysReactionCount = value;
             }
         }
         private int _goodGuysReactionCount = 4;
@@ -53,11 +54,11 @@ namespace LathBotBack.Services
                 {
                     return bool.Parse(entity.Value);
                 }
-                return _goodGuysStatus;
+                return this._goodGuysStatus;
             }
             set
             {
-                _goodGuysStatus = value;
+                this._goodGuysStatus = value;
             }
         }
         private bool _goodGuysStatus = true;

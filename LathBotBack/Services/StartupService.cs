@@ -2,6 +2,7 @@
 using LathBotBack.Base;
 using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace LathBotBack.Services
 {
@@ -9,7 +10,7 @@ namespace LathBotBack.Services
     {
         #region Singleton
         private static StartupService instance;
-        private static readonly object padlock = new();
+        private static readonly Lock padlock = new();
         public static StartupService Instance
         {
             get
@@ -31,6 +32,6 @@ namespace LathBotBack.Services
         }
 
         public override void Init(DiscordClient client)
-            => StartUpCompleted = true;
+            => this.StartUpCompleted = true;
     }
 }

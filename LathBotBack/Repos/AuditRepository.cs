@@ -1,8 +1,8 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
+using Microsoft.Data.SqlClient;
 using System;
-using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
@@ -14,19 +14,19 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "INSERT INTO Audits (ModDbId, WarnAmount, PardonAmount, MuteAmount, UnmuteAmount, KickAmount, BanAmount, TimeoutAmount) VALUES (@mod, @warns, @pardons, @mutes, @unmutes, @kicks, @bans, @timeouts);";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("mod", entity.Mod);
-                DbCommand.Parameters.AddWithValue("warns", entity.Warns);
-                DbCommand.Parameters.AddWithValue("pardons", entity.Pardons);
-                DbCommand.Parameters.AddWithValue("mutes", entity.Mutes);
-                DbCommand.Parameters.AddWithValue("unmutes", entity.Unmutes);
-                DbCommand.Parameters.AddWithValue("kicks", entity.Kicks);
-                DbCommand.Parameters.AddWithValue("bans", entity.Bans);
-                DbCommand.Parameters.AddWithValue("timeouts", entity.Timeouts);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "INSERT INTO Audits (ModDbId, WarnAmount, PardonAmount, MuteAmount, UnmuteAmount, KickAmount, BanAmount, TimeoutAmount) VALUES (@mod, @warns, @pardons, @mutes, @unmutes, @kicks, @bans, @timeouts);";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("mod", entity.Mod);
+                this.DbCommand.Parameters.AddWithValue("warns", entity.Warns);
+                this.DbCommand.Parameters.AddWithValue("pardons", entity.Pardons);
+                this.DbCommand.Parameters.AddWithValue("mutes", entity.Mutes);
+                this.DbCommand.Parameters.AddWithValue("unmutes", entity.Unmutes);
+                this.DbCommand.Parameters.AddWithValue("kicks", entity.Kicks);
+                this.DbCommand.Parameters.AddWithValue("bans", entity.Bans);
+                this.DbCommand.Parameters.AddWithValue("timeouts", entity.Timeouts);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -36,9 +36,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -52,11 +52,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT WarnAmount, PardonAmount, MuteAmount, UnmuteAmount, KickAmount, BanAmount, TimeoutAmount FROM Audits WHERE ModDbId = @mod;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("mod", id);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT WarnAmount, PardonAmount, MuteAmount, UnmuteAmount, KickAmount, BanAmount, TimeoutAmount FROM Audits WHERE ModDbId = @mod;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("mod", id);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new()
                 {
@@ -69,7 +69,7 @@ namespace LathBotBack.Repos
                     Bans = (int)reader["BanAmount"],
                     Timeouts = (int)reader["TimeoutAmount"]
                 };
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -79,9 +79,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -94,19 +94,19 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "UPDATE Audits SET WarnAmount = @warns, PardonAmount = @pardons, MuteAmount = @mutes, UnmuteAmount = @unmutes, KickAmount = @kicks, BanAmount = @bans, TimeoutAmount = @timeouts WHERE ModDbId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("warns", entity.Warns);
-                DbCommand.Parameters.AddWithValue("pardons", entity.Pardons);
-                DbCommand.Parameters.AddWithValue("mutes", entity.Mutes);
-                DbCommand.Parameters.AddWithValue("unmutes", entity.Unmutes);
-                DbCommand.Parameters.AddWithValue("kicks", entity.Kicks);
-                DbCommand.Parameters.AddWithValue("bans", entity.Bans);
-                DbCommand.Parameters.AddWithValue("timeouts", entity.Timeouts);
-                DbCommand.Parameters.AddWithValue("id", entity.Mod);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "UPDATE Audits SET WarnAmount = @warns, PardonAmount = @pardons, MuteAmount = @mutes, UnmuteAmount = @unmutes, KickAmount = @kicks, BanAmount = @bans, TimeoutAmount = @timeouts WHERE ModDbId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("warns", entity.Warns);
+                this.DbCommand.Parameters.AddWithValue("pardons", entity.Pardons);
+                this.DbCommand.Parameters.AddWithValue("mutes", entity.Mutes);
+                this.DbCommand.Parameters.AddWithValue("unmutes", entity.Unmutes);
+                this.DbCommand.Parameters.AddWithValue("kicks", entity.Kicks);
+                this.DbCommand.Parameters.AddWithValue("bans", entity.Bans);
+                this.DbCommand.Parameters.AddWithValue("timeouts", entity.Timeouts);
+                this.DbCommand.Parameters.AddWithValue("id", entity.Mod);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -116,9 +116,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -131,12 +131,12 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "DELETE FROM Audits WHERE ModDbId = @id";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "DELETE FROM Audits WHERE ModDbId = @id";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -146,9 +146,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 

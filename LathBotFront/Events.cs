@@ -1,23 +1,20 @@
 ﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.EventArgs;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.EventArgs;
 using LathBotBack.Base;
 using LathBotBack.Config;
 using LathBotBack.Logging;
 using LathBotBack.Models;
 using LathBotBack.Repos;
 using LathBotBack.Services;
-using LathBotFront.Interactions.PreExecutionChecks;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -25,7 +22,7 @@ namespace LathBotFront
 {
     internal class Events
     {
-        internal static Task OnClientReady(DiscordClient sender, SessionReadyEventArgs _)
+        internal static Task OnClientReady(DiscordClient sender, SessionCreatedEventArgs _)
         {
             DiscordActivity activity = new("the camera outside your location.", DiscordActivityType.Streaming)
             {
@@ -89,15 +86,15 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task ComponentTriggered(DiscordClient _1, ComponentInteractionCreateEventArgs e)
+        internal static Task ComponentTriggered(DiscordClient _1, ComponentInteractionCreatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
                 if (e.Id == "lb_server_verification")
                 {
                     DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
-                    await member.GrantRoleAsync(e.Guild.GetRole(767050052257447936));
-                    await member.GrantRoleAsync(e.Guild.GetRole(699562710144385095));
+                    await member.GrantRoleAsync(await e.Guild.GetRoleAsync(767050052257447936));
+                    await member.GrantRoleAsync(await e.Guild.GetRoleAsync(699562710144385095));
                     await e.Interaction.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
                         new DiscordInteractionResponseBuilder
                         {
@@ -110,15 +107,15 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task SlashCommandErrored(SlashCommandsExtension _1, SlashCommandErrorEventArgs e)
+        internal static Task SlashCommandErrored(CommandsExtension _1, CommandErroredEventArgs e)
         {
             _ = Task.Run(async () =>
             {
-                if (e.Exception is SlashExecutionChecksFailedException checkException)
-                    if (checkException.FailedChecks.Any(x => x.GetType() == typeof(EmbedBannedAttribute)))
-                        await e.Context.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
-                            .AsEphemeral()
-                            .WithContent("You are banned from using this command"));
+                //if (e.Exception is SlashExecutionChecksFailedException checkException)
+                //    if (checkException.FailedChecks.Any(x => x.GetType() == typeof(EmbedBannedAttribute)))
+                //        await e.Context.RespondAsync(new DiscordInteractionResponseBuilder()
+                //            .AsEphemeral()
+                //            .WithContent("You are banned from using this command"));
 
                 await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
                 await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
@@ -126,17 +123,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task AutoCompleteErrored(SlashCommandsExtension _1, AutocompleteErrorEventArgs e)
-        {
-            _ = Task.Run(async () =>
-            {
-                await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
-                await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
-            });
-            return Task.CompletedTask;
-        }
-
-        internal static Task MessageCreated(DiscordClient _1, MessageCreateEventArgs e)
+        internal static Task MessageCreated(DiscordClient _1, MessageCreatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -162,7 +149,7 @@ namespace LathBotFront
                     _ = e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👍"));
                     _ = e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👎"));
                 }
-                if (e.Channel.Id == 741340775530496013 && e.MentionedRoles.Contains(e.Guild.GetRole(741342066021367938)))
+                if (e.Channel.Id == 741340775530496013 && e.MentionedRoles.Contains(await e.Guild.GetRoleAsync(741342066021367938)))
                 {
                     try
                     {
@@ -185,7 +172,7 @@ namespace LathBotFront
                 }
                 if (((e.Channel.Id == 838088490704568341) ||
                     (e.Channel.Id == 718162681554534511 && !e.Channel.PermissionOverwrites.Any(x => x.Id == e.Author.Id))) &&
-                    !(await e.Guild.GetMemberAsync(e.Author.Id)).Permissions.HasPermission(DiscordPermissions.KickMembers))
+                    !(await e.Guild.GetMemberAsync(e.Author.Id)).Permissions.HasPermission(DiscordPermission.KickMembers))
                 {
                     string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
                     Regex rg = new(pattern);
@@ -236,17 +223,17 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task ContextMenuErrored(SlashCommandsExtension _1, ContextMenuErrorEventArgs e)
-        {
-            _ = Task.Run(async () =>
-            {
-                await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
-                await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
-            });
-            return Task.CompletedTask;
-        }
+        //internal static Task ContextMenuErrored(SlashCommandsExtension _1, ContextMenuErrorEventArgs e)
+        //{
+        //    _ = Task.Run(async () =>
+        //    {
+        //        await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
+        //        await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
+        //    });
+        //    return Task.CompletedTask;
+        //}
 
-        internal static Task MessageUpdated(DiscordClient _1, MessageUpdateEventArgs e)
+        internal static Task MessageUpdated(DiscordClient _1, MessageUpdatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -261,7 +248,7 @@ namespace LathBotFront
                 {
                     DiscordObjectService.Instance.LastEdits.Add(e.Channel.Id, e.MessageBefore);
                 }
-                if (e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(e.Guild.GetRole(701446136208293969)) && e.Channel.Id == 726046413816987709)
+                if (e.Channel.Id == 726046413816987709 && e.Guild.GetMemberAsync(e.Author.Id).Result.Roles.Contains(await e.Guild.GetRoleAsync(701446136208293969)))
                 {
                     string pattern = @"((http:\/\/|https:\/\/)?(www.)?(([a-zA-Z0-9-]){2,}\.){1,16}([a-zA-Z]){2,24}(\/([a-zA-Z-_\/\.0-9#:?=&;,]*)?)?)";
                     Regex rg = new(pattern);
@@ -275,7 +262,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task MessageDeleted(DiscordClient _1, MessageDeleteEventArgs e)
+        internal static Task MessageDeleted(DiscordClient _1, MessageDeletedEventArgs e)
         {
             _ = Task.Run(() =>
             {
@@ -295,7 +282,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task MemberAdded(DiscordClient _1, GuildMemberAddEventArgs e)
+        internal static Task MemberAdded(DiscordClient _1, GuildMemberAddedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -325,7 +312,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task ReactionAdded(DiscordClient sender, MessageReactionAddEventArgs e)
+        internal static Task ReactionAdded(DiscordClient sender, MessageReactionAddedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -334,12 +321,12 @@ namespace LathBotFront
                     return;
                 }
                 DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
-                if (e.Message.Id == 767050733677314069 && !member.Roles.Contains(e.Guild.GetRole(767050052257447936)))
+                if (e.Message.Id == 767050733677314069 && !member.Roles.Contains(await e.Guild.GetRoleAsync(767050052257447936)))
                 {
                     if (e.Emoji.ToString() == "✅")
                     {
-                        await member.GrantRoleAsync(e.Guild.GetRole(767050052257447936));
-                        await member.GrantRoleAsync(e.Guild.GetRole(699562710144385095));
+                        await member.GrantRoleAsync(await e.Guild.GetRoleAsync(767050052257447936));
+                        await member.GrantRoleAsync(await e.Guild.GetRoleAsync(699562710144385095));
                     }
                 }
                 else if (e.Emoji.Name == "TheGoodGuys")
@@ -352,8 +339,8 @@ namespace LathBotFront
                         return;
                     if (!GoodGuysService.Instance.GoodGuysStatus)
                         return;
-                    var reacts = await e.Message.GetReactionsAsync(DiscordEmoji.FromGuildEmote(sender, 723564837338349578));
-                    if (reacts.Count >= GoodGuysService.Instance.GoodGuysReactionCount)
+                    var reacts = e.Message.GetReactionsAsync(DiscordEmoji.FromGuildEmote(sender, 723564837338349578)).ToBlockingEnumerable();
+                    if (reacts.Count() >= GoodGuysService.Instance.GoodGuysReactionCount)
                     {
                         var messages = DiscordObjectService.Instance.GoodGuysChannel.GetMessagesAsync(20);
 
@@ -399,16 +386,6 @@ namespace LathBotFront
         }
 
         internal static Task ClientErrored(DiscordClient _1, ClientErrorEventArgs e)
-        {
-            _ = Task.Run(async () =>
-            {
-                await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
-                await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
-            });
-            return Task.CompletedTask;
-        }
-
-        internal static Task CommandErrored(CommandsNextExtension _1, CommandErrorEventArgs e)
         {
             _ = Task.Run(async () =>
             {

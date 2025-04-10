@@ -1,7 +1,7 @@
 ﻿using DSharpPlus;
 using LathBotBack.Base;
 using LathBotBack.Logging;
-using System.Timers;
+using System.Threading;
 
 namespace LathBotBack.Services
 {
@@ -9,7 +9,7 @@ namespace LathBotBack.Services
     {
         #region Singleton
         private static SystemService instance;
-        private static readonly object padlock = new();
+        private static readonly Lock padlock = new();
         public static SystemService Instance
         {
             get
@@ -23,13 +23,13 @@ namespace LathBotBack.Services
         }
         #endregion
 
-        public Timer WarnTimer = new(3600000);
+        public System.Timers.Timer WarnTimer = new(3600000);
 
         public LoggingPublisher Logger = new();
 
         public override void Init(DiscordClient client)
         {
-            WarnTimer.Start();
+            this.WarnTimer.Start();
         }
     }
 }

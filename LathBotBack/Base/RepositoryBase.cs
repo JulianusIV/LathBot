@@ -1,6 +1,6 @@
 ﻿using LathBotBack.Services;
+using Microsoft.Data.SqlClient;
 using System;
-using System.Data.SqlClient;
 using System.Diagnostics;
 
 namespace LathBotBack.Base
@@ -14,9 +14,9 @@ namespace LathBotBack.Base
 
         public RepositoryBase(string connectionString)
         {
-            ConnectionString = connectionString;
-            DbConnection = new(connectionString);
-            DbCommand = new("", DbConnection);
+            this.ConnectionString = connectionString;
+            this.DbConnection = new(connectionString);
+            this.DbCommand = new("", this.DbConnection);
         }
 
         public bool Check()
@@ -24,8 +24,8 @@ namespace LathBotBack.Base
             bool success = false;
             try
             {
-                DbConnection.Open();
-                DbConnection.Close();
+                this.DbConnection.Open();
+                this.DbConnection.Close();
 
                 success = true;
             }

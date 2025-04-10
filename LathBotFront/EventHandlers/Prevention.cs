@@ -12,7 +12,7 @@ namespace LathBotFront.EventHandlers
         private static readonly Queue<(ulong, DateTime)> lastUsers = new();
         private static DateTime lastMessage = DateTime.MinValue;
 
-        public static Task OnMessageCreated(DiscordClient _1, MessageCreateEventArgs e)
+        public static Task OnMessageCreated(DiscordClient _1, MessageCreatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {

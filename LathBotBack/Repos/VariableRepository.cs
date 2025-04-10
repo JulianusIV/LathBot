@@ -1,8 +1,8 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
+using Microsoft.Data.SqlClient;
 using System;
-using System.Data.SqlClient;
 
 namespace LathBotBack.Repos
 {
@@ -14,15 +14,15 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "INSERT INTO Variables (VarName, VarValue) OUTPUT INSERTED.VarId VALUES (@name, @val);";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("name", entity.Name);
-                DbCommand.Parameters.AddWithValue("val", entity.Value);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "INSERT INTO Variables (VarName, VarValue) OUTPUT INSERTED.VarId VALUES (@name, @val);";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("name", entity.Name);
+                this.DbCommand.Parameters.AddWithValue("val", entity.Value);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity.ID = (int)reader["VarId"];
-                DbConnection.Close();
+                this.DbConnection.Close();
                 result = true;
             }
             catch (Exception e)
@@ -31,9 +31,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -47,11 +47,11 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "SELECT VarName, VarValue FROM Variables WHERE VarId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                using SqlDataReader reader = DbCommand.ExecuteReader();
+                this.DbCommand.CommandText = "SELECT VarName, VarValue FROM Variables WHERE VarId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                using SqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Variable
                 {
@@ -59,7 +59,7 @@ namespace LathBotBack.Repos
                     Name = (string)reader["VarName"],
                     Value = (string)reader["VarValue"]
                 };
-                DbConnection.Close();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -69,9 +69,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -84,14 +84,14 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "UPDATE Variables SET VarName = @name, VarValue = @val WHERE VarId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("name", entity.Name);
-                DbCommand.Parameters.AddWithValue("val", entity.Value);
-                DbCommand.Parameters.AddWithValue("id", entity.ID);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "UPDATE Variables SET VarName = @name, VarValue = @val WHERE VarId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("name", entity.Name);
+                this.DbCommand.Parameters.AddWithValue("val", entity.Value);
+                this.DbCommand.Parameters.AddWithValue("id", entity.ID);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -101,9 +101,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 
@@ -116,12 +116,12 @@ namespace LathBotBack.Repos
 
             try
             {
-                DbCommand.CommandText = "DELETE FROM Variables WHERE VarId = @id;";
-                DbCommand.Parameters.Clear();
-                DbCommand.Parameters.AddWithValue("id", id);
-                DbConnection.Open();
-                DbCommand.ExecuteNonQuery();
-                DbConnection.Close();
+                this.DbCommand.CommandText = "DELETE FROM Variables WHERE VarId = @id;";
+                this.DbCommand.Parameters.Clear();
+                this.DbCommand.Parameters.AddWithValue("id", id);
+                this.DbConnection.Open();
+                this.DbCommand.ExecuteNonQuery();
+                this.DbConnection.Close();
 
                 result = true;
             }
@@ -131,9 +131,9 @@ namespace LathBotBack.Repos
             }
             finally
             {
-                if (DbConnection.State == System.Data.ConnectionState.Open)
+                if (this.DbConnection.State == System.Data.ConnectionState.Open)
                 {
-                    DbConnection.Close();
+                    this.DbConnection.Close();
                 }
             }
 

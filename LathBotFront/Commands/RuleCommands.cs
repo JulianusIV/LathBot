@@ -1,5 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+﻿using DSharpPlus.Commands;
+using DSharpPlus.Commands.Trees.Metadata;
 using DSharpPlus.Entities;
 using LathBotBack.Services;
 using System.Linq;
@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
 {
-    public class RuleCommands : BaseCommandModule
+    public class RuleCommands
     {
         [Command("rule")]
-        [Aliases("r")]
+        [TextAlias("r")]
         public async Task Rule(CommandContext ctx, uint ruleNum)
         {
             if (ruleNum > 13 || ruleNum < 0)

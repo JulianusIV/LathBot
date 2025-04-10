@@ -1,13 +1,17 @@
 ﻿using DSharpPlus;
+using DSharpPlus.Commands;
+using DSharpPlus.Commands.ContextChecks;
+using DSharpPlus.Commands.Processors.SlashCommands;
+using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.SlashCommands;
+using DSharpPlus.Interactivity;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
 using LathBotBack.Services;
 using LathBotFront._2FA;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,29 +20,21 @@ using WarnModule;
 
 namespace LathBotFront.Interactions
 {
-    public class ModerationInteractions : ApplicationCommandModule
+    public class ModerationInteractions
     {
-        [SlashCommand("offtopic", "Move a offtopic conversation to another channel")]
-        [SlashCommandPermissions(DiscordPermissions.KickMembers)]
-        public async Task Offtopic(InteractionContext ctx,
-            [Option("Channel", "The channel to move to.")] DiscordChannel channel,
-            [Option("Amount", "The amount of messages to copy/move over (min 5, max 100)")] long amount = 20,
-            [Option("DeleteSource", "Whether to delete the messages in the source channel.")] bool deleteSource = false)
+        [Command("offtopic")]
+        [Description("Move a offtopic conversation to another channel")]
+        [RequirePermissions(DiscordPermission.KickMembers)]
+        public async Task Offtopic(CommandContext ctx,
+            [Parameter("Channel"), Description("The channel to move to.")] DiscordChannel channel,
+            [Parameter("Amount"), Description("The amount of messages to copy/move over (min 5, max 100)")] long amount = 20,
+            [Parameter("DeleteSource"), Description("Whether to delete the messages in the source channel.")] bool deleteSource = false)
         {
-            if (!ctx.Member.Permissions.HasPermission(DiscordPermissions.KickMembers))
-            {
-                await ctx.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder()
-                        .AsEphemeral()
-                        .WithContent("No!"));
-                return;
-            }
-
-            await ctx.CreateResponseAsync(DiscordInteractionResponseType.DeferredChannelMessageWithSource);
+            await ctx.DeferResponseAsync();
 
             if (amount > 100 || amount < 5)
             {
-                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Amount must be less than 100 and more than 5!"));
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("Amount must be less than 100 and more than 5!"));
                 return;
             }
 
@@ -53,7 +49,7 @@ namespace LathBotFront.Interactions
 
                 await webhook.ExecuteAsync(new DiscordWebhookBuilder()
                     .WithContent(message.Content)
-                    .WithAvatarUrl(message.Author.GetAvatarUrl(ImageFormat.Auto))
+                    .WithAvatarUrl(message.Author.GetAvatarUrl(MediaFormat.Auto))
                     .WithUsername((message.Author as DiscordMember).DisplayName));
             }
             try
@@ -67,31 +63,21 @@ namespace LathBotFront.Interactions
                 deleteSource = false;
             }
             await webhook.DeleteAsync();
-            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
-                .WithContent($"Your current conversation is offtopic, please move to {channel.Mention}. " +
-                             $"Your most recent messages have been {(deleteSource ? "moved" : "copied")}"));
+            await ctx.RespondAsync(new DiscordMessageBuilder().WithContent($"Your current conversation is offtopic, please move to {channel.Mention}. " +
+                $"Your most recent messages have been {(deleteSource ? "moved" : "copied")}"));
         }
 
-        [SlashCommand("ChangeWarnTime", "Change the amount of time a users warn will take to expire.")]
-        [SlashCommandPermissions(DiscordPermissions.Administrator)]
-        public async Task ChangeWarnTime(InteractionContext ctx,
-            [Option("Member", "The member")] DiscordUser member,
-            [Option("Warn", "The warn to change", true)]
-            [Autocomplete(typeof(Autocomplete.UserWarnAutocompleteProvider))]
+        [Command("change_warn_time"), Description("Change the amount of time a users warn will take to expire.")]
+        [RequirePermissions(DiscordPermission.Administrator)]
+        public async Task ChangeWarnTime(CommandContext ctx,
+            [Parameter("Member"), Description("The member")] DiscordUser member,
+            [Parameter("Warn"), Description("The warn to change")]
+            [SlashAutoCompleteProvider(typeof(Autocomplete.UserWarnAutocompleteProvider))]
             long warnNumber,
-            [Option("ChangeBy", "By how much to extend or shorten the time the user is warned for")] long changeBy,
-            [Option("Add", "True = Add days to the sentence, False = Remove days from the sentence")] bool add = true)
+            [Parameter("ChangeBy"), Description("By how much to extend or shorten the time the user is warned for")] long changeBy,
+            [Parameter("Add"), Description("True = Add days to the sentence, False = Remove days from the sentence")] bool add = true)
         {
-            if (!ctx.Member.Permissions.HasPermission(DiscordPermissions.Administrator))
-            {
-                await ctx.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder()
-                        .AsEphemeral()
-                        .WithContent("No!"));
-                return;
-            }
-
-            await ctx.CreateResponseAsync(DiscordInteractionResponseType.DeferredChannelMessageWithSource);
+            await ctx.DeferResponseAsync();
             var repo = new WarnRepository(ReadConfig.Config.ConnectionString);
             var urepo = new UserRepository(ReadConfig.Config.ConnectionString);
             urepo.GetIdByDcId(member.Id, out int dbId);
@@ -108,18 +94,18 @@ namespace LathBotFront.Interactions
 
             await (await ((DiscordMember)member).CreateDmChannelAsync()).SendMessageAsync($"Your warn number {warn.Number} has been changed to expire after {warn.ExpirationTime}!");
 
-            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"Updated warn to expire {warn.ExpirationTime} days after warn creation."));
+            await ctx.RespondAsync(new DiscordMessageBuilder().WithContent($"Updated warn to expire {warn.ExpirationTime} days after warn creation."));
         }
 
-        [SlashCommand("embedban", "Ban a user from posting links/embeds/attachments in Debate")]
-        [SlashCommandPermissions(DiscordPermissions.KickMembers)]
+        [Command("embedban"), Description("Ban a user from posting links/embeds/attachments in Debate")]
+        [RequirePermissions(DiscordPermission.KickMembers)]
         public async Task EmbedBan(
-            InteractionContext ctx,
-            [Option("member", "The member to embedban")]
+            CommandContext ctx,
+            [Parameter("member"), Description("The member to embedban")]
             DiscordUser member
             )
         {
-            await ctx.CreateResponseAsync(DiscordInteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
+            await ctx.DeferResponseAsync();
 
             var repo = new UserRepository(ReadConfig.Config.ConnectionString);
 
@@ -128,19 +114,19 @@ namespace LathBotFront.Interactions
 
             if (user.EmbedBanned)
             {
-                await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("User is already banned from posting embeds in Debate."));
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("User is already banned from posting embeds in Debate."));
                 return;
             }
             user.EmbedBanned = true;
             repo.Update(user);
-            await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Done!"));
+            await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("Done!"));
         }
 
-        [SlashCommand("AddTwoFA", "Add 2FA")]
-        [SlashCommandPermissions(DiscordPermissions.KickMembers)]
-        public async Task AddTwoFA(InteractionContext ctx)
+        [Command("add_2fa"), Description("Add 2FA")]
+        [RequirePermissions(DiscordPermission.KickMembers)]
+        public async Task AddTwoFA(SlashCommandContext ctx)
         {
-            await ctx.DeferAsync(true);
+            await ctx.DeferResponseAsync(true);
 
             UserRepository userrepo = new(ReadConfig.Config.ConnectionString);
             ModRepository repo = new(ReadConfig.Config.ConnectionString);
@@ -149,7 +135,7 @@ namespace LathBotFront.Interactions
 
             if (mod.TwoFAKey is not null && mod.TwoFAKey.Length > 0)
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You already have 2FA set up, message JulianusIV if you need to reset it."));
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("You already have 2FA set up, message JulianusIV if you need to reset it."));
                 return;
             }
             mod.TwoFAKeySalt = Guid.NewGuid().ToString("D");
@@ -166,13 +152,13 @@ namespace LathBotFront.Interactions
 
                 Color = new DiscordColor(27, 116, 226),
             }.WithImageUrl("attachment://qrcode.png");
-            var webhookBuilder = new DiscordWebhookBuilder().AddEmbed(embedBuilder).AddFile("qrcode.png", stream).WithContent(GoogleAuthenticator.GenerateProvisiongingString(ctx.Member.Username, Encoding.UTF8.GetBytes(twoFAKey)));
-            await ctx.EditResponseAsync(webhookBuilder);
+            var messageBuilder = new DiscordMessageBuilder().AddEmbed(embedBuilder).AddFile("qrcode.png", stream).WithContent(GoogleAuthenticator.GenerateProvisiongingString(ctx.Member.Username, Encoding.UTF8.GetBytes(twoFAKey)));
+            await ctx.RespondAsync(messageBuilder);
         }
 
-        [SlashCommand("Test2FA", "Test 2FA")]
-        [SlashCommandPermissions(DiscordPermissions.KickMembers)]
-        public async Task Test2FA(InteractionContext ctx)
+        [Command("test_2fa"), Description("Test 2FA")]
+        [RequirePermissions(DiscordPermission.KickMembers)]
+        public async Task Test2FA(SlashCommandContext ctx)
         {
             UserRepository userrepo = new(ReadConfig.Config.ConnectionString);
             ModRepository repo = new(ReadConfig.Config.ConnectionString);
@@ -181,7 +167,7 @@ namespace LathBotFront.Interactions
 
             if (mod.TwoFAKey is null || mod.TwoFAKey.Length <= 0)
             {
-                await ctx.CreateResponseAsync(DiscordInteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("2FA not set up!").AsEphemeral());
+                await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("2FA not set up!"));
                 return;
             }
             var twoFAKey = AesEncryption.DecryptStringToBytes(mod.TwoFAKey, mod.TwoFAKeySalt);
@@ -200,9 +186,10 @@ namespace LathBotFront.Interactions
                 .WithTitle("2FA")
                 .AddComponents(textInput);
 
-            await ctx.CreateResponseAsync(DiscordInteractionResponseType.Modal, responseBuilder);
+            await ctx.RespondWithModalAsync(responseBuilder);
 
-            var res = await ctx.Client.GetInteractivity().WaitForModalAsync("2famodal");
+            InteractivityExtension interactivity = (InteractivityExtension)ctx.ServiceProvider.GetService(typeof(InteractivityExtension));
+            var res = await interactivity.WaitForModalAsync("2famodal");
 
             await res.Result.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
             var reason = res.Result.Values["2famodal"];

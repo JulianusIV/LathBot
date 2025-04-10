@@ -1,19 +1,23 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+﻿using DSharpPlus.Commands;
+using DSharpPlus.Commands.ContextChecks;
+using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using LathBotBack.Services;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
 {
-    public class EmbedCommands : BaseCommandModule
+    public class EmbedCommands
     {
         [Command("roleme")]
-        [RequireRoles(RoleCheckMode.Any, "Bot Management")]
+        [RequirePermissions(DiscordPermission.Administrator)]
         [Description("Creates the embed for #role-assign")]
-        public async Task RolemeEmbed(CommandContext ctx)
+        public async Task RolemeEmbed(SlashCommandContext ctx)
         {
+            await ctx.DeferResponseAsync(true);
+
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
             var embedBuilder = new DiscordEmbedBuilder()
             {
@@ -32,13 +36,17 @@ namespace LathBotFront.Commands
                 new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷"))
             });
             await ctx.Channel.SendMessageAsync(messageBuilder);
+
+            await ctx.RespondAsync("Done!");
         }
 
         [Command("updateroleme")]
-        [RequireRoles(RoleCheckMode.Any, "Bot Management")]
+        [RequirePermissions(DiscordPermission.Administrator)]
         [Description("Creates the embed for #role-assign")]
-        public async Task EditRolemeEmbed(CommandContext ctx)
+        public async Task EditRolemeEmbed(SlashCommandContext ctx)
         {
+            await ctx.DeferResponseAsync(true);
+
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
             var embedBuilder = new DiscordEmbedBuilder()
             {
@@ -59,6 +67,8 @@ namespace LathBotFront.Commands
 
             DiscordMessage infoMessage = await ctx.Channel.GetMessageAsync(1014293811435942040);
             await infoMessage.ModifyAsync(messageBuilder);
+
+            await ctx.RespondAsync("Done!");
         }
 
         /// <summary>
@@ -67,10 +77,12 @@ namespace LathBotFront.Commands
         /// <param name="ctx"></param>
         /// <returns></returns>
         [Command("infoembed")]
-        [RequireRoles(RoleCheckMode.Any, "Bot Management")]
+        [RequirePermissions(DiscordPermission.Administrator)]
         [Description("Creates the embed for #information")]
-        public async Task InfoEmbed(CommandContext ctx)
+        public async Task InfoEmbed(SlashCommandContext ctx)
         {
+            await ctx.DeferResponseAsync(true);
+
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
             DiscordEmbedBuilder embedBuilder = new()
             {
@@ -98,6 +110,8 @@ namespace LathBotFront.Commands
             }
 
             await ctx.Channel.SendMessageAsync(messageBuilder);
+
+            await ctx.RespondAsync("Done!");
         }
 
         /// <summary>
@@ -106,10 +120,12 @@ namespace LathBotFront.Commands
         /// <param name="ctx"></param>
         /// <returns></returns>
         [Command("updateinfo")]
-        [RequireRoles(RoleCheckMode.Any, "Bot Management")]
+        [RequirePermissions(DiscordPermission.Administrator)]
         [Description("Updates the embed for #rules")]
-        public async Task UpdateInfoEmbed(CommandContext ctx)
+        public async Task UpdateInfoEmbed(SlashCommandContext ctx)
         {
+            await ctx.DeferResponseAsync(true);
+
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
             DiscordEmbedBuilder embedBuilder = new()
             {
@@ -138,6 +154,8 @@ namespace LathBotFront.Commands
 
             DiscordMessage infoMessage = await ctx.Channel.GetMessageAsync(769235106828386366);
             await infoMessage.ModifyAsync(messageBuilder);
+
+            await ctx.RespondAsync("Done!");
         }
 
         /// <summary>
@@ -146,10 +164,12 @@ namespace LathBotFront.Commands
         /// <param name="ctx"></param>
         /// <returns></returns>
         [Command("rules")]
-        [RequireRoles(RoleCheckMode.Any, "Bot Management")]
+        [RequirePermissions(DiscordPermission.Administrator)]
         [Description("Creates the embed for #information")]
-        public async Task RuleEmbed(CommandContext ctx)
+        public async Task RuleEmbed(SlashCommandContext ctx)
         {
+            await ctx.DeferResponseAsync(true);
+
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
             DiscordEmbedBuilder embedBuilderRules = new()
             {
@@ -201,6 +221,8 @@ namespace LathBotFront.Commands
 
             DiscordEmbed embedNsfw = embedBuilderNsfw.Build();
             await ctx.Channel.SendMessageAsync(embedNsfw);
+
+            await ctx.RespondAsync("Done!");
         }
 
         /// <summary>
@@ -209,10 +231,12 @@ namespace LathBotFront.Commands
         /// <param name="ctx"></param>
         /// <returns></returns>
         [Command("updaterules")]
-        [RequireRoles(RoleCheckMode.Any, "Bot Management")]
+        [RequirePermissions(DiscordPermission.Administrator)]
         [Description("Updates the embed for #information")]
-        public async Task UpdateRuleEmbed(CommandContext ctx)
+        public async Task UpdateRuleEmbed(SlashCommandContext ctx)
         {
+            await ctx.DeferResponseAsync(true);
+
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
             DiscordEmbedBuilder embedBuilderRules = new()
             {
@@ -264,6 +288,8 @@ namespace LathBotFront.Commands
 
             DiscordMessage nsfwMessage = await ctx.Channel.GetMessageAsync(769235313968676864);
             await nsfwMessage.ModifyAsync("", embedBuilderNsfw.Build());
+
+            await ctx.RespondAsync("Done!");
         }
     }
 }

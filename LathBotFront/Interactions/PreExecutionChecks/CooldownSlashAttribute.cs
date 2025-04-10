@@ -1,4 +1,4 @@
-﻿using DSharpPlus.SlashCommands;
+﻿using DSharpPlus.Commands.Processors.SlashCommands;
 using System;
 using System.Collections.Concurrent;
 using System.Globalization;
@@ -13,34 +13,34 @@ namespace LathBotFront.Interactions.PreExecutionChecks
         public TimeSpan Reset { get; } = TimeSpan.FromSeconds(resetAfter);
         public ConcurrentDictionary<string, CoolDownBucket> Buckets { get; } = new ConcurrentDictionary<string, CoolDownBucket>();
 
-        public CoolDownBucket GetBucket(InteractionContext ctx)
+        public CoolDownBucket GetBucket(SlashCommandContext ctx)
         {
-            var bucketId = GetBucketId(ctx, out _);
-            Buckets.TryGetValue(bucketId, out var bucket);
+            var bucketId = this.GetBucketId(ctx, out _);
+            this.Buckets.TryGetValue(bucketId, out var bucket);
             return bucket;
         }
 
-        public TimeSpan GetRemainingCooldown(InteractionContext ctx)
+        public TimeSpan GetRemainingCooldown(SlashCommandContext ctx)
         {
-            var bucket = GetBucket(ctx);
+            var bucket = this.GetBucket(ctx);
             if (bucket is null)
                 return TimeSpan.Zero;
             return bucket.ResetsAt - DateTimeOffset.UtcNow;
         }
 
-        public string GetBucketId(InteractionContext ctx, out ulong userId)
+        public string GetBucketId(SlashCommandContext ctx, out ulong userId)
         {
             userId = ctx.User.Id;
             return CoolDownBucket.MakeId(userId);
         }
 
-        public async Task<bool> ExecuteCheckAsync(InteractionContext ctx)
+        public async Task<bool> ExecuteCheckAsync(SlashCommandContext ctx)
         {
-            var bucketId = GetBucketId(ctx, out var user);
-            if (!Buckets.TryGetValue(bucketId, out var bucket))
+            var bucketId = this.GetBucketId(ctx, out var user);
+            if (!this.Buckets.TryGetValue(bucketId, out var bucket))
             {
-                bucket = new CoolDownBucket(MaxUses, Reset, user);
-                Buckets.AddOrUpdate(bucketId, bucket, (k, v) => bucket);
+                bucket = new CoolDownBucket(this.MaxUses, this.Reset, user);
+                this.Buckets.AddOrUpdate(bucketId, bucket, (k, v) => bucket);
             }
 
             return await bucket.DecrementUseAsync();
@@ -52,7 +52,7 @@ namespace LathBotFront.Interactions.PreExecutionChecks
         public ulong UserId { get; } = userId;
         public string BucketId { get; }
         public int RemainingUses
-            => Volatile.Read(ref _remainingUses);
+            => Volatile.Read(ref this._remainingUses);
         public int MaxUses { get; } = maxUses;
         public DateTimeOffset ResetsAt { get; set; } = DateTimeOffset.UtcNow + resetAfter;
         public TimeSpan Reset { get; set; } = resetAfter;
@@ -62,23 +62,23 @@ namespace LathBotFront.Interactions.PreExecutionChecks
 
         internal async Task<bool> DecrementUseAsync()
         {
-            await UsageSemaphore.WaitAsync();
+            await this.UsageSemaphore.WaitAsync();
 
             var now = DateTimeOffset.UtcNow;
-            if (now >= ResetsAt)
+            if (now >= this.ResetsAt)
             {
-                Interlocked.Exchange(ref _remainingUses, MaxUses);
-                ResetsAt = now + Reset;
+                Interlocked.Exchange(ref this._remainingUses, this.MaxUses);
+                this.ResetsAt = now + this.Reset;
             }
 
             var success = false;
-            if (RemainingUses > 0)
+            if (this.RemainingUses > 0)
             {
-                Interlocked.Decrement(ref _remainingUses);
+                Interlocked.Decrement(ref this._remainingUses);
                 success = true;
             }
 
-            UsageSemaphore.Release();
+            this.UsageSemaphore.Release();
             return success;
         }
 
