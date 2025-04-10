@@ -3,14 +3,14 @@ using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
-using LathBotFront.Interactions.PreExecutionChecks;
+using LathBotFront.Commands.PreExecutionChecks;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 
-namespace LathBotFront.Interactions
+namespace LathBotFront.Commands
 {
-    public class DebateInteractions
+    public class DebateCommands
     {
         private static readonly CooldownSlash _embedCooldown = new(300);
 

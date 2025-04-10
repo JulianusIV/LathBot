@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LathBotFront.Interactions.PreExecutionChecks
+namespace LathBotFront.Commands.PreExecutionChecks
 {
     public class CooldownSlash(double resetAfter, int maxUses = 1)
     {

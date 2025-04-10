@@ -18,9 +18,9 @@ using System.Text;
 using System.Threading.Tasks;
 using WarnModule;
 
-namespace LathBotFront.Interactions
+namespace LathBotFront.Commands
 {
-    public class ModerationInteractions
+    public class ModerationCommands
     {
         [Command("offtopic")]
         [Description("Move a offtopic conversation to another channel")]
@@ -84,7 +84,7 @@ namespace LathBotFront.Interactions
             repo.GetWarnByUserAndNum(dbId, (int)warnNumber, out Warn warn);
 
             if (warn.ExpirationTime is null)
-                warn.ExpirationTime = (WarnBuilder.CalculateSeverity(warn.Level) == 1 ? 14 : 56) + (add ? (int)changeBy : (-(int)changeBy));
+                warn.ExpirationTime = (WarnBuilder.CalculateSeverity(warn.Level) == 1 ? 14 : 56) + (add ? (int)changeBy : -(int)changeBy);
             else if (add)
                 warn.ExpirationTime += (int)changeBy;
             else

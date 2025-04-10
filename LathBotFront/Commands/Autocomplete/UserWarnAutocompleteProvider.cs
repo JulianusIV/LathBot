@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LathBotFront.Interactions.Autocomplete
+namespace LathBotFront.Commands.Autocomplete
 {
     public class UserWarnAutocompleteProvider : IAutoCompleteProvider
     {

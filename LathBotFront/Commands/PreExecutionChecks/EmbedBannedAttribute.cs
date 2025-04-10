@@ -4,7 +4,7 @@ using LathBotBack.Config;
 using LathBotBack.Repos;
 using System.Threading.Tasks;
 
-namespace LathBotFront.Interactions.PreExecutionChecks
+namespace LathBotFront.Commands.PreExecutionChecks
 {
     public class EmbedBannedAttribute : ContextCheckAttribute { }
 
