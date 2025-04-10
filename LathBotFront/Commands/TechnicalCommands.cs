@@ -69,8 +69,7 @@ namespace LathBotFront.Commands
         }
 
         [Command("freeze")]
-        [Description("Freeze a whole channel\n" +
-            "Never to be supported channels:\nQuestions & Messages for Lathrix\nBooster-only")]
+        [Description("Freeze a channel - Never to be supported channels: Questions & Messages for Lathrix; Booster-only")]
         [RequirePermissions(DiscordPermission.BanMembers)]
         public async Task ChFreeze(CommandContext ctx)
         {
@@ -322,7 +321,7 @@ namespace LathBotFront.Commands
         }
 
         [Command("purgecell")]
-        [Description("Purge parstapo-cell and log it to a file")]
+        [Description("Purge #parstapo-cell and log it to a file")]
         [RequirePermissions(DiscordPermission.Administrator)]
         public async Task PurgeCell(SlashCommandContext ctx)
         {

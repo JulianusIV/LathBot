@@ -22,7 +22,7 @@ namespace LathBotFront.Commands
             => await ctx.RespondAsync("😒");
 
         [Command("slap")]
-        [Description("Slap someone, but be careful who you choose to slap, they might slap harder!")]
+        [Description("Slap someone, but be careful who you choose to slap, they might slap harder.")]
         public async Task Slap(CommandContext ctx, [Description("Who you want to slap.")] DiscordMember target)
         {
             if (target.Id == 708083256439996497) //LathBot
@@ -64,6 +64,7 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync($"God dammit {target.Mention}, *slap* you've made a mistake again! *slap*");
             }
         }
+
         [Command("repeat")]
         [Description("Let the Bot repeat something.")]
         public async Task Repeat(CommandContext ctx, [Description("What the bot should repeat.")][RemainingText] string repetition)
@@ -85,7 +86,7 @@ namespace LathBotFront.Commands
         }
 
         [Command("parth")]
-        [Description("Parth!")]
+        [Description("Parth")]
         public async Task Parth(CommandContext ctx)
         {
             await ctx.RespondAsync("Boss man! (even tho the whole senate technically are all equal but i am keeping this for the laughs)");
