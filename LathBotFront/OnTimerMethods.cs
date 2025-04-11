@@ -210,13 +210,17 @@ namespace LathBotFront
                     .WithDescription("**Explanation:\n**" + json.Explanation)
                     .WithColor(new DiscordColor("e49a5e"))
                     .WithImageUrl("attachment://apod" + fileExtension)
-                    .AddField("Links:", json.HdUrl is null ? $"[Source Link]({json.URL})" : $"[Source Link]({json.HdUrl})\n[Low resolution source]({json.URL})")
                     .WithFooter("Copyright: " + (json.Copyright is null ? "Public Domain" : json.Copyright) + "\nSource: NASA APOD API Endpoint");
 
                 DiscordMessageBuilder builder = new DiscordMessageBuilder()
                     .AddFile("apod" + fileExtension, stream, AddFileOptions.CloseStream)
                     .AddEmbed(embedBuilder)
                     .WithContent((await DiscordObjectService.Instance.Lathland.GetRoleAsync(848307821703200828)).Mention);
+
+                if (json.HdUrl is null)
+                    builder = builder.AddComponents(new DiscordLinkButtonComponent(json.URL, "Image"));
+                else
+                    builder = builder.AddComponents(new DiscordLinkButtonComponent(json.HdUrl, "Image"), new DiscordLinkButtonComponent(json.URL, "Low resolution image"));
 
                 DiscordMessageBuilder builder2 = null;
                 if (json.MediaType != "image")
