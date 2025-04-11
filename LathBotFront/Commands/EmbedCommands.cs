@@ -18,7 +18,7 @@ namespace LathBotFront.Commands
         {
             await ctx.DeferResponseAsync(true);
 
-            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
+            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             var embedBuilder = new DiscordEmbedBuilder()
             {
                 Color = lathrix.Color,
@@ -48,7 +48,7 @@ namespace LathBotFront.Commands
         {
             await ctx.DeferResponseAsync(true);
 
-            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
+            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             var embedBuilder = new DiscordEmbedBuilder()
             {
                 Color = lathrix.Color,
@@ -85,7 +85,7 @@ namespace LathBotFront.Commands
         {
             await ctx.DeferResponseAsync(true);
 
-            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
+            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = lathrix.Color,
@@ -128,7 +128,7 @@ namespace LathBotFront.Commands
         {
             await ctx.DeferResponseAsync(true);
 
-            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
+            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             DiscordEmbedBuilder embedBuilder = new()
             {
                 Color = lathrix.Color,
@@ -172,7 +172,7 @@ namespace LathBotFront.Commands
         {
             await ctx.DeferResponseAsync(true);
 
-            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
+            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             DiscordEmbedBuilder embedBuilderRules = new()
             {
                 Color = lathrix.Color,
@@ -239,7 +239,7 @@ namespace LathBotFront.Commands
         {
             await ctx.DeferResponseAsync(true);
 
-            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(192037157416730625);
+            DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             DiscordEmbedBuilder embedBuilderRules = new()
             {
                 Color = lathrix.Color,

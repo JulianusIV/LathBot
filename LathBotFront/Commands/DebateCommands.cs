@@ -3,6 +3,9 @@ using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
+using LathBotBack.Config;
+using LathBotBack.Models;
+using LathBotBack.Repos;
 using LathBotFront.Commands.PreExecutionChecks;
 using System;
 using System.ComponentModel;
@@ -28,7 +31,13 @@ namespace LathBotFront.Commands
                 return;
             }
 
-            if (ctx.Channel.Id != 718162681554534511)
+            DiscordObjectRepository discordObjectRepository = new(ReadConfig.Config.ConnectionString);
+            if (!discordObjectRepository.GetByName("DebateChannel", out DiscordObject debateChannel))
+            {
+                await ctx.RespondAsync("Error getting an id from the database.");
+                return;
+            }
+            if (ctx.Channel.Id != debateChannel.ObjectId)
             {
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("This command is only available in <#718162681554534511>."));
                 return;

@@ -32,7 +32,7 @@ namespace WarnModule
 
         public async Task<bool> PreExecutionChecks()
         {
-            if (this.Member.Id == 192037157416730625)
+            if (this.Member.Id == DiscordObjectService.Instance.Lathrix)
             {
                 await this.WarnChannel.SendMessageAsync("You cant warn Lathrix!");
                 return false;
@@ -363,7 +363,7 @@ namespace WarnModule
             embedBuilder.AddField($"{this.PointsLeft} points remaining", "Please keep any talk of this to DM's");
             DiscordEmbed embed = embedBuilder.Build();
 
-            DiscordChannel warnsChannel = await this.Guild.GetChannelAsync(722186358906421369);
+            DiscordChannel warnsChannel = await this.Guild.GetChannelAsync(DiscordObjectService.Instance.WarnsChannel.Id);
             await warnsChannel.SendMessageAsync(this.Member.Mention, embed);
 
             DiscordEmbedBuilder logEmbedBuilder = new()

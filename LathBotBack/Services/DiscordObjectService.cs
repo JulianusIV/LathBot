@@ -2,7 +2,12 @@
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using LathBotBack.Base;
+using LathBotBack.Config;
+using LathBotBack.Models;
+using LathBotBack.Repos;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace LathBotBack.Services
@@ -36,6 +41,10 @@ namespace LathBotBack.Services
         public DiscordChannel APODChannel { get; private set; }
         public DiscordChannel LogsChannel { get; private set; }
 
+        public ulong Lathrix { get; private set; }
+        public ulong Owner { get; private set; }
+        public ulong APODRole { get; set; }
+
         public DiscordMessage LathQuestions { get; set; }
         public DiscordMessage StaffQuestions { get; set; }
         public Dictionary<ulong, DiscordMessage> LastDeletes { get; set; }
@@ -63,28 +72,36 @@ namespace LathBotBack.Services
 
         public override async void Init(DiscordClient client)
         {
-            this.Lathland = client.GetGuildAsync(699555747591094344).GetAwaiter().GetResult();
+            DiscordObjectRepository discordObjectRepo = new(ReadConfig.Config.ConnectionString);
+            if (!discordObjectRepo.GetAll(out List<DiscordObject> discordObjects))
+                throw new Exception("Could not get DiscordObjects from database.");
+            var dictionary = discordObjects.ToDictionary(x => x.ObjectName, x => x.ObjectId);
 
-            this.QuestionsChannel = await this.Lathland.GetChannelAsync(721082217119612969);
-            this.StaffChannel = await this.Lathland.GetChannelAsync(724313826786410508);
-            this.GoodGuysChannel = await this.Lathland.GetChannelAsync(795654190143766578);
-            this.ErrorLogChannel = await this.Lathland.GetChannelAsync(787423655566376970);
-            this.TimerChannel = await this.Lathland.GetChannelAsync(771830187171250217);
-            this.WarnsChannel = await this.Lathland.GetChannelAsync(722186358906421369);
-            this.APODChannel = await this.Lathland.GetChannelAsync(848240982880550932);
-            this.StaffChannel = await this.Lathland.GetChannelAsync(724313826786410508);
-            this.LogsChannel = await this.Lathland.GetChannelAsync(700009728151126036);
-            this.QuestionsChannel = await this.Lathland.GetChannelAsync(721082217119612969);
+            this.Lathland = await client.GetGuildAsync(dictionary["MainGuildId"]);
+
+            this.QuestionsChannel = await this.Lathland.GetChannelAsync(dictionary["QuestionsChannel"]);
+            this.StaffChannel = await this.Lathland.GetChannelAsync(dictionary["StaffChannel"]);
+            this.GoodGuysChannel = await this.Lathland.GetChannelAsync(dictionary["GoodGuysChannel"]);
+            this.ErrorLogChannel = await this.Lathland.GetChannelAsync(dictionary["ErrorLogChannel"]);
+            this.TimerChannel = await this.Lathland.GetChannelAsync(dictionary["TimerChannel"]);
+            this.WarnsChannel = await this.Lathland.GetChannelAsync(dictionary["WarnsChannel"]);
+            this.APODChannel = await this.Lathland.GetChannelAsync(dictionary["APODChannel"]);
+            this.LogsChannel = await this.Lathland.GetChannelAsync(dictionary["LogsChannel"]);
+
+            this.Lathrix = dictionary["Lathrix"];
+            this.Owner = dictionary["Owner"];
+            this.APODRole = dictionary["APODRole"];
 
             DiscordMessage lastStaffMessage = null;
             try
             {
-                lastStaffMessage = this.StaffChannel.GetMessageAsync((ulong)this.StaffChannel.LastMessageId).GetAwaiter().GetResult();
+                if (this.StaffChannel.LastMessageId is not null)
+                    lastStaffMessage = this.StaffChannel.GetMessageAsync((ulong)this.StaffChannel.LastMessageId).GetAwaiter().GetResult();
             }
             catch (NotFoundException)
             {
             }
-            if (lastStaffMessage?.Author.Id == 708083256439996497)
+            if (lastStaffMessage?.Author.Id == client.CurrentUser.Id)
                 this.StaffQuestions = lastStaffMessage;
             else
                 this.StaffQuestions = this.StaffChannel.SendMessageAsync(this.StaffQuestionsEmbed.Build()).GetAwaiter().GetResult();
@@ -92,12 +109,13 @@ namespace LathBotBack.Services
             DiscordMessage lastLathQuestion = null;
             try
             {
-                lastLathQuestion = this.QuestionsChannel.GetMessageAsync((ulong)this.QuestionsChannel.LastMessageId).GetAwaiter().GetResult();
+                if (this.QuestionsChannel.LastMessageId is not null)
+                    lastLathQuestion = this.QuestionsChannel.GetMessageAsync((ulong)this.QuestionsChannel.LastMessageId).GetAwaiter().GetResult();
             }
             catch (NotFoundException)
             {
             }
-            if (lastLathQuestion?.Author.Id == 708083256439996497)
+            if (lastLathQuestion?.Author.Id == client.CurrentUser.Id)
                 this.LathQuestions = lastLathQuestion;
             else
                 this.LathQuestions = this.QuestionsChannel.SendMessageAsync(this.LathQuestionsEmbed).GetAwaiter().GetResult();

@@ -12,6 +12,7 @@ using DSharpPlus.Interactivity.Extensions;
 using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
+using LathBotBack.Services;
 using LathBotFront._2FA;
 using LathBotFront.Commands.ChoiceProviders;
 using Microsoft.Data.SqlClient;
@@ -33,7 +34,7 @@ namespace LathBotFront.Commands
         public async Task InitDB(CommandContext ctx)
         {
             await ctx.DeferResponseAsync();
-            if (ctx.User.Id != 387325006176059394)
+            if (ctx.User.Id != DiscordObjectService.Instance.Owner)
                 return;
             var members = ctx.Guild.GetAllMembersAsync();
             await foreach (DiscordMember member in members)
@@ -58,7 +59,7 @@ namespace LathBotFront.Commands
         public async Task UpdateDB(CommandContext ctx)
         {
             await ctx.DeferResponseAsync();
-            if (ctx.User.Id != 387325006176059394)
+            if (ctx.User.Id != DiscordObjectService.Instance.Owner)
                 return;
             var members = ctx.Guild.GetAllMembersAsync().ToBlockingEnumerable();
             int count = 0;
@@ -127,7 +128,7 @@ namespace LathBotFront.Commands
             DiscordEmbedBuilder embedBuilder = new()
             {
                 Title = $"Showing all warnings in the server",
-                Color = ctx.Guild.GetMemberAsync(192037157416730625).Result.Color,
+                Color = ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix).Result.Color,
                 Description = "Use -warns <User> to get more information on a specific user"
             };
             foreach (Warn warn in warns)
@@ -193,7 +194,7 @@ namespace LathBotFront.Commands
                     embedBuilder = new DiscordEmbedBuilder
                     {
                         Title = $"Showing all warnings in the server",
-                        Color = ctx.Guild.GetMemberAsync(192037157416730625).Result.Color,
+                        Color = ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix).Result.Color,
                         Description = "Use -warns <User> to get more information on a specific user"
                     };
                 }
@@ -266,7 +267,7 @@ namespace LathBotFront.Commands
             SqlConnection connection = new(ReadConfig.Config.ConnectionString);
             try
             {
-                if (ctx.Member.Id != 387325006176059394)
+                if (ctx.Member.Id != DiscordObjectService.Instance.Owner)
                     return;
                 command = command.Trim();
                 SqlCommand cmd = new(command, connection);
@@ -394,7 +395,7 @@ namespace LathBotFront.Commands
             if (ctx.Guild.Members.ContainsKey(user.Id))
                 member = await ctx.Guild.GetMemberAsync(user.Id);
 
-            if (member.Id == 192037157416730625)
+            if (member.Id == DiscordObjectService.Instance.Lathrix)
             {
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("You can't mute Lathrix!"));
                 return;

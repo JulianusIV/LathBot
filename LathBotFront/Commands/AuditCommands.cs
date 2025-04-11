@@ -51,7 +51,15 @@ namespace LathBotFront.Commands
                 await slashContext.RespondAsync("Working on it...", true);
 
             var members = ctx.Guild.GetAllMembersAsync().ToBlockingEnumerable();
-            var channel = await ctx.Guild.GetChannelAsync(700350465174405170);
+
+            DiscordObjectRepository discordObjectRepository = new(ReadConfig.Config.ConnectionString);
+            if (!discordObjectRepository.GetByName("GeneralChat", out DiscordObject generalChat))
+            {
+                await ctx.RespondAsync("Error getting an id from the database.");
+                return;
+            }
+
+            var channel = await ctx.Guild.GetChannelAsync(generalChat.ObjectId);
             var mods = members.Where(x => x
                 .PermissionsIn(channel)
                 .HasPermission(DiscordPermission.KickMembers) && !x.IsBot);
@@ -73,7 +81,11 @@ namespace LathBotFront.Commands
 
         private async Task<DiscordMessageBuilder> DoAudit(CommandContext ctx, DiscordMember mod)
         {
-            var channel = await ctx.Guild.GetChannelAsync(700350465174405170);
+            DiscordObjectRepository discordObjectRepository = new(ReadConfig.Config.ConnectionString);
+            if (!discordObjectRepository.GetByName("GeneralChat", out DiscordObject generalChat))
+                return new DiscordMessageBuilder { Content = "Error getting an id from the database" };
+
+            var channel = await ctx.Guild.GetChannelAsync(generalChat.ObjectId);
             if (!mod.PermissionsIn(channel).HasPermission(DiscordPermission.KickMembers))
                 return new DiscordMessageBuilder { Content = "Member is not a mod (anymore)." };
 

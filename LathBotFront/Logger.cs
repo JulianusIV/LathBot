@@ -18,7 +18,7 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
 
                 DiscordAuditLogBanEntry auditLog = e.Guild.GetAuditLogsAsync(limit: 5, actionType: DiscordAuditLogActionType.Ban)
@@ -41,7 +41,7 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
 
                 DiscordAuditLogBanEntry auditLog = e.Guild.GetAuditLogsAsync(limit: 5, actionType: DiscordAuditLogActionType.Unban)
@@ -65,7 +65,7 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
 
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
@@ -120,7 +120,7 @@ namespace LathBotFront
 
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
 
                 if (e.ChannelBefore.Id == 722905404354592900) //senate
@@ -150,7 +150,7 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
 
                 if (e.RoleBefore.Name == e.RoleAfter.Name
@@ -182,7 +182,7 @@ namespace LathBotFront
                 if (e.Author.IsBot)
                     return;
 
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
 
                 if (e.Channel.Id == 722905404354592900) //senate
@@ -210,7 +210,7 @@ namespace LathBotFront
                 if (e.Message.Author.IsBot)
                     return;
 
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
 
                 if (e.Channel.Id == 722905404354592900 || e.Channel.Id == 700009728151126036) //senate & logs
@@ -259,7 +259,7 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
 
                 if (e.Channel.Id == 722905404354592900 //senate
@@ -298,7 +298,7 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
 
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
@@ -334,7 +334,7 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
                 if (e.Parent.Id == 722905404354592900) //senate
                     return;
@@ -358,7 +358,7 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
                 if (e.Parent.Id == 722905404354592900) //senate
                     return;
@@ -380,7 +380,7 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Guild.Id != 699555747591094344)
+                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
                 if (e.Parent.Id == 722905404354592900) //senate
                     return;

@@ -220,7 +220,7 @@ namespace LathBotFront.Commands
             else
                 await channel.SendMessageAsync("Questions are now open again!");
 
-            await ctx.RespondAsync($"Questions channel is now {(open ? "opened" : "closed")}.");
+            await ctx.RespondAsync($"Questions channel is now {(open ? "closed" : "opened")}.");
         }
 
         [Command("toggleboard")]

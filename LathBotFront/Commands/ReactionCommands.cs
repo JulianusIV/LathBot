@@ -25,18 +25,18 @@ namespace LathBotFront.Commands
         [Description("Slap someone, but be careful who you choose to slap, they might slap harder.")]
         public async Task Slap(CommandContext ctx, [Description("Who you want to slap.")] DiscordMember target)
         {
-            if (target.Id == 708083256439996497) //LathBot
+            if (target.Id == ctx.Client.CurrentUser.Id)
             {
-                if (ctx.Member.Id != 387325006176059394) //myself
+                if (ctx.Member.Id != DiscordObjectService.Instance.Owner)
                     await ctx.RespondAsync($"God dammit {ctx.Member.Mention}, *slap* you can't slap me! *slap*");
                 else
                     await ctx.RespondAsync($"God dammit, *slaps myself* I've made a mistake again! *slaps myself*");
             }
-            else if (target.Id == 387325006176059394) //myself
+            else if (target.Id == DiscordObjectService.Instance.Owner)
             {
                 await ctx.RespondAsync($"God dammit {ctx.Member.Mention}, *slap* you can't slap my creator or imma slap you! *slap*");
             }
-            else if (target.Id == 192037157416730625) //Lathrix
+            else if (target.Id == DiscordObjectService.Instance.Lathrix)
             {
                 await ctx.RespondAsync($"God dammit {ctx.Member.Mention}, *slap* why would you slap a god? *slap*");
             }
@@ -96,13 +96,11 @@ namespace LathBotFront.Commands
         [Description("Pat someone")]
         public async Task Pat(CommandContext ctx, [Description("Who to pat")] DiscordMember member)
         {
-            if (member.Id == 192037157416730625)
+            if (member.Id == DiscordObjectService.Instance.Lathrix)
                 await ctx.RespondAsync("Not gonna ping Lath, but im guessing he would pat back.");
             else if (member.Id == 395566758989135882)//neb
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithStickers([ctx.Guild.Stickers[964256150054899742]]));
-            else if (member.Id == 700373370491109489)//femke
-                await ctx.RespondAsync(new DiscordMessageBuilder().WithStickers([ctx.Guild.Stickers[1013888253272801310]]));
-            else if (member.Id == 387325006176059394)//julian
+            else if (member.Id == DiscordObjectService.Instance.Owner)
                 await ctx.RespondAsync($"Julian!, you just got pat by {ctx.Member.Mention}");
             else if (member.Id == ctx.Client.CurrentUser.Id)
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithStickers([ctx.Guild.Stickers[967807862007029880]]));
@@ -125,7 +123,7 @@ namespace LathBotFront.Commands
                 SystemService.Instance.Logger.Log($"Error while trying to get last deleted message in {ctx.Channel.Id}");
                 return;
             }
-            if ((lastDelete.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastDelete.Author.IsBot || lastDelete.Content.Contains("submit")) // Julian once again
+            if ((lastDelete.Author.Id == DiscordObjectService.Instance.Owner && ctx.Member.Id != DiscordObjectService.Instance.Owner) || lastDelete.Author.IsBot || lastDelete.Content.Contains("submit"))
             {
                 await ctx.RespondAsync("No");
                 return;
@@ -180,7 +178,7 @@ namespace LathBotFront.Commands
                 SystemService.Instance.Logger.Log($"Error while trying to get last edited message in {ctx.Channel.Id}");
                 return;
             }
-            if ((lastEdit.Author.Id == 387325006176059394 && ctx.Member.Id != 387325006176059394) || lastEdit.Author.IsBot) //Oh hey, is that a new ID? no it is Julian...
+            if ((lastEdit.Author.Id == DiscordObjectService.Instance.Owner && ctx.Member.Id != DiscordObjectService.Instance.Owner) || lastEdit.Author.IsBot) //Oh hey, is that a new ID? no it is Julian...
             {
                 await ctx.RespondAsync("No");
                 return;

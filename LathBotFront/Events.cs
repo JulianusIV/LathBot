@@ -123,7 +123,7 @@ namespace LathBotFront
             return Task.CompletedTask;
         }
 
-        internal static Task MessageCreated(DiscordClient _1, MessageCreatedEventArgs e)
+        internal static Task MessageCreated(DiscordClient client, MessageCreatedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
@@ -132,7 +132,7 @@ namespace LathBotFront
                     await e.Channel.CrosspostMessageAsync(e.Message);
                     return;
                 }
-                if (e.Author.Id == 708083256439996497)
+                if (e.Author.Id == client.CurrentUser.Id)
                     return;
                 if (e.Channel.IsPrivate)
                     return;
@@ -222,16 +222,6 @@ namespace LathBotFront
             });
             return Task.CompletedTask;
         }
-
-        //internal static Task ContextMenuErrored(SlashCommandsExtension _1, ContextMenuErrorEventArgs e)
-        //{
-        //    _ = Task.Run(async () =>
-        //    {
-        //        await File.AppendAllTextAsync("error.txt", DateTime.Now + ":\n" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace + Environment.NewLine);
-        //        await DiscordObjectService.Instance.ErrorLogChannel.SendMessageAsync(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
-        //    });
-        //    return Task.CompletedTask;
-        //}
 
         internal static Task MessageUpdated(DiscordClient _1, MessageUpdatedEventArgs e)
         {
