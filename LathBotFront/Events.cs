@@ -322,8 +322,7 @@ namespace LathBotFront
                 else if (e.Emoji.Name == "TheGoodGuys")
                 {
                     if (e.Channel.Id == 795654190143766578 || //Goodguyschannel
-                    e.Channel.Id == 713284112638672917 || //YT
-                    e.Channel.Id == 720543453376937996) //Twitter
+                    e.Channel.Id == 713284112638672917) //YT
                         return;
                     if (e.Message.Timestamp < DateTime.Now - TimeSpan.FromHours(4))
                         return;

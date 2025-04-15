@@ -973,17 +973,18 @@ namespace LathBotFront.Commands
 
             if (reason is null)
             {
-                await ctx.FollowupAsync("Please provide a 2FA code!", true);
+                await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Please provide a 2FA code!"));
                 return false;
             }
 
             var pin = GoogleAuthenticator.GeneratePin(Encoding.UTF8.GetBytes(twoFAKey));
             if (reason != pin)
             {
-                await ctx.FollowupAsync("Pin does not match!", true);
+                await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Pin does not match!"));
                 return false;
             }
 
+            await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Pin matches!"));
             return true;
         }
 
@@ -993,7 +994,7 @@ namespace LathBotFront.Commands
             if (ctx.Guild.Members.ContainsKey(user.Id))
                 member = await ctx.Guild.GetMemberAsync(user.Id);
 
-            DiscordWebhookBuilder builder = new DiscordWebhookBuilder()
+            DiscordFollowupMessageBuilder builder = new DiscordFollowupMessageBuilder()
                 .AddEmbed(new DiscordEmbedBuilder
                 {
                     Title = "Are you fucking sure about that?",
@@ -1009,13 +1010,14 @@ namespace LathBotFront.Commands
                 new DiscordButtonComponent(DiscordButtonStyle.Danger, "sure", "Yes I fucking am!"),
                 new DiscordButtonComponent(DiscordButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
             ];
+            builder.AsEphemeral();
             builder.AddComponents(components);
-            DiscordMessage message = await ctx.EditResponseAsync(builder);
+            DiscordMessage message = await ctx.FollowupAsync(builder);
             var interactivityResult = await message.WaitForButtonAsync(ctx.User, TimeSpan.FromMinutes(1));
 
             if (interactivityResult.Result.Id == "abort")
             {
-                await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Okay i will not {operation} the user."));
+                await ctx.EditFollowupAsync(message.Id, new DiscordMessageBuilder().WithContent($"Okay i will not {operation} the user."));
                 return false;
             }
             return true;
