@@ -711,7 +711,7 @@ namespace LathBotFront.Commands
                 Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.Member.AvatarUrl, Text = $"{ctx.Member.DisplayName}" },
                 Description = reason
             };
-            await ctx.EditResponseAsync(new DiscordMessageBuilder().WithContent($"Done!"));
+            await ctx.FollowupAsync(new DiscordMessageBuilder().WithContent($"Done!"));
             await (await ctx.Guild.GetChannelAsync(764251867135475713)).SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embedBuilder));
             await (await ctx.Guild.GetChannelAsync(722186358906421369)).SendMessageAsync($"{user.Mention}", embedBuilder);
         }
