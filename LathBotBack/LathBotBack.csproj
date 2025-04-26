@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02480" />
-    <PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02480" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02480" />
+    <PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02495" />
+    <PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02495" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02495" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
   </ItemGroup>
 

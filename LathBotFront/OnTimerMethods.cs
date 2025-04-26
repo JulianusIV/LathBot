@@ -201,34 +201,37 @@ namespace LathBotFront
 
                 APODJsonObject json = JsonConvert.DeserializeObject<APODJsonObject>(content);
 
+                bool isImage = json.MediaType == "image";
+
                 HttpResponseMessage result = await httpClient.GetAsync(json.URL ?? json.ThumbnailUrl);
                 Stream stream = await result.Content.ReadAsStreamAsync();
-                string fileExtension = MimeTypeMap.GetExtension(result.Content.Headers.ContentType.MediaType);
-
-                DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
-                    .WithTitle("Astronomy Picture of the day:\n" + json.Title)
-                    .WithDescription("**Explanation:\n**" + json.Explanation)
-                    .WithColor(new DiscordColor("e49a5e"))
-                    .WithImageUrl("attachment://apod" + fileExtension)
-                    .WithFooter("Copyright: " + (json.Copyright is null ? "Public Domain" : json.Copyright) + "\nSource: NASA APOD API Endpoint");
+                string fileName = "apod" + MimeTypeMap.GetExtension(result.Content.Headers.ContentType.MediaType);
 
                 DiscordMessageBuilder builder = new DiscordMessageBuilder()
-                    .AddFile("apod" + fileExtension, stream, AddFileOptions.CloseStream)
-                    .AddEmbed(embedBuilder)
-                    .WithContent((await DiscordObjectService.Instance.Lathland.GetRoleAsync(848307821703200828)).Mention);
+                    .AddFile(fileName, stream, AddFileOptions.CloseStream)
+                    .EnableV2Components();
 
-                if (json.HdUrl is null)
-                    builder = builder.AddComponents(new DiscordLinkButtonComponent(json.URL, "Image"));
+                List<DiscordButtonComponent> buttons;
+                if (!isImage)
+                    buttons = [new DiscordLinkButtonComponent(json.URL, "Video")];
                 else
-                    builder = builder.AddComponents(new DiscordLinkButtonComponent(json.HdUrl, "Image"), new DiscordLinkButtonComponent(json.URL, "Low resolution image"));
+                    buttons = [new DiscordLinkButtonComponent(json.HdUrl, "Image"), new DiscordLinkButtonComponent(json.URL, "Low resolution image")];
 
-                DiscordMessageBuilder builder2 = null;
-                if (json.MediaType != "image")
-                    builder2 = new DiscordMessageBuilder().WithContent(json.URL.Replace("embed/", "watch?v=").Replace("?rel=0", ""));
+                builder.AddContainerComponent(new DiscordContainerComponent(color: new DiscordColor("e49a5e"),
+                    components:
+                    [
+                        new DiscordTextDisplayComponent((await DiscordObjectService.Instance.Lathland.GetRoleAsync(848307821703200828)).Mention),
+                        new DiscordSeparatorComponent(true, DiscordSeparatorSpacing.Large),
+                        new DiscordTextDisplayComponent($"## Astronomy Picture of the day:\n## {json.Title}\n\n**Explanation:**\n{json.Explanation}"),
+                        new DiscordSeparatorComponent(true, DiscordSeparatorSpacing.Large),
+                        new DiscordMediaGalleryComponent(new DiscordMediaGalleryItem("attachment://" + fileName)),
+                        new DiscordActionRowComponent(buttons),
+                        new DiscordSeparatorComponent(true),
+                        new DiscordTextDisplayComponent($"-# Copyright: {(json.Copyright is null ? "Public Domain" : json.Copyright)}\n-# Source: NASA APOD API Endpoint")
+                    ]));
+
                 builder.WithAllowedMentions(Mentions.All);
                 await DiscordObjectService.Instance.APODChannel.SendMessageAsync(builder);
-                if (builder2 is not null)
-                    await DiscordObjectService.Instance.APODChannel.SendMessageAsync(builder2);
             }
         }
     }

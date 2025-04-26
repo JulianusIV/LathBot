@@ -80,7 +80,7 @@ namespace WarnModule
             DiscordSelectComponent selectMenu = new("warnSelect", "Select a Rule!", options);
 
             DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
-                .AddComponents(selectMenu)
+                .AddActionRowComponent(selectMenu)
                 .WithContent("­");
             DiscordMessage message = await this.WarnChannel.SendMessageAsync(messageBuilder);
 
@@ -113,7 +113,7 @@ namespace WarnModule
             DiscordSelectComponent selectMenu = new("warnSelect", "Select a Rule!", options);
 
             var message = await ctx.FollowupAsync(new DiscordFollowupMessageBuilder()
-                .AddComponents(selectMenu)
+                .AddActionRowComponent(selectMenu)
                 .WithContent("­")
                 .AsEphemeral());
 
@@ -142,7 +142,7 @@ namespace WarnModule
                         (index + 1) < this.Rule.MinPoints || (index + 1) > this.Rule.MaxPoints)
                     );
                 }
-                discordMessage.AddComponents(buttons);
+                discordMessage.AddActionRowComponent(buttons);
             }
             DiscordMessage pointsMessage = await this.WarnChannel.SendMessageAsync(discordMessage);
             var interactpointsMessage = await pointsMessage.WaitForButtonAsync(this.Mod, TimeSpan.FromMinutes(2));
@@ -169,14 +169,14 @@ namespace WarnModule
                         (index + 1) < this.Rule.MinPoints || (index + 1) > this.Rule.MaxPoints)
                     );
                 }
-                webhook.AddComponents(buttons);
+                webhook.AddActionRowComponent(buttons);
             }
             DiscordMessage pointsMessage = await ctx.EditFollowupAsync(messageID, webhook);
             var interactpointsMessage = await pointsMessage.WaitForButtonAsync(this.Mod, TimeSpan.FromMinutes(2));
             this.PointsDeducted = int.Parse(interactpointsMessage.Result.Id);
 
             foreach (var item in webhook.Components)
-                foreach (DiscordButtonComponent button in item.Components.Cast<DiscordButtonComponent>())
+                foreach (DiscordButtonComponent button in ((DiscordActionRowComponent)item).Components.Cast<DiscordButtonComponent>())
                     button.Disable();
 
             await ctx.EditFollowupAsync(messageID, webhook);
@@ -248,7 +248,7 @@ namespace WarnModule
             var responseBuilder = new DiscordInteractionResponseBuilder()
                 .WithCustomId("reason")
                 .WithTitle("Reason")
-                .AddComponents(textInput);
+                .AddTextInputComponent(textInput);
 
             await interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, responseBuilder);
             InteractivityExtension interactivity = (InteractivityExtension)client.ServiceProvider.GetService(typeof(InteractivityExtension));

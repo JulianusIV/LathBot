@@ -830,7 +830,7 @@ namespace LathBotFront.Commands
             var responseBuilder = new DiscordInteractionResponseBuilder()
                 .WithCustomId("report_reason")
                 .WithTitle("Reason")
-                .AddComponents(textInput);
+                .AddTextInputComponent(textInput);
 
             await ctx.RespondWithModalAsync(responseBuilder);
 
@@ -961,7 +961,7 @@ namespace LathBotFront.Commands
             var responseBuilder = new DiscordInteractionResponseBuilder()
                 .WithCustomId("2famodal")
                 .WithTitle("2FA")
-                .AddComponents(textInput);
+                .AddTextInputComponent(textInput);
 
             await ctx.RespondWithModalAsync(responseBuilder);
 
@@ -1005,13 +1005,13 @@ namespace LathBotFront.Commands
                     Color = member == null ? new DiscordColor("#FF0000") : member.Color
                 }
                 .AddField("Member you selected:", member == null ? user.ToString() : member.ToString()));
-            List<DiscordComponent> components =
+            List<DiscordButtonComponent> components =
             [
-                new DiscordButtonComponent(DiscordButtonStyle.Danger, "sure", "Yes I fucking am!"),
-                new DiscordButtonComponent(DiscordButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
+                new(DiscordButtonStyle.Danger, "sure", "Yes I fucking am!"),
+                new(DiscordButtonStyle.Secondary, "abort", "NO ABORT, ABORT!")
             ];
             builder.AsEphemeral();
-            builder.AddComponents(components);
+            builder.AddActionRowComponent(components);
             DiscordMessage message = await ctx.FollowupAsync(builder);
             var interactivityResult = await message.WaitForButtonAsync(ctx.User, TimeSpan.FromMinutes(1));
 

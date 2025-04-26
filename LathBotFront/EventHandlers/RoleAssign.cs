@@ -87,7 +87,7 @@ namespace LathBotFront.EventHandlers
                         new("Warhammer 40k", "wh40k", "Get access to the Warhammer 40k game channel", member.Roles.Any(x => x.Id == 766322672321560628), new DiscordComponentEmoji("🔨"))
                     };
 
-                    builder.AddComponents(new DiscordSelectComponent("roleme_games_dropdown", "Select your roles", options, false, 0, options.Count));
+                    builder.AddActionRowComponent(new DiscordSelectComponent("roleme_games_dropdown", "Select your roles", options, false, 0, options.Count));
 
                     await e.Interaction.EditOriginalResponseAsync(builder);
                 }
@@ -117,7 +117,7 @@ namespace LathBotFront.EventHandlers
                         new("Ugly Green", "ugly_green", "Get the Ugly Green color role", member.Roles.Any(x => x.Id == 759439706634584064), new DiscordComponentEmoji("🟢"))
                     };
 
-                    builder.AddComponents(new DiscordSelectComponent("roleme_color_dropdown", "Select your roles", options, false, 0, options.Count));
+                    builder.AddActionRowComponent(new DiscordSelectComponent("roleme_color_dropdown", "Select your roles", options, false, 0, options.Count));
 
                     await e.Interaction.EditOriginalResponseAsync(builder);
                 }
@@ -144,7 +144,7 @@ namespace LathBotFront.EventHandlers
                     if (member.Roles.Any(x => greetingsEnabledRoleIds.Contains(x.Id)))
                         options.Add(new DiscordSelectComponentOption("Greetings", "greetings", "Gives you permissions to send messages in Greetings", member.Roles.Any(x => x.Id == 1014280593929928797), new DiscordComponentEmoji("👋")));
 
-                    builder.AddComponents(new DiscordSelectComponent("roleme_misc_dropdown", "Select your roles", options, false, 0, options.Count));
+                    builder.AddActionRowComponent(new DiscordSelectComponent("roleme_misc_dropdown", "Select your roles", options, false, 0, options.Count));
 
                     await e.Interaction.EditOriginalResponseAsync(builder);
                 }

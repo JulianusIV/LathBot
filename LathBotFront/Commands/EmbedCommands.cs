@@ -3,7 +3,6 @@ using DSharpPlus.Commands.ContextChecks;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
 using LathBotBack.Services;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 
@@ -30,12 +29,12 @@ namespace LathBotFront.Commands
 
             var messageBuilder = new DiscordMessageBuilder().AddEmbed(embedBuilder);
 
-            messageBuilder.AddComponents(new List<DiscordComponent>()
-            {
-                new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
-                new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷")),
-                new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_color", "Color", emoji: new DiscordComponentEmoji("🎨"))
-            });
+            messageBuilder.AddActionRowComponent(
+            [
+                new(DiscordButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
+                new(DiscordButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷")),
+                new(DiscordButtonStyle.Primary, "roleme_color", "Color", emoji: new DiscordComponentEmoji("🎨"))
+            ]);
             await ctx.Channel.SendMessageAsync(messageBuilder);
 
             await ctx.RespondAsync("Done!");
@@ -60,12 +59,12 @@ namespace LathBotFront.Commands
 
             var messageBuilder = new DiscordMessageBuilder().AddEmbed(embedBuilder);
 
-            messageBuilder.AddComponents(new List<DiscordComponent>()
-            {
-                new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
-                new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷")),
-                new DiscordButtonComponent(DiscordButtonStyle.Primary, "roleme_color", "Color", emoji: new DiscordComponentEmoji("🎨"))
-            });
+            messageBuilder.AddActionRowComponent(
+            [
+                new(DiscordButtonStyle.Primary, "roleme_games", "Games", emoji: new DiscordComponentEmoji("🎮")),
+                new(DiscordButtonStyle.Primary, "roleme_misc", "Misc", emoji: new DiscordComponentEmoji("🏷")),
+                new(DiscordButtonStyle.Primary, "roleme_color", "Color", emoji: new DiscordComponentEmoji("🎨"))
+            ]);
 
             DiscordMessage infoMessage = await ctx.Channel.GetMessageAsync(1014293811435942040);
             await infoMessage.ModifyAsync(messageBuilder);
@@ -99,7 +98,7 @@ namespace LathBotFront.Commands
 
             var messageBuilder = new DiscordMessageBuilder().AddEmbed(embedBuilder);
 
-            foreach (var button in new DiscordComponent[]
+            foreach (var button in new DiscordButtonComponent[]
             {
                 new DiscordLinkButtonComponent("https://www.youtube.com/user/Lathland", "YouTube", emoji: new DiscordComponentEmoji(978916644426494002)),
                 new DiscordLinkButtonComponent("https://twitter.com/Lathrix", "Twitter", emoji: new DiscordComponentEmoji(978917283965583410)),
@@ -108,7 +107,7 @@ namespace LathBotFront.Commands
                 new DiscordLinkButtonComponent("https://docs.google.com/document/d/1FAJzwct6lgyuoxuVu_V8iSvzOVlP6_sqUuJYKZOhu8M/edit#", "Warn information document")
             })
             {
-                messageBuilder.AddComponents(button);
+                messageBuilder.AddActionRowComponent(button);
             }
 
             await ctx.Channel.SendMessageAsync(messageBuilder);
@@ -142,17 +141,11 @@ namespace LathBotFront.Commands
 
             var messageBuilder = new DiscordMessageBuilder().AddEmbed(embedBuilder);
 
-            foreach (var button in new DiscordComponent[]
-            {
-                new DiscordLinkButtonComponent("https://www.youtube.com/user/Lathland", "YouTube", emoji: new DiscordComponentEmoji(978916644426494002)),
+            messageBuilder.AddActionRowComponent(new DiscordLinkButtonComponent("https://www.youtube.com/user/Lathland", "YouTube", emoji: new DiscordComponentEmoji(978916644426494002)),
                 new DiscordLinkButtonComponent("https://twitter.com/Lathrix", "Twitter", emoji: new DiscordComponentEmoji(978917283965583410)),
                 //new DiscordLinkButtonComponent("https://www.twitch.tv/lathrix", "Twitch", emoji: new DiscordComponentEmoji(978917615823101952)),
                 new DiscordLinkButtonComponent("https://docs.google.com/document/d/1Pq-7WVHn6uwcGWKH8fqznxRiJrRC4MeV7JmLUe-E2yA/edit#", "Role information document"),
-                new DiscordLinkButtonComponent("https://docs.google.com/document/d/1FAJzwct6lgyuoxuVu_V8iSvzOVlP6_sqUuJYKZOhu8M/edit#", "Warn information document")
-            })
-            {
-                messageBuilder.AddComponents(button);
-            }
+                new DiscordLinkButtonComponent("https://docs.google.com/document/d/1FAJzwct6lgyuoxuVu_V8iSvzOVlP6_sqUuJYKZOhu8M/edit#", "Warn information document"));
 
             DiscordMessage infoMessage = await ctx.Channel.GetMessageAsync(769235106828386366);
             await infoMessage.ModifyAsync(messageBuilder);

@@ -184,7 +184,7 @@ namespace LathBotFront.Commands
             var responseBuilder = new DiscordInteractionResponseBuilder()
                 .WithCustomId("2famodal")
                 .WithTitle("2FA")
-                .AddComponents(textInput);
+                .AddTextInputComponent(textInput);
 
             await ctx.RespondWithModalAsync(responseBuilder);
 
