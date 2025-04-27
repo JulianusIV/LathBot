@@ -42,14 +42,17 @@ namespace LathBotFront.Commands
             }
             else if (target.Id == 241445303960600576) //Theo
             {
-                if (ctx.Member.Id == 387325006176059394)
+                if (ctx.Member.Id == 387325006176059394) //Julian
                     await ctx.RespondAsync($"You might think you are immune to slaps {target.Mention}, *slap* but {ctx.Member.Mention} is immune to counter slapping! *slap*");
                 else
                     await ctx.RespondAsync($"God dammit {ctx.Member.Mention}, *slap* you dont slap the creator of slapping");
             }
             else if (target.Id == 671485545288826900) //Tophat
             {
-                await ctx.RespondAsync($"Do you want to be turned into a Servitor?");
+                if (ctx.Member.Id == 387325006176059394)//Julian
+                    await ctx.RespondAsync($"*slap* You aren't immune {target.Mention}! *slap*");
+                else 
+                    await ctx.RespondAsync($"Do you want to be turned into a Servitor?");
             }
             else if (target.Id == 289112287250350080) //Parth
             {
