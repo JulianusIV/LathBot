@@ -203,7 +203,7 @@ namespace LathBotFront
 
                 bool isImage = json.MediaType == "image";
 
-                HttpResponseMessage result = await httpClient.GetAsync(json.URL ?? json.ThumbnailUrl);
+                HttpResponseMessage result = await httpClient.GetAsync(isImage ? json.URL : json.ThumbnailUrl);
                 Stream stream = await result.Content.ReadAsStreamAsync();
                 string fileName = "apod" + MimeTypeMap.GetExtension(result.Content.Headers.ContentType.MediaType);
 
