@@ -49,6 +49,10 @@ namespace LathBotFront
 
         public async Task RunAsync()
         {
+            this.PKClient = new()
+            {
+                BaseAddress = new Uri("https://api.pluralkit.me/v2/messages/")
+            };
 #if DEBUG
             this.PKClient.DefaultRequestHeaders.Add("User-Agent",
                     "LathBot/2.x (DEBUG BUILD - Discord contact: @julianusiv - GitHub repo: https://github.com/JulianusIV/LathBot)");
@@ -56,7 +60,6 @@ namespace LathBotFront
             this.PKClient.DefaultRequestHeaders.Add("User-Agent",
                     "LathBot/2.x (Discord contact: @julianusiv - GitHub repo: https://github.com/JulianusIV/LathBot)");
 #endif
-            this.PKClient.BaseAddress = new Uri("https://api.pluralkit.me/v2/messages/");
             ReadConfig.Read();
             var varrepo = new VariableRepository(ReadConfig.Config.ConnectionString);
             bool result;
