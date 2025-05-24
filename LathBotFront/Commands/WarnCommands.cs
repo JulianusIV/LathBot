@@ -15,11 +15,13 @@ using LathBotBack.Repos;
 using LathBotBack.Services;
 using LathBotFront._2FA;
 using LathBotFront.Commands.ChoiceProviders;
+using LathBotFront.EventHandlers;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using WarnModule;
@@ -316,8 +318,19 @@ namespace LathBotFront.Commands
 
             if (!ctx.Member.Permissions.HasFlag(DiscordPermission.KickMembers))
             {
-                await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("No you dumbass!"));
+                await ctx.RespondAsync("No you dumbass!");
                 return;
+            }
+
+            ulong authorId = target.Author.Id;
+            if (target.Author.IsBot)
+            {
+                var response = await Bot.Instance.PKClient.GetAsync($"https://api.pluralkit.me/v2/messages/{target.Id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var pkMessage = await response.Content.ReadFromJsonAsync<PKMessageModel>();
+                    authorId = ulong.Parse(pkMessage.Sender);
+                }
             }
 
             WarnBuilder warnBuilder = new(
@@ -325,10 +338,10 @@ namespace LathBotFront.Commands
                 await ctx.Guild.GetChannelAsync(764251867135475713),
                 ctx.Guild,
                 ctx.Member,
-                await ctx.Guild.GetMemberAsync(target.Author.Id),
+                await ctx.Guild.GetMemberAsync(authorId),
                 target);
 
-            if (!await warnBuilder.PreExecutionChecks())
+            if (!await warnBuilder.PreExecutionChecks(ctx))
                 return;
             var id = await warnBuilder.RequestRuleEphemeral(ctx);
             var interaction = await warnBuilder.RequestPointsEphemeral(ctx, id);
@@ -365,7 +378,7 @@ namespace LathBotFront.Commands
                 ctx.Member,
                 await ctx.Guild.GetMemberAsync(target.Id));
 
-            if (!await warnBuilder.PreExecutionChecks())
+            if (!await warnBuilder.PreExecutionChecks(ctx))
                 return;
             var id = await warnBuilder.RequestRuleEphemeral(ctx);
             var interaction = await warnBuilder.RequestPointsEphemeral(ctx, id);
@@ -410,7 +423,7 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("User is already muted."));
                 return;
             }
-            if (!await this.AreYouSure(ctx, user, ctx.Client, "mute"))
+            if (!await this.AreYouSure(ctx, user, "mute"))
                 return;
 
             if (ctx.Member.Roles.Contains(await ctx.Guild.GetRoleAsync(748646909354311751)))
@@ -513,7 +526,7 @@ namespace LathBotFront.Commands
                 return;
             }
 
-            if (!await this.AreYouSure(ctx, user, ctx.Client, "unmute"))
+            if (!await this.AreYouSure(ctx, user, "unmute"))
                 return;
 
             DiscordRole verificationRole = await ctx.Guild.GetRoleAsync(767050052257447936);
@@ -639,7 +652,7 @@ namespace LathBotFront.Commands
                 await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("You cant kick someone higher or same rank as you!"));
                 return;
             }
-            if (await this.AreYouSure(ctx, user, ctx.Client, "kick"))
+            if (await this.AreYouSure(ctx, user, "kick"))
                 return;
             await member.RemoveAsync();
             AuditRepository repo = new(ReadConfig.Config.ConnectionString);
@@ -693,7 +706,7 @@ namespace LathBotFront.Commands
             }
             if (!await this.Ensure2FA(ctx))
                 return;
-            if (!await this.AreYouSure(ctx, user, ctx.Client, "ban"))
+            if (!await this.AreYouSure(ctx, user, "ban"))
                 return;
 
             await ctx.Guild.BanMemberAsync(user, TimeSpan.FromDays(deleteMessageDays), reason);
@@ -988,7 +1001,7 @@ namespace LathBotFront.Commands
             return true;
         }
 
-        private async Task<bool> AreYouSure(CommandContext ctx, DiscordUser user, DiscordClient client, string operation)
+        private async Task<bool> AreYouSure(CommandContext ctx, DiscordUser user, string operation)
         {
             DiscordMember member = null;
             if (ctx.Guild.Members.ContainsKey(user.Id))

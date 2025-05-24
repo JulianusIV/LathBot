@@ -13,6 +13,7 @@ using LathBotFront.Commands.PreExecutionChecks;
 using LathBotFront.EventHandlers;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,6 +39,8 @@ namespace LathBotFront
         }
         #endregion
 
+        public HttpClient PKClient { get; private set; }
+
         public DiscordClient Client { get; private set; }
 
         public InteractivityExtension Interactivity { get; private set; }
@@ -46,6 +49,14 @@ namespace LathBotFront
 
         public async Task RunAsync()
         {
+#if DEBUG
+            this.PKClient.DefaultRequestHeaders.Add("User-Agent",
+                    "LathBot/2.x (DEBUG BUILD - Discord contact: @julianusiv - GitHub repo: https://github.com/JulianusIV/LathBot)");
+#else
+            this.PKClient.DefaultRequestHeaders.Add("User-Agent",
+                    "LathBot/2.x (Discord contact: @julianusiv - GitHub repo: https://github.com/JulianusIV/LathBot)");
+#endif
+            this.PKClient.BaseAddress = new Uri("https://api.pluralkit.me/v2/messages/");
             ReadConfig.Read();
             var varrepo = new VariableRepository(ReadConfig.Config.ConnectionString);
             bool result;
@@ -70,7 +81,7 @@ namespace LathBotFront
                     .HandleMessageReactionAdded(Events.ReactionAdded)
                     .HandleComponentInteractionCreated(Events.ComponentTriggered)
                     .HandleComponentInteractionCreated(RoleAssign.ComponentTriggered)
-#if !DEBUG
+                    //#if !DEBUG
                     .HandleGuildBanAdded(Logger.BanAdded)
                     .HandleGuildBanRemoved(Logger.BanRemoved)
                     .HandleGuildMemberUpdated(Logger.MemberUpdated)
@@ -83,7 +94,7 @@ namespace LathBotFront
                     .HandleThreadCreated(Logger.ThreadCreated)
                     .HandleThreadDeleted(Logger.ThreadDeleted)
                     .HandleThreadUpdated(Logger.ThreadUpdated)
-#endif
+                //#endif
                 )
                 .UseInteractivity(new InteractivityConfiguration
                 {

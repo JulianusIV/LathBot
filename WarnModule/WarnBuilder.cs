@@ -30,16 +30,16 @@ namespace WarnModule
         private int MemberDbId;
         private int PointsLeft;
 
-        public async Task<bool> PreExecutionChecks()
+        public async Task<bool> PreExecutionChecks(SlashCommandContext ctx)
         {
             if (this.Member.Id == DiscordObjectService.Instance.Lathrix)
             {
-                await this.WarnChannel.SendMessageAsync("You cant warn Lathrix!");
+                await ctx.RespondAsync("You cant warn Lathrix!");
                 return false;
             }
             if (await this.Guild.GetMemberAsync(this.Member.Id) == null)
             {
-                await this.WarnChannel.SendMessageAsync($"User {this.Member.DisplayName} is not on this server anymore, you can't warn them!");
+                await ctx.RespondAsync($"User {this.Member.DisplayName} is not on this server anymore, you can't warn them!");
                 return false;
             }
             if (this.Mod.Roles.Contains(await this.Guild.GetRoleAsync(748646909354311751)))

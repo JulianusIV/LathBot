@@ -2,15 +2,17 @@
 using DSharpPlus.Entities;
 using DSharpPlus.Entities.AuditLogs;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Exceptions;
 using LathBotBack.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace LathBotFront
+namespace LathBotFront.EventHandlers
 {
     public class Logger
     {
@@ -179,8 +181,20 @@ namespace LathBotFront
         {
             _ = Task.Run(async () =>
             {
-                if (e.Author.IsBot)
-                    return;
+                if (e.Message.Author.IsBot)
+                {
+                    bool isWebhook = false;
+                    try
+                    {
+                        await e.Guild.GetMemberAsync(e.Message.Author.Id);
+                    }
+                    catch (NotFoundException)
+                    {
+                        isWebhook = true;
+                    }
+                    if (!isWebhook)
+                        return;
+                }
 
                 if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
@@ -208,7 +222,19 @@ namespace LathBotFront
             _ = Task.Run(async () =>
             {
                 if (e.Message.Author.IsBot)
-                    return;
+                {
+                    bool isWebhook = false;
+                    try
+                    {
+                        await e.Guild.GetMemberAsync(e.Message.Author.Id);
+                    }
+                    catch (NotFoundException)
+                    {
+                        isWebhook = true;
+                    }
+                    if (!isWebhook)
+                        return;
+                }
 
                 if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
                     return;
@@ -217,6 +243,15 @@ namespace LathBotFront
                     return;
                 if (e.Message.Content is null)
                     return;
+
+                var response = await Bot.Instance.PKClient.GetAsync($"{e.Message.Id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var pkMessage = await response.Content.ReadFromJsonAsync<PKMessageModel>();
+                    if (pkMessage.System is not null &&
+                        pkMessage.Original == e.Message.Id.ToString())
+                        return;
+                }
 
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
                     .WithTimestamp(DateTime.Now)
