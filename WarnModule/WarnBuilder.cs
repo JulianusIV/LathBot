@@ -1,6 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using LathBotBack.Config;
@@ -46,7 +47,7 @@ namespace WarnModule
             {
                 DiscordEmbedBuilder discordEmbed = new()
                 {
-                    Color = this.Mod.Color,
+                    Color = this.Mod.Color.PrimaryColor,
                     Title = $"Trial Plague {this.Mod.Nickname} just used a moderation command",
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -236,7 +237,7 @@ namespace WarnModule
             }
         }
 
-        public async Task RequestReasonEphemeral(SlashCommandContext ctx, DiscordInteraction interaction)
+        public async Task RequestReasonEphemeral(DiscordInteraction interaction)
         {
             var textInput = new DiscordTextInputComponent("If needed state a reason.",
                 "reason",
@@ -245,17 +246,16 @@ namespace WarnModule
                 style: DiscordTextInputStyle.Paragraph,
                 max_length: 250);
 
-            var responseBuilder = new DiscordInteractionResponseBuilder()
+            var responseBuilder = new DiscordModalBuilder()
                 .WithCustomId("reason")
                 .WithTitle("Reason")
-                .AddTextInputComponent(textInput);
+                .AddTextInput(textInput, "If needed state a reason.");
 
             await interaction.CreateResponseAsync(DiscordInteractionResponseType.Modal, responseBuilder);
             InteractivityExtension interactivity = (InteractivityExtension)client.ServiceProvider.GetService(typeof(InteractivityExtension));
             var res = await interactivity.WaitForModalAsync("reason");
-
-            await res.Result.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
-            this.Reason = res.Result.Values["reason"] ?? "/";
+            await res.Result.Interaction.DeferAsync(true);
+            this.Reason = (res.Result.Values["reason"] as TextInputModalSubmission).Value ?? "/";
             this.Reason = this.Reason.Equals("NONE", StringComparison.CurrentCultureIgnoreCase) ? "/" : this.Reason;
         }
 
@@ -391,7 +391,7 @@ namespace WarnModule
                     Name = this.MessageLink.Author.Username
                 },
                 Description = this.MessageLink.Content,
-                Color = (await this.Guild.GetMemberAsync(this.MessageLink.Author.Id)).Color
+                Color = (await this.Guild.GetMemberAsync(this.MessageLink.Author.Id)).Color.PrimaryColor
             };
             if (this.MessageLink.Attachments.Count != 0)
             {

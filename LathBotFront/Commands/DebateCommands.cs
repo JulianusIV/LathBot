@@ -9,6 +9,7 @@ using LathBotBack.Repos;
 using LathBotFront.Commands.PreExecutionChecks;
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
@@ -20,6 +21,8 @@ namespace LathBotFront.Commands
         [Command("embed")]
         [Description("Request permissions to embed links/attach files in Debate chat")]
         [EmbedBanned]
+        [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Suppression is necessary to avoid warning")]
+        [SuppressMessage("Design", "DSP0007:Use 'DiscordChannel#ModifyAsync'", Justification = "Only one call to addOverwrite is made")]
         public async Task Embed(SlashCommandContext ctx)
         {
             await ctx.DeferResponseAsync(true);
@@ -43,7 +46,7 @@ namespace LathBotFront.Commands
                 return;
             }
 
-            await ctx.Channel.AddOverwriteAsync(ctx.Member, DiscordPermission.EmbedLinks | DiscordPermission.AttachFiles);
+            await ctx.Channel.AddOverwriteAsync(ctx.Member, new DiscordPermissions(DiscordPermission.EmbedLinks, DiscordPermission.AttachFiles));
 
             await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("Done! You now have permissions to send ONE message containing links and/or files within the next 3 minutes."));
 

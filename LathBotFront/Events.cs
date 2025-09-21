@@ -345,7 +345,7 @@ namespace LathBotFront
                                 Name = message.Author.Username
                             },
                             Description = message.Content,
-                            Color = ((DiscordMember)message.Author).Color
+                            Color = ((DiscordMember)message.Author).Color.PrimaryColor
                         };
                         discordEmbed.AddField("Message jump link", $"[Doing!]({e.Message.JumpLink})");
 

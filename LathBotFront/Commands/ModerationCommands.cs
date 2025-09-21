@@ -4,6 +4,7 @@ using DSharpPlus.Commands.ContextChecks;
 using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using LathBotBack.Config;
 using LathBotBack.Models;
@@ -181,10 +182,10 @@ namespace LathBotFront.Commands
                 max_length: 6
                 );
 
-            var responseBuilder = new DiscordInteractionResponseBuilder()
+            var responseBuilder = new DiscordModalBuilder()
                 .WithCustomId("2famodal")
                 .WithTitle("2FA")
-                .AddTextInputComponent(textInput);
+                .AddTextInput(textInput, "Please input your 2FA Code.");
 
             await ctx.RespondWithModalAsync(responseBuilder);
 
@@ -194,14 +195,14 @@ namespace LathBotFront.Commands
             await res.Result.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
             var reason = res.Result.Values["2famodal"];
 
-            if (reason is null)
+            if (reason is null || reason is not TextInputModalSubmission)
             {
                 await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Please provide a 2FA code!"));
                 return;
             }
 
             var pin = GoogleAuthenticator.GeneratePin(Encoding.UTF8.GetBytes(twoFAKey));
-            if (reason != pin)
+            if ((reason as TextInputModalSubmission).Value != pin)
             {
                 await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Pin does not match!"));
                 return;

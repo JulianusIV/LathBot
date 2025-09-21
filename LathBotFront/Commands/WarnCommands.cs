@@ -6,6 +6,7 @@ using DSharpPlus.Commands.Processors.SlashCommands;
 using DSharpPlus.Commands.Processors.SlashCommands.ArgumentModifiers;
 using DSharpPlus.Commands.Trees;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
@@ -130,7 +131,7 @@ namespace LathBotFront.Commands
             DiscordEmbedBuilder embedBuilder = new()
             {
                 Title = $"Showing all warnings in the server",
-                Color = ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix).Result.Color,
+                Color = ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix).Result.Color.PrimaryColor,
                 Description = "Use -warns <User> to get more information on a specific user"
             };
             foreach (Warn warn in warns)
@@ -196,7 +197,7 @@ namespace LathBotFront.Commands
                     embedBuilder = new DiscordEmbedBuilder
                     {
                         Title = $"Showing all warnings in the server",
-                        Color = ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix).Result.Color,
+                        Color = ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix).Result.Color.PrimaryColor,
                         Description = "Use -warns <User> to get more information on a specific user"
                     };
                 }
@@ -316,12 +317,6 @@ namespace LathBotFront.Commands
         {
             await ctx.DeferResponseAsync(true);
 
-            if (!ctx.Member.Permissions.HasFlag(DiscordPermission.KickMembers))
-            {
-                await ctx.RespondAsync("No you dumbass!");
-                return;
-            }
-
             ulong authorId = target.Author.Id;
             if (target.Author.IsBot)
             {
@@ -345,7 +340,7 @@ namespace LathBotFront.Commands
                 return;
             var id = await warnBuilder.RequestRuleEphemeral(ctx);
             var interaction = await warnBuilder.RequestPointsEphemeral(ctx, id);
-            await warnBuilder.RequestReasonEphemeral(ctx, interaction);
+            await warnBuilder.RequestReasonEphemeral(interaction);
             if (!await warnBuilder.WriteToDatabase())
                 return;
             if (!await warnBuilder.WriteAuditToDb())
@@ -382,7 +377,7 @@ namespace LathBotFront.Commands
                 return;
             var id = await warnBuilder.RequestRuleEphemeral(ctx);
             var interaction = await warnBuilder.RequestPointsEphemeral(ctx, id);
-            await warnBuilder.RequestReasonEphemeral(ctx, interaction);
+            await warnBuilder.RequestReasonEphemeral(interaction);
             if (!await warnBuilder.WriteToDatabase())
                 return;
             if (!await warnBuilder.WriteAuditToDb())
@@ -430,7 +425,7 @@ namespace LathBotFront.Commands
             {
                 DiscordEmbedBuilder discordEmbed = new()
                 {
-                    Color = ctx.Member.Color,
+                    Color = ctx.Member.Color.PrimaryColor,
                     Title = $"Trial Plague {ctx.Member.Nickname} just used a moderation command",
                     Description = $"[Link to usage]({(await ctx.GetResponseAsync()).JumpLink})",
                     Footer = new DiscordEmbedBuilder.EmbedFooter
@@ -507,7 +502,7 @@ namespace LathBotFront.Commands
             {
                 DiscordEmbedBuilder discordEmbed = new()
                 {
-                    Color = ctx.Member.Color,
+                    Color = ctx.Member.Color.PrimaryColor,
                     Title = $"Trial Plague {ctx.Member.Nickname} just used a moderation command",
                     Description = $"[Link to usage]({(await ctx.GetResponseAsync()).JumpLink})",
                     Footer = new DiscordEmbedBuilder.EmbedFooter
@@ -840,10 +835,10 @@ namespace LathBotFront.Commands
                 required: true,
                 style: DiscordTextInputStyle.Paragraph);
 
-            var responseBuilder = new DiscordInteractionResponseBuilder()
+            var responseBuilder = new DiscordModalBuilder()
                 .WithCustomId("report_reason")
                 .WithTitle("Reason")
-                .AddTextInputComponent(textInput);
+                .AddTextInput(textInput, "Please state a reason for your report.");
 
             await ctx.RespondWithModalAsync(responseBuilder);
 
@@ -868,7 +863,7 @@ namespace LathBotFront.Commands
                 Footer = new DiscordEmbedBuilder.EmbedFooter { IconUrl = ctx.User.AvatarUrl, Text = ctx.User.Username }
             };
 
-            embedBuilder.AddField("Reason:", reason);
+            embedBuilder.AddField("Reason:", (reason as TextInputModalSubmission).Value);
 
             DiscordEmbed embed = embedBuilder.Build();
             var senate = ctx.Guild.GetAllMembersAsync().ToBlockingEnumerable().Where(x => x.Roles.Any(y => y.Id == 784852719449276467));
@@ -971,10 +966,10 @@ namespace LathBotFront.Commands
                 max_length: 6
             );
 
-            var responseBuilder = new DiscordInteractionResponseBuilder()
+            var responseBuilder = new DiscordModalBuilder()
                 .WithCustomId("2famodal")
                 .WithTitle("2FA")
-                .AddTextInputComponent(textInput);
+                .AddTextInput(textInput, "Please input your 2FA Code.");
 
             await ctx.RespondWithModalAsync(responseBuilder);
 
@@ -984,14 +979,14 @@ namespace LathBotFront.Commands
             await res.Result.Interaction.DeferAsync(true);
             var reason = res.Result.Values["2famodal"];
 
-            if (reason is null)
+            if (reason is null || reason is not TextInputModalSubmission)
             {
                 await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Please provide a 2FA code!"));
                 return false;
             }
 
             var pin = GoogleAuthenticator.GeneratePin(Encoding.UTF8.GetBytes(twoFAKey));
-            if (reason != pin)
+            if ((reason as TextInputModalSubmission).Value != pin)
             {
                 await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Pin does not match!"));
                 return false;
@@ -1015,7 +1010,7 @@ namespace LathBotFront.Commands
                     {
                         Url = user.AvatarUrl
                     },
-                    Color = member == null ? new DiscordColor("#FF0000") : member.Color
+                    Color = member == null ? new DiscordColor("#FF0000") : member.Color.PrimaryColor
                 }
                 .AddField("Member you selected:", member == null ? user.ToString() : member.ToString()));
             List<DiscordButtonComponent> components =

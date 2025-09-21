@@ -284,7 +284,7 @@ namespace LathBotFront.Commands
                 Title = "Advert",
                 Url = url,
                 Description = adText + "\nClick on the title to go to the page!",
-                Color = ctx.Member.Color,
+                Color = ctx.Member.Color.PrimaryColor,
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = ctx.Member.Username + "#" + ctx.User.Discriminator + " " + ctx.Member.Id,
@@ -522,11 +522,11 @@ namespace LathBotFront.Commands
             ];
             if (perms.Any(x => rolemeIds.Contains(x.Id)))
                 await perms.First(x => x.Id == 767050052257447936).UpdateAsync(DiscordPermission.SendMessages,
-                    channel.Id == 718162681554534511 ? DiscordPermission.AttachFiles | DiscordPermission.EmbedLinks : DiscordPermissions.None); //if debate, no embeds or files
+                    channel.Id == 718162681554534511 ? new DiscordPermissions(DiscordPermission.AttachFiles, DiscordPermission.EmbedLinks) : DiscordPermissions.None); //if debate, no embeds or files
             if (channel.Id == 766463841059078205) //counting
-                await perms.First(x => x.Id == 767050052257447936).UpdateAsync(DiscordPermissions.None, DiscordPermission.EmbedLinks | DiscordPermission.AttachFiles);
+                await perms.First(x => x.Id == 767050052257447936).UpdateAsync(DiscordPermissions.None, new DiscordPermissions(DiscordPermission.EmbedLinks, DiscordPermission.AttachFiles));
             else
-                await perms.First(x => x.Id == 767050052257447936).UpdateAsync(DiscordPermission.ViewChannel | DiscordPermission.SendMessages, DiscordPermissions.None);
+                await perms.First(x => x.Id == 767050052257447936).UpdateAsync(new DiscordPermissions(DiscordPermission.ViewChannel, DiscordPermission.SendMessages), DiscordPermissions.None);
         }
     }
     public class TestVariables

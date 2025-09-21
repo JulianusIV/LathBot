@@ -20,7 +20,7 @@ namespace LathBotFront.Commands
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             var embedBuilder = new DiscordEmbedBuilder()
             {
-                Color = lathrix.Color,
+                Color = lathrix.Color.PrimaryColor,
                 Title = "Role Assign",
                 Description = "Get your roles here.\n" +
                     "Each role unlocks new channels (once you are verified) for you to see and/or send messages in.\n" +
@@ -50,7 +50,7 @@ namespace LathBotFront.Commands
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             var embedBuilder = new DiscordEmbedBuilder()
             {
-                Color = lathrix.Color,
+                Color = lathrix.Color.PrimaryColor,
                 Title = "Role Assign",
                 Description = "Get your roles here.\n" +
                     "Each role unlocks new channels (once you are verified) for you to see and/or send messages in.\n" +
@@ -87,7 +87,7 @@ namespace LathBotFront.Commands
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             DiscordEmbedBuilder embedBuilder = new()
             {
-                Color = lathrix.Color,
+                Color = lathrix.Color.PrimaryColor,
                 Title = "Information",
                 Description = "Greetings Sir's and Siret's, and welcome to the Lathland discord server!" +
                 " You can talk to fellow Lathrixians, share art and post videos. " +
@@ -130,7 +130,7 @@ namespace LathBotFront.Commands
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             DiscordEmbedBuilder embedBuilder = new()
             {
-                Color = lathrix.Color,
+                Color = lathrix.Color.PrimaryColor,
                 Title = "Information",
                 Description = "Greetings Sir's and Siret's, and welcome to the Lathland discord server!" +
                 " You can talk to fellow Lathrixians, share art and post videos. " +
@@ -168,7 +168,7 @@ namespace LathBotFront.Commands
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             DiscordEmbedBuilder embedBuilderRules = new()
             {
-                Color = lathrix.Color,
+                Color = lathrix.Color.PrimaryColor,
                 Title = "Rules",
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
@@ -203,7 +203,7 @@ namespace LathBotFront.Commands
 
             DiscordEmbedBuilder embedBuilderNsfw = new()
             {
-                Color = lathrix.Color,
+                Color = lathrix.Color.PrimaryColor,
                 Title = "NSFW definition / guideline",
                 Description = "To clarify the NSFW rules, anything that includes:\n" +
                 "\n" +
@@ -235,7 +235,7 @@ namespace LathBotFront.Commands
             DiscordMember lathrix = await ctx.Guild.GetMemberAsync(DiscordObjectService.Instance.Lathrix);
             DiscordEmbedBuilder embedBuilderRules = new()
             {
-                Color = lathrix.Color,
+                Color = lathrix.Color.PrimaryColor,
                 Title = "Rules",
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
@@ -270,7 +270,7 @@ namespace LathBotFront.Commands
 
             DiscordEmbedBuilder embedBuilderNsfw = new()
             {
-                Color = lathrix.Color,
+                Color = lathrix.Color.PrimaryColor,
                 Title = "NSFW definition / guideline",
                 Description = "To clarify the NSFW rules, anything that includes:\n" +
                 "\n" +

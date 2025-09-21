@@ -84,7 +84,7 @@ namespace LathBotFront
                     .HandleMessageReactionAdded(Events.ReactionAdded)
                     .HandleComponentInteractionCreated(Events.ComponentTriggered)
                     .HandleComponentInteractionCreated(RoleAssign.ComponentTriggered)
-                    //#if !DEBUG
+#if !DEBUG
                     .HandleGuildBanAdded(Logger.BanAdded)
                     .HandleGuildBanRemoved(Logger.BanRemoved)
                     .HandleGuildMemberUpdated(Logger.MemberUpdated)
@@ -93,18 +93,17 @@ namespace LathBotFront
                     .HandleMessageUpdated(Logger.MessageEdited)
                     .HandleMessageDeleted(Logger.MessageDeleted)
                     .HandleMessagesBulkDeleted(Logger.BulkMessagesDeleted)
-                    .HandleVoiceStateUpdated(Logger.VoiceUpdate)
                     .HandleThreadCreated(Logger.ThreadCreated)
                     .HandleThreadDeleted(Logger.ThreadDeleted)
                     .HandleThreadUpdated(Logger.ThreadUpdated)
-                //#endif
+#endif
                 )
                 .UseInteractivity(new InteractivityConfiguration
                 {
                     Timeout = TimeSpan.FromMinutes(5),
                     PollBehaviour = PollBehaviour.KeepEmojis
                 })
-                .UseCommands((IServiceProvider serviceProvider, CommandsExtension extension) =>
+                .UseCommands((serviceProvider, extension) =>
                 {
                     extension.AddCommands(Assembly.GetExecutingAssembly());
                     TextCommandProcessor textCommandProcessor = new(new()

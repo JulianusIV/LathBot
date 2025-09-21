@@ -157,7 +157,7 @@ namespace LathBotFront.EventHandlers
 
                 if (e.RoleBefore.Name == e.RoleAfter.Name
                     && e.RoleBefore.IsHoisted == e.RoleAfter.IsHoisted
-                    && e.RoleBefore.Color.Value == e.RoleAfter.Color.Value
+                    && e.RoleBefore.Colors == e.RoleAfter.Colors
                     && e.RoleBefore.Permissions == e.RoleAfter.Permissions
                     && e.RoleBefore.IsMentionable == e.RoleAfter.IsMentionable)
                     return;
@@ -166,9 +166,9 @@ namespace LathBotFront.EventHandlers
                     .WithDescription($":information_source: The role {e.RoleAfter.Mention} ({e.RoleAfter.Id}) was just updated")
                     .AddField("Name", e.RoleBefore.Name == e.RoleAfter.Name ? "No change" : $"{e.RoleBefore.Name} -> {e.RoleAfter.Name}", true)
                     .AddField("Hoist", e.RoleBefore.IsHoisted == e.RoleAfter.IsHoisted ? "No change" : $"{e.RoleBefore.IsHoisted} -> {e.RoleAfter.IsHoisted}", true)
-                    .AddField("Color", e.RoleBefore.Color.Value == e.RoleAfter.Color.Value ? "No change" : $"{e.RoleBefore.Color} -> {e.RoleAfter.Color}", true)
+                    .AddField("Color", e.RoleBefore.Colors.PrimaryColor.Value == e.RoleAfter.Colors.PrimaryColor.Value ? "No change" : $"{e.RoleBefore.Colors.PrimaryColor} -> {e.RoleAfter.Colors.PrimaryColor}", true)
                     .AddField("Permissions", e.RoleBefore.Permissions == e.RoleAfter.Permissions ? "No change" :
-                        $"{e.RoleBefore.Permissions.EnumeratePermissions().Aggregate(0, (acc, next) => acc & (int)next)} -> {e.RoleAfter.Permissions.EnumeratePermissions().Aggregate(0, (acc, next) => acc & (int)next)}", true)
+                        $"{e.RoleBefore.Permissions.Aggregate(0, (acc, next) => acc & (int)next)} -> {e.RoleAfter.Permissions.Aggregate(0, (acc, next) => acc & (int)next)}", true)
                     .AddField("Mentionable", e.RoleBefore.IsMentionable == e.RoleAfter.IsMentionable ? "No change" : $"{e.RoleBefore.IsMentionable} -> {e.RoleAfter.IsMentionable}", true)
                     .WithColor(DiscordColor.Blurple);
 
@@ -325,42 +325,6 @@ namespace LathBotFront.EventHandlers
 
                     await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(embed);
                 }
-            });
-            return Task.CompletedTask;
-        }
-
-        internal static Task VoiceUpdate(DiscordClient _1, VoiceStateUpdatedEventArgs e)
-        {
-            _ = Task.Run(async () =>
-            {
-                if (e.Guild.Id != DiscordObjectService.Instance.Lathland.Id)
-                    return;
-
-                DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
-                    .WithTimestamp(DateTime.Now)
-                    .WithThumbnail(e.User.AvatarUrl);
-                if (e.Before?.Channel?.Id == e.After?.Channel?.Id)
-                    return;
-                if (e.Before is null)
-                {
-                    embed.WithDescription($"<:add:930501217187156018> {e.User.Mention} ({e.User.Id}) joined voice channel\n" +
-                            $"{e.Channel.Mention}")
-                        .WithColor(DiscordColor.Green);
-                }
-                else if (e.After.Channel is null)
-                {
-                    embed.WithDescription($"<:remove:930501216889360425> {e.User.Mention} ({e.User.Id}) left voice channel\n" +
-                            $"{e.Before.Channel.Mention}")
-                        .WithColor(DiscordColor.Red);
-                }
-                else
-                {
-                    embed.WithDescription($":information_source: {e.User.Mention} ({e.User.Id}) changed voice channel\n" +
-                            $"from {e.Before.Channel.Mention} to {e.After.Channel.Mention}")
-                        .WithColor(DiscordColor.Blurple);
-                }
-
-                await DiscordObjectService.Instance.LogsChannel.SendMessageAsync(new DiscordMessageBuilder().AddEmbed(embed).WithAllowedMentions(Mentions.None));
             });
             return Task.CompletedTask;
         }

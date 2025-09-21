@@ -103,7 +103,7 @@ namespace LathBotFront.Commands
             {
                 Title = "Moderator:",
                 Description = $"{mod.DisplayName}#{mod.Discriminator} ({mod.Id})",
-                Color = mod.Color,
+                Color = mod.Color.PrimaryColor,
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
                 {
                     Url = mod.AvatarUrl
