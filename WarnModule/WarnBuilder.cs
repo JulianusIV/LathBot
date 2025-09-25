@@ -60,39 +60,6 @@ namespace WarnModule
             return true;
         }
 
-        public async Task RequestRule(SlashCommandContext ctx = null)
-        {
-            List<DiscordSelectComponentOption> options = [];
-            foreach (var item in RuleService.Rules)
-            {
-                if (item.RuleNum == 0)
-                {
-                    options.Add(new DiscordSelectComponentOption(
-                        $"OTHER",
-                        item.RuleNum.ToString()));
-                    continue;
-                }
-                var option = new DiscordSelectComponentOption(
-                    $"Rule {item.RuleNum}: {item.ShortDesc}",
-                    item.RuleNum.ToString(),
-                    item.RuleText.Length > 99 ? item.RuleText[..95] + "..." : item.RuleText);
-                options.Add(option);
-            }
-            DiscordSelectComponent selectMenu = new("warnSelect", "Select a Rule!", options);
-
-            DiscordMessageBuilder messageBuilder = new DiscordMessageBuilder()
-                .AddActionRowComponent(selectMenu)
-                .WithContent("­");
-            DiscordMessage message = await this.WarnChannel.SendMessageAsync(messageBuilder);
-
-            if (ctx is not null)
-                await ctx.FollowupAsync(message.JumpLink.ToString(), true);
-
-            var reaction = await message.WaitForSelectAsync(this.Mod, "warnSelect", TimeSpan.FromMinutes(2));
-            this.Rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
-            await message.DeleteAsync();
-        }
-
         public async Task<ulong> RequestRuleEphemeral(SlashCommandContext ctx)
         {
             List<DiscordSelectComponentOption> options = [];
@@ -122,33 +89,6 @@ namespace WarnModule
             this.Rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == reaction.Result.Values.First());
             await reaction.Result.Interaction.CreateResponseAsync(DiscordInteractionResponseType.DeferredMessageUpdate);
             return message.Id;
-        }
-
-        public async Task RequestPoints()
-        {
-            DiscordMessageBuilder discordMessage = new()
-            {
-                Content = $"For this rule you can reduce the users chances by {this.Rule.MinPoints} - {this.Rule.MaxPoints}"
-            };
-            for (int i = 0; i < 3; i++)
-            {
-                List<DiscordButtonComponent> buttons = [];
-                for (int index = i * 5; index < (i * 5) + 5; index++)
-                {
-                    buttons.Add(new DiscordButtonComponent
-                    (
-                        DiscordButtonStyle.Primary,
-                        (index + 1).ToString(),
-                        (index + 1).ToString(),
-                        (index + 1) < this.Rule.MinPoints || (index + 1) > this.Rule.MaxPoints)
-                    );
-                }
-                discordMessage.AddActionRowComponent(buttons);
-            }
-            DiscordMessage pointsMessage = await this.WarnChannel.SendMessageAsync(discordMessage);
-            var interactpointsMessage = await pointsMessage.WaitForButtonAsync(this.Mod, TimeSpan.FromMinutes(2));
-            this.PointsDeducted = int.Parse(interactpointsMessage.Result.Id);
-            await pointsMessage.DeleteAsync();
         }
 
         public async Task<DiscordInteraction> RequestPointsEphemeral(SlashCommandContext ctx, ulong messageID)
@@ -205,36 +145,6 @@ namespace WarnModule
                 15 => 3,
                 _ => 0
             };
-        }
-
-        public async Task RequestReason()
-        {
-            bool tryagain = true;
-            this.Reason = "/";
-            while (tryagain)
-            {
-                DiscordMessage reasonMessage = await this.WarnChannel.SendMessageAsync("If needed please state a reason, write ``NONE`` if you dont want to specify.");
-                InteractivityResult<DiscordMessage> reasonResult = await this.WarnChannel.GetNextMessageAsync(this.Mod);
-                if (reasonResult.Result.Content.Trim().Equals("NONE", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    await reasonMessage.DeleteAsync();
-                    this.Reason = "/";
-                    tryagain = false;
-                }
-                else if (reasonResult.Result.Content.Length >= 250)
-                {
-                    DiscordMessage buffoon = await this.WarnChannel.SendMessageAsync("Max reason length is 250 characters!");
-                    await reasonMessage.DeleteAsync();
-                    await Task.Delay(3000);
-                    await buffoon.DeleteAsync();
-                }
-                else
-                {
-                    this.Reason = reasonResult.Result.Content;
-                    await reasonMessage.DeleteAsync();
-                    tryagain = false;
-                }
-            }
         }
 
         public async Task RequestReasonEphemeral(DiscordInteraction interaction)

@@ -1,7 +1,8 @@
 ﻿using DSharpPlus;
-
+using DSharpPlus.Entities;
 using LathBotBack.Base;
 using LathBotBack.Models;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace LathBotBack.Services
@@ -25,6 +26,7 @@ namespace LathBotBack.Services
         #endregion
 
         public static Rule[] Rules;
+        public DiscordModalBuilder WarnModal { get; private set; }
 
         public override void Init(DiscordClient client)
         {
@@ -45,6 +47,62 @@ namespace LathBotBack.Services
                 new Rule(13, "Holding bias as a staff member is prohibited, or if you are a member who is trying to make staff biased. This will be known as corruption and should be reported to a member of the Senate immediately.", 1, 10, "BIAS"),
                 new Rule(0, "This rule is for anything that goes against basic human decency, and for cases not covered by the rules, that should be warned.", 1, 15, "OTHER")
             ];
+
+            List<DiscordSelectComponentOption> options = [];
+            foreach (var item in Rules)
+            {
+                if (item.RuleNum == 0)
+                {
+                    options.Add(new DiscordSelectComponentOption(
+                        $"OTHER",
+                        item.RuleNum.ToString()));
+                    continue;
+                }
+                options.Add(new DiscordSelectComponentOption(
+                    $"Rule {item.RuleNum}: {item.ShortDesc}",
+                    item.RuleNum.ToString(),
+                    item.RuleText.Length > 99 ? item.RuleText[..95] + "..." : item.RuleText));
+            }
+
+            DiscordSelectComponent ruleSelect = new(
+                "rule",
+                "Select Rule",
+                options
+            );
+
+            DiscordSelectComponent pointSelect = new(
+                "warnamount",
+                "Select severity.",
+                [
+                    new DiscordSelectComponentOption("1 Point", "1"),
+                    new DiscordSelectComponentOption("2 Points", "2"),
+                    new DiscordSelectComponentOption("3 Points", "3"),
+                    new DiscordSelectComponentOption("4 Points", "4"),
+                    new DiscordSelectComponentOption("5 Points", "5"),
+                    new DiscordSelectComponentOption("6 Points", "6"),
+                    new DiscordSelectComponentOption("7 Points", "7"),
+                    new DiscordSelectComponentOption("8 Points", "8"),
+                    new DiscordSelectComponentOption("9 Points", "9"),
+                    new DiscordSelectComponentOption("10 Points", "10"),
+                    new DiscordSelectComponentOption("11 Points", "11"),
+                    new DiscordSelectComponentOption("12 Points", "12"),
+                    new DiscordSelectComponentOption("13 Points", "13"),
+                    new DiscordSelectComponentOption("14 Points", "14"),
+                    new DiscordSelectComponentOption("15 Points", "15")
+                ]);
+
+            var textInput = new DiscordTextInputComponent(
+                "reason",
+                "/",
+                required: false,
+                style: DiscordTextInputStyle.Paragraph,
+                max_length: 250);
+
+            this.WarnModal = new DiscordModalBuilder()
+                .WithCustomId("warnModal")
+                .AddSelectMenu(ruleSelect, "Select rule.")
+                .AddSelectMenu(pointSelect, "Select severity.")
+                .AddTextInput(textInput, "If needed state a reason.");
         }
     }
 }

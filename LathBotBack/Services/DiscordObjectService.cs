@@ -40,6 +40,7 @@ namespace LathBotBack.Services
         public DiscordChannel WarnsChannel { get; private set; }
         public DiscordChannel APODChannel { get; private set; }
         public DiscordChannel LogsChannel { get; private set; }
+        public DiscordChannel WarnLogChannel { get; private set; }
 
         public ulong Lathrix { get; private set; }
         public ulong Owner { get; private set; }
@@ -87,6 +88,7 @@ namespace LathBotBack.Services
             this.WarnsChannel = await this.Lathland.GetChannelAsync(dictionary["WarnsChannel"]);
             this.APODChannel = await this.Lathland.GetChannelAsync(dictionary["APODChannel"]);
             this.LogsChannel = await this.Lathland.GetChannelAsync(dictionary["LogsChannel"]);
+            this.WarnLogChannel = await this.Lathland.GetChannelAsync(dictionary["WarnLogChannel"]);
 
             this.Lathrix = dictionary["Lathrix"];
             this.Owner = dictionary["Owner"];

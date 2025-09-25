@@ -21,7 +21,9 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -315,42 +317,121 @@ namespace LathBotFront.Commands
         [RequirePermissions(DiscordPermission.KickMembers)]
         public async Task WarnMessage(SlashCommandContext ctx, DiscordMessage target)
         {
-            await ctx.DeferResponseAsync(true);
-
-            ulong authorId = target.Author.Id;
-            if (target.Author.IsBot)
+            if (target.Author.Id == DiscordObjectService.Instance.Lathrix)
             {
-                var response = await Bot.Instance.PKClient.GetAsync($"https://api.pluralkit.me/v2/messages/{target.Id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var pkMessage = await response.Content.ReadFromJsonAsync<PKMessageModel>();
-                    authorId = ulong.Parse(pkMessage.Sender);
-                }
+                await ctx.RespondAsync("You can't warn Lathrix!");
+                return;
             }
 
-            WarnBuilder warnBuilder = new(
-                ctx.Client,
-                await ctx.Guild.GetChannelAsync(764251867135475713),
-                ctx.Guild,
-                ctx.Member,
-                await ctx.Guild.GetMemberAsync(authorId),
-                target);
+            DiscordModalBuilder modal = RuleService.Instance.WarnModal;
+            modal.WithTitle($"Warn {target.Author.GlobalName}");
+            ValueTask modalTask = ctx.RespondWithModalAsync(modal);
+            ValueTask<DiscordMember> memberTask = this.PKGet(ctx.Guild, target.Author.IsBot, target.Id, target.Author.Id);
 
-            if (!await warnBuilder.PreExecutionChecks(ctx))
+            InteractivityExtension interactivity = ctx.Client.ServiceProvider.GetService(typeof(InteractivityExtension)) as InteractivityExtension;
+            await modalTask;
+            var result = await interactivity.WaitForModalAsync("warnModal", ctx.User);
+            if (result.TimedOut)
                 return;
-            var id = await warnBuilder.RequestRuleEphemeral(ctx);
-            var interaction = await warnBuilder.RequestPointsEphemeral(ctx, id);
-            await warnBuilder.RequestReasonEphemeral(interaction);
-            if (!await warnBuilder.WriteToDatabase())
-                return;
-            if (!await warnBuilder.WriteAuditToDb())
-                return;
-            await warnBuilder.ReadRemainingPoints();
-            await warnBuilder.SendWarnMessage();
-            await warnBuilder.LogMessage();
-            await warnBuilder.SendPunishMessage();
+            await result.Result.Interaction.DeferAsync(true);
 
-            await WarnBuilder.ResetLastPunish(target.Author.Id);
+            string ruleNum = (result.Result.Values["rule"] as SelectMenuModalSubmission).Values[0];
+            Rule rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == ruleNum);
+            int points = int.Parse((result.Result.Values["warnamount"] as SelectMenuModalSubmission).Values[0]);
+            string reason = (result.Result.Values["reason"] as TextInputModalSubmission).Value;
+            int severity = ((points - 1) / 5) + 1;
+
+            DiscordMember member = await memberTask;
+            int dbResult = await this.DbOps(member, ctx.Member, rule, reason, points, result);
+            if (dbResult < 0)
+                return;
+
+            new WarnRepository(ReadConfig.Config.ConnectionString).GetRemainingPoints(dbResult, out int remaining);
+
+            DiscordEmbedBuilder warnEmbed = new()
+            {
+                Color = severity switch
+                {
+                    1 => DiscordColor.Yellow,
+                    2 => DiscordColor.Orange,
+                    3 => DiscordColor.Red,
+                    _ => DiscordColor.Black,
+                },
+                Thumbnail = new()
+                {
+                    Height = 8,
+                    Width = 8,
+                    Url = member.AvatarUrl,
+                },
+                Title = $"{member.DisplayName} ({member.Id}) has been warned for Rule {ruleNum}:",
+                Description = $"{rule.RuleText}\n" +
+                    "\n" +
+                    $"{reason}",
+                Footer = new()
+                {
+                    IconUrl = ctx.Member.AvatarUrl,
+                    Text = ctx.Member.DisplayName
+                }
+            };
+            warnEmbed.AddField($"{remaining} points remaining", "Please keep any talk of this to DM's");
+            DiscordChannel warnsChannel = await ctx.Guild.GetChannelAsync(DiscordObjectService.Instance.WarnsChannel.Id);
+            await warnsChannel.SendMessageAsync(member.Mention, warnEmbed);
+
+            DiscordEmbedBuilder logEmbed = new()
+            {
+                Color = DiscordColor.Yellow,
+                Title = $"Successfully warned {member.DisplayName} ({member.Id})",
+                Description = $"Rule {rule.RuleNum}:\n" +
+                    "\n" +
+                    $"{reason}" +
+                    "\n" +
+                    $"User has {remaining} points left.",
+                Footer = new()
+                {
+                    IconUrl = ctx.Member.AvatarUrl,
+                    Text = ctx.Member.DisplayName
+                }
+            };
+
+            DiscordChannel warnLogChannel = await ctx.Guild.GetChannelAsync(DiscordObjectService.Instance.WarnLogChannel.Id);
+            await warnLogChannel.SendMessageAsync(logEmbed);
+
+            DiscordEmbedBuilder messageLogEmbed = new()
+            {
+                Author = new()
+                {
+                    IconUrl = member.AvatarUrl,
+                    Name = member.Username
+                },
+                Description = target.Content,
+                Color = member.Color.PrimaryColor
+            };
+            if (target.Attachments is not null && target.Attachments.Any())
+            {
+                DiscordMessageBuilder messageLog = new();
+                Dictionary<string, Stream> attachments = [];
+                foreach (var attachment in target.Attachments)
+                {
+                    using HttpClient httpClient = new();
+
+                    attachments.Add(attachment.FileName, await httpClient.GetStreamAsync(attachment.Url));
+                    if (attachment.MediaType.Contains("image") && string.IsNullOrEmpty(messageLogEmbed.ImageUrl))
+                        messageLogEmbed.WithImageUrl("attachment://" + attachment.FileName);
+                }
+                messageLog.AddFiles(attachments);
+                await warnLogChannel.SendMessageAsync(messageLog.AddEmbed(messageLogEmbed).WithAllowedMentions(Mentions.None));
+                foreach (var attachment in attachments)
+                    attachment.Value.Close();
+            }
+            else
+                await warnLogChannel.SendMessageAsync(messageLogEmbed);
+            await target.DeleteAsync();
+
+            if (remaining < 11)
+                await result.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.Member.Mention} User has {remaining} points left.\n" +
+                    $"By common practice the user should be muted{(remaining < 6 ? ", kicked" : "")}{(remaining < 1 ? ", or banned" : "")}."));
+            else
+                await result.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Done!"));
         }
 
         [Command("Warn user")]
@@ -358,34 +439,87 @@ namespace LathBotFront.Commands
         [RequirePermissions(DiscordPermission.KickMembers)]
         public async Task WarnUser(SlashCommandContext ctx, DiscordUser target)
         {
-            await ctx.DeferResponseAsync(true);
-
-            if (!ctx.Member.Permissions.HasFlag(DiscordPermission.KickMembers))
+            if (target.Id == DiscordObjectService.Instance.Lathrix)
             {
-                await ctx.RespondAsync(new DiscordMessageBuilder().WithContent("No you dumbass!"));
+                await ctx.RespondAsync("You can't warn Lathrix!");
                 return;
             }
+            DiscordModalBuilder modal = RuleService.Instance.WarnModal;
+            modal.WithTitle($"Warn {target.GlobalName}");
+            await ctx.RespondWithModalAsync(modal);
 
-            WarnBuilder warnBuilder = new(
-                ctx.Client,
-                await ctx.Guild.GetChannelAsync(764251867135475713),
-                ctx.Guild,
-                ctx.Member,
-                await ctx.Guild.GetMemberAsync(target.Id));
+            InteractivityExtension interactivity = ctx.Client.ServiceProvider.GetService(typeof(InteractivityExtension)) as InteractivityExtension;
+            var result = await interactivity.WaitForModalAsync("warnModal", ctx.User);
+            if (result.TimedOut)
+                return;
+            await result.Result.Interaction.DeferAsync(true);
 
-            if (!await warnBuilder.PreExecutionChecks(ctx))
+            string ruleNum = (result.Result.Values["rule"] as SelectMenuModalSubmission).Values[0];
+            Rule rule = RuleService.Rules.Single(x => x.RuleNum.ToString() == ruleNum);
+            int points = int.Parse((result.Result.Values["warnamount"] as SelectMenuModalSubmission).Values[0]);
+            string reason = (result.Result.Values["reason"] as TextInputModalSubmission).Value;
+            int severity = ((points - 1) / 5) + 1;
+            DiscordMember targetMember = await ctx.Guild.GetMemberAsync(target.Id);
+
+            int dbResult = await this.DbOps(targetMember, ctx.Member, rule, reason, points, result);
+            if (dbResult < 0)
                 return;
-            var id = await warnBuilder.RequestRuleEphemeral(ctx);
-            var interaction = await warnBuilder.RequestPointsEphemeral(ctx, id);
-            await warnBuilder.RequestReasonEphemeral(interaction);
-            if (!await warnBuilder.WriteToDatabase())
-                return;
-            if (!await warnBuilder.WriteAuditToDb())
-                return;
-            await warnBuilder.ReadRemainingPoints();
-            await warnBuilder.SendWarnMessage();
-            await warnBuilder.SendPunishMessage();
-            await WarnBuilder.ResetLastPunish(target.Id);
+
+            new WarnRepository(ReadConfig.Config.ConnectionString).GetRemainingPoints(dbResult, out int remaining);
+
+            DiscordEmbedBuilder warnEmbed = new()
+            {
+                Color = severity switch
+                {
+                    1 => DiscordColor.Yellow,
+                    2 => DiscordColor.Orange,
+                    3 => DiscordColor.Red,
+                    _ => DiscordColor.Black,
+                },
+                Thumbnail = new()
+                {
+                    Height = 8,
+                    Width = 8,
+                    Url = targetMember.AvatarUrl,
+                },
+                Title = $"{targetMember.DisplayName} ({targetMember.Id}) has been warned for Rule {ruleNum}:",
+                Description = $"{rule.RuleText}\n" +
+                    "\n" +
+                    $"{reason}",
+                Footer = new()
+                {
+                    IconUrl = ctx.Member.AvatarUrl,
+                    Text = ctx.Member.DisplayName
+                }
+            };
+            warnEmbed.AddField($"{remaining} points remaining", "Please keep any talk of this to DM's");
+            DiscordChannel warnsChannel = await ctx.Guild.GetChannelAsync(DiscordObjectService.Instance.WarnsChannel.Id);
+            await warnsChannel.SendMessageAsync(targetMember.Mention, warnEmbed);
+
+            DiscordEmbedBuilder logEmbed = new()
+            {
+                Color = DiscordColor.Yellow,
+                Title = $"Successfully warned {targetMember.DisplayName} ({targetMember.Id})",
+                Description = $"Rule {rule.RuleNum}:\n" +
+                    "\n" +
+                    $"{reason}" +
+                    "\n" +
+                    $"User has {remaining} points left.",
+                Footer = new()
+                {
+                    IconUrl = ctx.Member.AvatarUrl,
+                    Text = ctx.Member.DisplayName
+                }
+            };
+
+            DiscordChannel warnLogChannel = await ctx.Guild.GetChannelAsync(DiscordObjectService.Instance.WarnLogChannel.Id);
+            await warnLogChannel.SendMessageAsync(logEmbed);
+
+            if (remaining < 11)
+                await result.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.Member.Mention} User has {remaining} points left.\n" +
+                    $"By common practice the user should be muted{(remaining < 6 ? ", kicked" : "")}{(remaining < 1 ? ", or banned" : "")}."));
+            else
+                await result.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("Done!"));
         }
 
         [Command("mute"), Description("Mute a user")]
@@ -958,7 +1092,7 @@ namespace LathBotFront.Commands
 
             var twoFAKey = AesEncryption.DecryptStringToBytes(mod.TwoFAKey, mod.TwoFAKeySalt);
 
-            var textInput = new DiscordTextInputComponent("Please input your 2FA Code.",
+            var textInput = new DiscordTextInputComponent(
                 "2famodal",
                 placeholder: "000000",
                 required: true,
@@ -1029,6 +1163,75 @@ namespace LathBotFront.Commands
                 return false;
             }
             return true;
+        }
+
+        private async ValueTask<DiscordMember> PKGet(DiscordGuild guild, bool isBot, ulong messageId, ulong fallback)
+        {
+            if (isBot)
+            {
+                HttpResponseMessage response = await Bot.Instance.PKClient.GetAsync($"https://api.pluralkit.me/v2/messages/{messageId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    PKMessageModel pkMessage = await response.Content.ReadFromJsonAsync<PKMessageModel>();
+                    ulong userId = ulong.Parse(pkMessage.Sender);
+                    return await guild.GetMemberAsync(userId);
+                }
+            }
+            return await guild.GetMemberAsync(fallback);
+        }
+
+        private async ValueTask<int> DbOps(
+            DiscordMember member,
+            DiscordMember mod,
+            Rule rule,
+            string reason,
+            int points,
+            InteractivityResult<ModalSubmittedEventArgs> result)
+        {
+            UserRepository userRepo = new(ReadConfig.Config.ConnectionString);
+            WarnRepository warnRepo = new(ReadConfig.Config.ConnectionString);
+            AuditRepository auditRepo = new(ReadConfig.Config.ConnectionString);
+
+            bool dbResult = userRepo.GetIdByDcId(member.Id, out int memberDbId);
+            if (!dbResult)
+            {
+                await result.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("There was an error getting the user from the Database"));
+                return -1;
+            }
+            dbResult = warnRepo.GetWarnAmount(memberDbId, out int warnNumber);
+            if (!dbResult)
+            {
+                await result.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("There was an error getting the previous warns from the Database"));
+                return -1;
+            }
+            _ = userRepo.GetIdByDcId(mod.Id, out int modDbId);
+            if (memberDbId == 0 || modDbId == 0)
+                return -1;
+
+            Warn warn = new()
+            {
+                User = memberDbId,
+                Mod = modDbId,
+                Reason = rule.RuleNum == 0 ? reason : $"Rule {rule.RuleNum}, {reason}",
+                Number = warnNumber + 1,
+                Level = points,
+                Time = DateTime.Now,
+                Persistent = false
+            };
+            dbResult = warnRepo.Create(ref warn);
+            if (!dbResult)
+            {
+                await result.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent("There was an error creating the database entry"));
+                return -1;
+            }
+            dbResult = auditRepo.Read(modDbId, out Audit audit);
+            if (dbResult)
+            {
+                audit.Warns++;
+                _ = auditRepo.Update(audit);
+            }
+            userRepo.UpdateLastPunish(memberDbId, DateTime.Now);
+            return memberDbId;
         }
     }
 }

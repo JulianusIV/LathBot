@@ -174,7 +174,7 @@ namespace LathBotFront.Commands
             var twoFAKey = AesEncryption.DecryptStringToBytes(mod.TwoFAKey, mod.TwoFAKeySalt);
 
 
-            var textInput = new DiscordTextInputComponent("Please input your 2FA Code.",
+            var textInput = new DiscordTextInputComponent(
                 "2famodal",
                 placeholder: "000000",
                 required: true,
