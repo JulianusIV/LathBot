@@ -13,14 +13,11 @@ using LathBotBack.Repos;
 using LathBotBack.Services;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using MimeTypes;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace LathBotFront.Commands
@@ -37,48 +34,7 @@ namespace LathBotFront.Commands
         public async Task Test(CommandContext ctx)
         {
             await ctx.DeferResponseAsync();
-
-            using HttpClient httpClient = new();
-            string content = await httpClient.GetStringAsync("https://api.nasa.gov/planetary/apod?api_key=" + ReadConfig.Config.NasaApiKey + "&thumbs=True&date=2025-04-01");
-
-            APODJsonObject json = JsonConvert.DeserializeObject<APODJsonObject>(content);
-
-            bool isImage = json.MediaType == "image";
-
-            var result = await httpClient.GetAsync(isImage ? json.URL : json.ThumbnailUrl);
-            var stream = result.Content.ReadAsStream();
-            var contentType = result.Content.Headers.ContentType.MediaType;
-
-            string filename = "apod" + MimeTypeMap.GetExtension(contentType);
-
-            DiscordMessageBuilder builder = new DiscordMessageBuilder()
-                .AddFile(filename, stream, AddFileOptions.CloseStream);
-
-            builder.EnableV2Components();
-
-            List<DiscordButtonComponent> buttons;
-            if (!isImage)
-                buttons = [new DiscordLinkButtonComponent(json.URL, "Video link")];
-            else
-                buttons = [new DiscordLinkButtonComponent(json.HdUrl, "Image"), new DiscordLinkButtonComponent(json.URL, "Low resolution image")];
-
-            builder.AddContainerComponent(new DiscordContainerComponent(color: new DiscordColor("e49a5e"),
-                components:
-                [
-                    new DiscordTextDisplayComponent(ctx.User.Mention),
-                    new DiscordSeparatorComponent(true, DiscordSeparatorSpacing.Large),
-                    new DiscordTextDisplayComponent($"## Astronomy Picture of the day:\n## {json.Title}\n\n**Explanation:**\n{json.Explanation}"),
-                    new DiscordSeparatorComponent(true, DiscordSeparatorSpacing.Large),
-                    new DiscordMediaGalleryComponent(new DiscordMediaGalleryItem("attachment://" + filename)),
-                    new DiscordActionRowComponent(buttons),
-                    new DiscordSeparatorComponent(true),
-                    new DiscordTextDisplayComponent($"-# Copyright: {(json.Copyright is null ? "Public Domain" : json.Copyright)}\n-# Source: NASA APOD API Endpoint")
-                ]));
-
-
-            builder.WithAllowedMentions(Mentions.All);
-            await ctx.Channel.SendMessageAsync(builder);
-            await ctx.RespondAsync("Done!");
+            await ctx.RespondAsync("test");
         }
 
         [Command("freeze")]

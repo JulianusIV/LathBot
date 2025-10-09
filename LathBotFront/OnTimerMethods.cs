@@ -4,13 +4,9 @@ using LathBotBack.Config;
 using LathBotBack.Models;
 using LathBotBack.Repos;
 using LathBotBack.Services;
-using MimeTypes;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace LathBotFront
@@ -190,71 +186,71 @@ namespace LathBotFront
             }
         }
 
-        public static async Task APOD()
-        {
-            var lastmessageList = DiscordObjectService.Instance.APODChannel.GetMessagesAsync(1).ToBlockingEnumerable();
-            DiscordMessage lastmessage = lastmessageList.ElementAt(0);
-            if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(24))
-            {
-                using HttpClient httpClient = new();
-                string content = await httpClient.GetStringAsync("https://api.nasa.gov/planetary/apod?api_key=" + ReadConfig.Config.NasaApiKey + "&thumbs=True");
+        //    public static async Task APOD()
+        //    {
+        //        var lastmessageList = DiscordObjectService.Instance.APODChannel.GetMessagesAsync(1).ToBlockingEnumerable();
+        //        DiscordMessage lastmessage = lastmessageList.ElementAt(0);
+        //        if ((DateTime.Now - lastmessage.Timestamp) > TimeSpan.FromHours(24))
+        //        {
+        //            using HttpClient httpClient = new();
+        //            string content = await httpClient.GetStringAsync("https://api.nasa.gov/planetary/apod?api_key=" + ReadConfig.Config.NasaApiKey + "&thumbs=True");
 
-                APODJsonObject json = JsonConvert.DeserializeObject<APODJsonObject>(content);
+        //            APODJsonObject json = JsonConvert.DeserializeObject<APODJsonObject>(content);
 
-                bool isImage = json.MediaType == "image";
+        //            bool isImage = json.MediaType == "image";
 
-                HttpResponseMessage result = await httpClient.GetAsync(isImage ? json.URL : json.ThumbnailUrl);
-                Stream stream = await result.Content.ReadAsStreamAsync();
-                string fileName = "apod" + MimeTypeMap.GetExtension(result.Content.Headers.ContentType.MediaType);
+        //            HttpResponseMessage result = await httpClient.GetAsync(isImage ? json.URL : json.ThumbnailUrl);
+        //            Stream stream = await result.Content.ReadAsStreamAsync();
+        //            string fileName = "apod" + MimeTypeMap.GetExtension(result.Content.Headers.ContentType.MediaType);
 
-                DiscordMessageBuilder builder = new DiscordMessageBuilder()
-                    .AddFile(fileName, stream, AddFileOptions.CloseStream)
-                    .EnableV2Components();
+        //            DiscordMessageBuilder builder = new DiscordMessageBuilder()
+        //                .AddFile(fileName, stream, AddFileOptions.CloseStream)
+        //                .EnableV2Components();
 
-                List<DiscordButtonComponent> buttons;
-                if (!isImage)
-                    buttons = [new DiscordLinkButtonComponent(json.URL, "Video")];
-                else
-                    buttons = [new DiscordLinkButtonComponent(json.HdUrl, "Image"), new DiscordLinkButtonComponent(json.URL, "Low resolution image")];
+        //            List<DiscordButtonComponent> buttons;
+        //            if (!isImage)
+        //                buttons = [new DiscordLinkButtonComponent(json.URL, "Video")];
+        //            else
+        //                buttons = [new DiscordLinkButtonComponent(json.HdUrl, "Image"), new DiscordLinkButtonComponent(json.URL, "Low resolution image")];
 
-                builder.AddContainerComponent(new DiscordContainerComponent(color: new DiscordColor("e49a5e"),
-                    components:
-                    [
-                        new DiscordTextDisplayComponent((await DiscordObjectService.Instance.Lathland.GetRoleAsync(848307821703200828)).Mention),
-                        new DiscordSeparatorComponent(true, DiscordSeparatorSpacing.Large),
-                        new DiscordTextDisplayComponent($"## Astronomy Picture of the day:\n## {json.Title}\n\n**Explanation:**\n{json.Explanation}"),
-                        new DiscordSeparatorComponent(true, DiscordSeparatorSpacing.Large),
-                        new DiscordMediaGalleryComponent(new DiscordMediaGalleryItem("attachment://" + fileName)),
-                        new DiscordActionRowComponent(buttons),
-                        new DiscordSeparatorComponent(true),
-                        new DiscordTextDisplayComponent($"-# Copyright: {(json.Copyright is null ? "Public Domain" : json.Copyright)}\n-# Source: NASA APOD API Endpoint")
-                    ]));
+        //            builder.AddContainerComponent(new DiscordContainerComponent(color: new DiscordColor("e49a5e"),
+        //                components:
+        //                [
+        //                    new DiscordTextDisplayComponent((await DiscordObjectService.Instance.Lathland.GetRoleAsync(848307821703200828)).Mention),
+        //                    new DiscordSeparatorComponent(true, DiscordSeparatorSpacing.Large),
+        //                    new DiscordTextDisplayComponent($"## Astronomy Picture of the day:\n## {json.Title}\n\n**Explanation:**\n{json.Explanation}"),
+        //                    new DiscordSeparatorComponent(true, DiscordSeparatorSpacing.Large),
+        //                    new DiscordMediaGalleryComponent(new DiscordMediaGalleryItem("attachment://" + fileName)),
+        //                    new DiscordActionRowComponent(buttons),
+        //                    new DiscordSeparatorComponent(true),
+        //                    new DiscordTextDisplayComponent($"-# Copyright: {(json.Copyright is null ? "Public Domain" : json.Copyright)}\n-# Source: NASA APOD API Endpoint")
+        //                ]));
 
-                builder.WithAllowedMentions(Mentions.All);
-                await DiscordObjectService.Instance.APODChannel.SendMessageAsync(builder);
-            }
-        }
+        //            builder.WithAllowedMentions(Mentions.All);
+        //            await DiscordObjectService.Instance.APODChannel.SendMessageAsync(builder);
+        //        }
+        //    }
+        //}
+
+        //struct APODJsonObject
+        //{
+        //    [JsonProperty("copyright")]
+        //    public string Copyright { get; set; }
+        //    [JsonProperty("date")]
+        //    public string Date { get; set; }
+        //    [JsonProperty("explanation")]
+        //    public string Explanation { get; set; }
+        //    [JsonProperty("hdurl")]
+        //    public string HdUrl { get; set; }
+        //    [JsonProperty("media_type")]
+        //    public string MediaType { get; set; }
+        //    [JsonProperty("service_version")]
+        //    public string ServiceVersion { get; set; }
+        //    [JsonProperty("thumbnail_url")]
+        //    public string ThumbnailUrl { get; set; }
+        //    [JsonProperty("title")]
+        //    public string Title { get; set; }
+        //    [JsonProperty("url")]
+        //    public string URL { get; set; }
+        //}
     }
-
-    struct APODJsonObject
-    {
-        [JsonProperty("copyright")]
-        public string Copyright { get; set; }
-        [JsonProperty("date")]
-        public string Date { get; set; }
-        [JsonProperty("explanation")]
-        public string Explanation { get; set; }
-        [JsonProperty("hdurl")]
-        public string HdUrl { get; set; }
-        [JsonProperty("media_type")]
-        public string MediaType { get; set; }
-        [JsonProperty("service_version")]
-        public string ServiceVersion { get; set; }
-        [JsonProperty("thumbnail_url")]
-        public string ThumbnailUrl { get; set; }
-        [JsonProperty("title")]
-        public string Title { get; set; }
-        [JsonProperty("url")]
-        public string URL { get; set; }
-    }
-}
