@@ -1,7 +1,7 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 
@@ -19,7 +19,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.CommandText = "SELECT * FROM Mods;";
                 this.DbCommand.Parameters.Clear();
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 list = [];
                 while (reader.Read())
                 {
@@ -72,7 +72,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("id", id);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new()
                 {
@@ -121,7 +121,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
                 this.DbCommand.Parameters.AddWithValue("tz", entity.Timezone);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity.Id = (int)reader["Id"];
                 this.DbConnection.Close();
@@ -154,7 +154,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("id", id);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Mod
                 {

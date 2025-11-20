@@ -1,5 +1,5 @@
 ﻿using LathBotBack.Services;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Diagnostics;
 
@@ -7,8 +7,8 @@ namespace LathBotBack.Base
 {
     public class RepositoryBase
     {
-        public SqlConnection DbConnection { get; set; }
-        public SqlCommand DbCommand { get; set; }
+        public MySqlConnection DbConnection { get; set; }
+        public MySqlCommand DbCommand { get; set; }
 
         public string ConnectionString { get; set; }
 

@@ -1,7 +1,7 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 
@@ -19,7 +19,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.CommandText = "SELECT * FROM Mutes;";
                 this.DbCommand.Parameters.Clear();
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     list.Add(new Mute
@@ -94,7 +94,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("user", userId);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Mute
                 {
@@ -136,7 +136,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.AddWithValue("time", entity.Timestamp);
                 this.DbCommand.Parameters.AddWithValue("duration", entity.Duration);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity.Id = (int)reader["Id"];
                 this.DbConnection.Close();
@@ -169,7 +169,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("id", id);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Mute
                 {

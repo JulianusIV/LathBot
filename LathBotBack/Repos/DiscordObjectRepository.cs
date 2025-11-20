@@ -1,7 +1,7 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 
@@ -20,7 +20,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("name", name);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new DiscordObject
                 {
@@ -54,7 +54,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.CommandText = "SELECT Id, ObjectName, ObjectId FROM DiscordObject;";
                 this.DbCommand.Parameters.Clear();
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     list.Add(new DiscordObject

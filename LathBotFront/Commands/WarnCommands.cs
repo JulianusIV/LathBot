@@ -17,7 +17,7 @@ using LathBotBack.Services;
 using LathBotFront._2FA;
 using LathBotFront.Commands.ChoiceProviders;
 using LathBotFront.EventHandlers;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -98,7 +98,7 @@ namespace LathBotFront.Commands
                     }
                 }
             }
-            bool res = repo.CountAll(out int amount);
+            bool res = repo.CountAll(out long amount);
             if (!res)
             {
                 await ctx.RespondAsync("Error counting entries in database");
@@ -269,20 +269,20 @@ namespace LathBotFront.Commands
         {
             await ctx.DeferResponseAsync();
 
-            SqlConnection connection = new(ReadConfig.Config.ConnectionString);
+            MySqlConnection connection = new(ReadConfig.Config.ConnectionString);
             try
             {
                 if (ctx.Member.Id != DiscordObjectService.Instance.Owner)
                     return;
                 command = command.Trim();
-                SqlCommand cmd = new(command, connection);
+                MySqlCommand cmd = new(command, connection);
                 string resultString = "";
                 connection.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
+                MySqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
                     for (int index = 0; index < reader.FieldCount; index++)
-                        resultString += reader.GetSqlValue(index).ToString() + " ";
+                        resultString += reader.GetValue(index).ToString() + " ";
                     resultString = resultString.Trim();
                     if (resultString.Length >= 1900)
                     {

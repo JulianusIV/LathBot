@@ -1,7 +1,7 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 
@@ -19,7 +19,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.CommandText = "SELECT * FROM Warns;";
                 this.DbCommand.Parameters.Clear();
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     list.Add(new Warn
@@ -64,7 +64,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("id", UserDbId);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     list.Add(new Warn
@@ -110,7 +110,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.AddWithValue("id", UserDbId);
                 this.DbCommand.Parameters.AddWithValue("num", WarnNum);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Warn
                 {
@@ -153,7 +153,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("id", UserDbId);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     amount -= (int)reader["WarnLevel"];
@@ -222,7 +222,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.AddWithValue("warntime", entity.Time);
                 this.DbCommand.Parameters.AddWithValue("persistent", entity.Persistent);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity.ID = (int)reader["WarnId"];
                 this.DbConnection.Close();
@@ -254,7 +254,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("id", id);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Warn
                 {

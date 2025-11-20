@@ -63,7 +63,7 @@ namespace LathBotFront
                     _ = DiscordObjectService.Instance.TimerChannel.SendMessageAsync($"Added user {mem.DisplayName}#{mem.Discriminator} ({mem.Id}) on startup");
                     added++;
                 }
-                bool res = repo.CountAll(out int allInDb);
+                bool res = repo.CountAll(out long allInDb);
                 string strAllInDb;
                 if (!res)
                 {

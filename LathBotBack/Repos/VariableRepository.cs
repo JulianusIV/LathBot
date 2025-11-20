@@ -1,7 +1,7 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System;
 
 namespace LathBotBack.Repos
@@ -19,7 +19,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.AddWithValue("name", entity.Name);
                 this.DbCommand.Parameters.AddWithValue("val", entity.Value);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity.ID = (int)reader["VarId"];
                 this.DbConnection.Close();
@@ -51,7 +51,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("id", id);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity = new Variable
                 {

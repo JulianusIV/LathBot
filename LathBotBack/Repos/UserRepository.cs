@@ -1,7 +1,7 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 
@@ -19,7 +19,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.CommandText = "SELECT UserDcId, UserDbId, EmbedBanned, LastPunish FROM Users;";
                 this.DbCommand.Parameters.Clear();
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 while (reader.Read())
                 {
                     long temp = reader.GetInt64(0);
@@ -53,7 +53,7 @@ namespace LathBotBack.Repos
             return result;
         }
 
-        public bool CountAll(out int amount)
+        public bool CountAll(out long amount)
         {
             bool result = false;
             amount = 0;
@@ -63,7 +63,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.CommandText = "SELECT COUNT(UserDcId) FROM Users;";
                 this.DbCommand.Parameters.Clear();
                 this.DbConnection.Open();
-                amount = (int)this.DbCommand.ExecuteScalar();
+                amount = (long)this.DbCommand.ExecuteScalar();
                 this.DbConnection.Close();
                 result = true;
             }
@@ -123,7 +123,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("dcid", (long)DcId);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 id = (int)reader["UserDbId"];
                 this.DbConnection.Close();
@@ -191,7 +191,7 @@ namespace LathBotBack.Repos
                 else
                     this.DbCommand.Parameters.AddWithValue("LastPunish", entity.LastPunish);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 entity.ID = (int)reader["UserDbId"];
                 this.DbConnection.Close();
@@ -224,7 +224,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("id", id);
                 this.DbConnection.Open();
-                using SqlDataReader reader = this.DbCommand.ExecuteReader();
+                using MySqlDataReader reader = this.DbCommand.ExecuteReader();
                 reader.Read();
                 long temp = reader.GetInt64(0);
                 entity = new User
