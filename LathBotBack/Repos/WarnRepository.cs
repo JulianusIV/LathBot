@@ -28,7 +28,7 @@ namespace LathBotBack.Repos
                         Level = (int)reader["WarnLevel"],
                         Mod = (int)reader["ModeratorDbId"],
                         Number = (int)reader["WarnNumber"],
-                        Persistent = (bool)reader["Persistent"],
+                        Persistent = reader.GetBoolean("Persistent"),
                         Reason = (string)reader["Reason"],
                         Time = (DateTime)reader["WarnTime"],
                         User = (int)reader["UserDbId"],
