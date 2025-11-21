@@ -129,7 +129,7 @@ namespace LathBotBack.Repos
 
             try
             {
-                this.DbCommand.CommandText = "INSERT INTO Mutes (UserDbId, ModDbId, MuteTimestamp, MuteDuration) OUTPUT INSERTED.Id VALUES (@user, @mod, @time, @duration);";
+                this.DbCommand.CommandText = "INSERT INTO Mutes (UserDbId, ModDbId, MuteTimestamp, MuteDuration) VALUES (@user, @mod, @time, @duration) RETURNING Id;";
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("user", entity.User);
                 this.DbCommand.Parameters.AddWithValue("mod", entity.Mod);

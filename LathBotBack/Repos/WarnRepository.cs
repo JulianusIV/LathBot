@@ -212,7 +212,7 @@ namespace LathBotBack.Repos
 
             try
             {
-                this.DbCommand.CommandText = $"INSERT INTO Warns (UserDbId, ModeratorDbId, Reason, WarnNumber, WarnLevel, WarnTime, Persistent) OUTPUT INSERTED.WarnId VALUES (@userid, @modid, @reason, @warnnum, @warnlevel, @warntime, @persistent);";
+                this.DbCommand.CommandText = $"INSERT INTO Warns (UserDbId, ModeratorDbId, Reason, WarnNumber, WarnLevel, WarnTime, Persistent) VALUES (@userid, @modid, @reason, @warnnum, @warnlevel, @warntime, @persistent) RETURNING WarnId;";
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("userid", entity.User);
                 this.DbCommand.Parameters.AddWithValue("modid", entity.Mod);

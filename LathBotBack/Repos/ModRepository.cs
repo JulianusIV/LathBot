@@ -116,7 +116,7 @@ namespace LathBotBack.Repos
 
             try
             {
-                this.DbCommand.CommandText = "INSERT INTO Mods (ModDbId, Timezone) OUTPUT INSERTED.Id VALUES (@dbid, @tz);";
+                this.DbCommand.CommandText = "INSERT INTO Mods (ModDbId, Timezone) VALUES (@dbid, @tz) RETURNING Id;";
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("dbid", entity.DbId);
                 this.DbCommand.Parameters.AddWithValue("tz", entity.Timezone);

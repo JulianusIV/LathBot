@@ -14,7 +14,7 @@ namespace LathBotBack.Repos
 
             try
             {
-                this.DbCommand.CommandText = "INSERT INTO Variables (VarName, VarValue) OUTPUT INSERTED.VarId VALUES (@name, @val);";
+                this.DbCommand.CommandText = "INSERT INTO Variables (VarName, VarValue) VALUES (@name, @val) RETURNING VarId;";
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("name", entity.Name);
                 this.DbCommand.Parameters.AddWithValue("val", entity.Value);
