@@ -1,7 +1,7 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
 
@@ -93,7 +93,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("dcid", (long)dcid);
                 this.DbConnection.Open();
-                exists = (int)this.DbCommand.ExecuteScalar() > 0;
+                exists = (long)this.DbCommand.ExecuteScalar() > 0;
                 this.DbConnection.Close();
                 result = true;
             }

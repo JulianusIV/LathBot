@@ -1,7 +1,7 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
 
@@ -73,7 +73,7 @@ namespace LathBotBack.Repos
                         Level = (int)reader["WarnLevel"],
                         Mod = (int)reader["ModeratorDbId"],
                         Number = (int)reader["WarnNumber"],
-                        Persistent = (bool)reader["Persistent"],
+                        Persistent = reader.GetBoolean("Persistent"),
                         Reason = (string)reader["Reason"],
                         Time = (DateTime)reader["WarnTime"],
                         User = (int)reader["UserDbId"],
@@ -118,7 +118,7 @@ namespace LathBotBack.Repos
                     Level = (int)reader["WarnLevel"],
                     Mod = (int)reader["ModeratorDbId"],
                     Number = (int)reader["WarnNumber"],
-                    Persistent = (bool)reader["Persistent"],
+                    Persistent = reader.GetBoolean("Persistent"),
                     Reason = (string)reader["Reason"],
                     Time = (DateTime)reader["WarnTime"],
                     User = (int)reader["UserDbId"],
@@ -265,7 +265,7 @@ namespace LathBotBack.Repos
                     Number = (int)reader["WarnNumber"],
                     Level = (int)reader["WarnLevel"],
                     Time = (DateTime)reader["WarnTime"],
-                    Persistent = (bool)reader["Persistent"],
+                    Persistent = reader.GetBoolean("Persistent"),
                     ExpirationTime = (int?)(reader["ExpirationTime"] is DBNull ? null : reader["ExpirationTime"])
                 };
                 this.DbConnection.Close();

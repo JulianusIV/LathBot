@@ -1,7 +1,7 @@
 ﻿using LathBotBack.Base;
 using LathBotBack.Models;
 using LathBotBack.Services;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using System;
 
 namespace LathBotBack.Repos
