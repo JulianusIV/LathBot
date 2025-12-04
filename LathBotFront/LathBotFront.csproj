@@ -23,9 +23,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02549" />
-		<PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02549" />
-		<PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02549" />
+		<PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02561" />
+		<PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02561" />
+		<PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02561" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.14.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="9.0.9" />
 		<PackageReference Include="MimeTypeMapOfficial" Version="1.0.17" />
