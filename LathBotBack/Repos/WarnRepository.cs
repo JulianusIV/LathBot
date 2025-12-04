@@ -187,7 +187,7 @@ namespace LathBotBack.Repos
                 this.DbCommand.Parameters.Clear();
                 this.DbCommand.Parameters.AddWithValue("userid", id);
                 this.DbConnection.Open();
-                amount = (int)this.DbCommand.ExecuteScalar();
+                amount = (int)(long)this.DbCommand.ExecuteScalar();
                 this.DbConnection.Close();
                 result = true;
             }
