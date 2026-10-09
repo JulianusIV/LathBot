@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<UserSecretsId>2014252a-ebf2-40b9-bce8-624c153c6a25</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileRunEnvironmentFiles>settings.env</DockerfileRunEnvironmentFiles>
@@ -23,9 +23,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02561" />
-		<PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02561" />
-		<PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02561" />
+		<PackageReference Include="DSharpPlus" Version="5.0.0-nightly-02613" />
+		<PackageReference Include="DSharpPlus.Commands" Version="5.0.0-nightly-02613" />
+		<PackageReference Include="DSharpPlus.Interactivity" Version="5.0.0-nightly-02613" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.14.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="9.0.9" />
 		<PackageReference Include="MimeTypeMapOfficial" Version="1.0.17" />

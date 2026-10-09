@@ -82,7 +82,7 @@ namespace LathBotFront
 #else
 					"Startup completed");
 #endif
-                await OnTimerMethods.APOD();
+                //await OnTimerMethods.APOD();
             });
             return Task.CompletedTask;
         }
@@ -393,7 +393,7 @@ namespace LathBotFront
 
                 await OnTimerMethods.RemindMutes();
 
-                await OnTimerMethods.APOD();
+                //await OnTimerMethods.APOD();
             }
             catch (Exception ex)
             {

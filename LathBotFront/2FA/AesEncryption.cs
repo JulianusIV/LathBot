@@ -74,9 +74,9 @@ namespace LathBotFront._2FA
         {
             ArgumentNullException.ThrowIfNull(salt, nameof(salt));
             var saltBytes = Encoding.ASCII.GetBytes(salt);
-#pragma warning disable SYSLIB0041
+# pragma warning disable SYSLIB0060
             var key = new Rfc2898DeriveBytes(ReadConfig.Config.RijndaelInputKey, saltBytes);
-#pragma warning restore SYSLIB0041
+# pragma warning restore SYSLIB0060
             var aesAlg = Aes.Create();
             aesAlg.Key = key.GetBytes(aesAlg.KeySize / 8);
             aesAlg.IV = key.GetBytes(aesAlg.BlockSize / 8);
